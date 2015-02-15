@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/background_color"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp" >
+
+    <EditText
+        android:id="@+id/etPlain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:hint="Say anything..." >
+    </EditText>
+
+    <com.toe.plain.FlipImageView
+        android:id="@+id/ivDone"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:scaleType="center"
+        android:src="@drawable/done_selector"
+        app:flipDrawable="@drawable/done_selector"
+        app:flipDuration="2000"
+        app:flipInterpolator="@android:anim/overshoot_interpolator"
+        app:flipRotations="y"
+        app:reverseRotation="true" />
+
+</LinearLayout>
