@@ -4,6 +4,7 @@
     <string name="app_name">\'plain</string>
     <string name="app_slogan">Say anything</string>
     <string name="font">fonts/organo.ttf</string>
+    <string name="list_font">fonts/gatsby-bold.ttf</string>
     <string name="api_key">b1788d1eea7837212b5fdec239a9c410a9f447041d6f37f20c9b9225fa1ca3fc</string>
     <string name="secret_key">a5d824ee9cee6fca6231dada0ba3dc49a0712a64b6ce9fccca40a6003cfd8969</string>
     <string name="database_name">PLAINDB</string>

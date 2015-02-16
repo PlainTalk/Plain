@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.skyfishjy.library.RippleBackground;
 
 public class About extends SherlockActivity {
 
@@ -22,19 +23,23 @@ public class About extends SherlockActivity {
 
 	private void setUp() {
 		// TODO Auto-generated method stub
-		Typeface font = Typeface.createFromAsset(getAssets(), getResources()
-				.getString(R.string.font));
+		Typeface font = Typeface.createFromAsset(getAssets(),
+				getString(R.string.font));
+
+		RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
+		rippleBackground.startRippleAnimation();
 
 		TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
 		tvTitle.setTypeface(font);
 
-		TextView tvSlogan = (TextView) findViewById(R.id.tvSlogan);
+		ShimmerTextView tvSlogan = (ShimmerTextView) findViewById(R.id.tvSlogan);
+		new Shimmer().start(tvSlogan);
 		tvSlogan.setTypeface(font);
 
 		TextView tvToe = (TextView) findViewById(R.id.tvToe);
 		tvToe.setTypeface(font);
 
-		TextView tvAbout= (TextView) findViewById(R.id.tvAbout);
+		TextView tvAbout = (TextView) findViewById(R.id.tvAbout);
 		tvAbout.setTypeface(font);
 
 		TextView tvEasterEgg = (TextView) findViewById(R.id.tvEasterEgg);
