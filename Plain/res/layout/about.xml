@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.xoxo"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
@@ -14,12 +14,23 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/plain_icon_300" />
+        <com.skyfishjy.library.RippleBackground
+            android:id="@+id/content"
+            android:layout_width="270dp"
+            android:layout_height="270dp"
+            app:rb_color="#0099CC"
+            app:rb_duration="3000"
+            app:rb_radius="23dp"
+            app:rb_rippleAmount="6"
+            app:rb_scale="6" >
+
+            <ImageView
+                android:id="@+id/ivLogo"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/plain_icon_300" />
+        </com.skyfishjy.library.RippleBackground>
 
         <TextView
             android:id="@+id/tvTitle"
@@ -32,13 +43,13 @@
             android:textSize="40dp"
             android:textStyle="bold" />
 
-        <TextView
+        <com.toe.plain.ShimmerTextView
             android:id="@+id/tvSlogan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/app_slogan"
-            android:textColor="#fff"
+            android:textColor="#666"
             android:textSize="20dp" />
 
         <TextView

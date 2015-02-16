@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ public class ListItemAdapter extends
 
 	private ArrayList<ListItem> objects;
 	private Context context;
+	private Typeface font;
 
 	public ListItemAdapter(Context context, int textViewResourceId,
 			ArrayList<ListItem> objects) {
@@ -25,6 +27,9 @@ public class ListItemAdapter extends
 	@SuppressLint("InflateParams")
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
+		font = Typeface.createFromAsset(context.getAssets(),
+				context.getString(R.string.list_font));
+
 		if (v == null) {
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -34,6 +39,7 @@ public class ListItemAdapter extends
 		ListItem i = objects.get(position);
 		if (i != null) {
 			TextView tvPlain = (TextView) v.findViewById(R.id.plain);
+			tvPlain.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.likes);
 
 			if (tvPlain != null) {

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.skyfishjy.library.RippleBackground;
 
 public class Welcome extends SherlockActivity {
 
@@ -42,13 +43,17 @@ public class Welcome extends SherlockActivity {
 
 	private void setUp() {
 		// TODO Auto-generated method stub
-		Typeface font = Typeface.createFromAsset(getAssets(), getResources()
-				.getString(R.string.font));
+		Typeface font = Typeface.createFromAsset(getAssets(),
+				getString(R.string.font));
+
+		RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
+		rippleBackground.startRippleAnimation();
 
 		TextView tvTitle = (TextView) findViewById(R.id.tvTitle);
 		tvTitle.setTypeface(font);
 
-		TextView tvSlogan = (TextView) findViewById(R.id.tvSlogan);
+		ShimmerTextView tvSlogan = (ShimmerTextView) findViewById(R.id.tvSlogan);
+		new Shimmer().start(tvSlogan);
 		tvSlogan.setTypeface(font);
 
 		Button bContinue = (Button) findViewById(R.id.bContinue);
