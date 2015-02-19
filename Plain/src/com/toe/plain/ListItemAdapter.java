@@ -41,6 +41,7 @@ public class ListItemAdapter extends
 			TextView tvPlain = (TextView) v.findViewById(R.id.plain);
 			tvPlain.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.likes);
+			TextView tvTag = (TextView) v.findViewById(R.id.tag);
 
 			if (tvPlain != null) {
 				tvPlain.setText("\"" + i.getPlain() + "\"");
@@ -48,6 +49,10 @@ public class ListItemAdapter extends
 
 			if (tvLikes != null) {
 				tvLikes.setText(i.getLikes() + "");
+			}
+
+			if (tvTag != null) {
+				tvTag.setText(i.getTag() + "");
 			}
 		}
 		return v;

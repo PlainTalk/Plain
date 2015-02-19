@@ -7,11 +7,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -40,6 +46,7 @@ public class Plain extends SherlockFragmentActivity {
 	String error;
 	EditText etPlain;
 	SherlockFragmentActivity activity;
+	ShimmerTextView tvNoListItem;
 	int max = 100;
 
 	@Override
@@ -67,6 +74,29 @@ public class Plain extends SherlockFragmentActivity {
 
 		switch (position) {
 		case 0:
+			ImageView ivBackground = (ImageView) findViewById(R.id.ivBackground);
+
+			final float growTo = 1.2f;
+			final float growFrom = 1.0f;
+			final float shrinkTo = 0.83f;
+			final float shrinkFrom = 1.2f;
+			final long duration = 40000;
+
+			ScaleAnimation grow = new ScaleAnimation(growFrom, growTo,
+					growFrom, growTo, Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			grow.setDuration(duration / 2);
+			ScaleAnimation shrink = new ScaleAnimation(shrinkFrom, shrinkTo,
+					shrinkFrom, shrinkTo, Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
+			shrink.setDuration(duration / 2);
+			shrink.setStartOffset(duration / 2);
+			AnimationSet growAndShrink = new AnimationSet(true);
+			growAndShrink.setInterpolator(new LinearInterpolator());
+			growAndShrink.addAnimation(grow);
+			growAndShrink.addAnimation(shrink);
+			ivBackground.startAnimation(growAndShrink);
+
 			etPlain = (EditText) findViewById(R.id.etPlain);
 			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
 			ivDone.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +112,13 @@ public class Plain extends SherlockFragmentActivity {
 			});
 			break;
 		case 1:
+			Typeface font = Typeface.createFromAsset(getAssets(),
+					getString(R.string.font));
+
+			tvNoListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			new Shimmer().start(tvNoListItem);
+			tvNoListItem.setTypeface(font);
+
 			getData();
 			listView = (PullToRefreshListView) findViewById(R.id.lvListItems);
 			listView.setOnRefreshListener(new OnRefreshListener() {
@@ -99,7 +136,7 @@ public class Plain extends SherlockFragmentActivity {
 	private void getData() {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
-		
+
 		storageService.findAllDocuments(getString(R.string.database_name),
 				getString(R.string.collection_name), new App42CallBack() {
 					public void onSuccess(Object response) {
@@ -147,6 +184,7 @@ public class Plain extends SherlockFragmentActivity {
 		try {
 			plainJson.put("plain", plain);
 			plainJson.put("likes", 0);
+			plainJson.put("tag", RandomStringUtils.random(3, true, true));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,7 +221,7 @@ public class Plain extends SherlockFragmentActivity {
 								etPlain.setText("");
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
-										"Plain published!", Toast.LENGTH_SHORT)
+										"Story published!", Toast.LENGTH_SHORT)
 										.show();
 							}
 						});
@@ -222,7 +260,7 @@ public class Plain extends SherlockFragmentActivity {
 			try {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
 				plains.add(new ListItem(json.getString("plain"), json
-						.getInt("likes")));
+						.getInt("likes"), json.getString("tag")));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -234,6 +272,7 @@ public class Plain extends SherlockFragmentActivity {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				tvNoListItem.setVisibility(View.INVISIBLE);
 				setSupportProgressBarIndeterminateVisibility(false);
 				adapter = new ListItemAdapter(getApplicationContext(),
 						R.layout.list_item, plains);
@@ -356,6 +395,24 @@ public class Plain extends SherlockFragmentActivity {
 				|| ex.getMessage().contains("Neither")
 				|| ex.getMessage().contains("Socket")) {
 			error = "No internet connection :-(";
+
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					tvNoListItem.setVisibility(View.VISIBLE);
+					tvNoListItem.setText("Refresh");
+					tvNoListItem.setOnClickListener(new View.OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							getData();
+						}
+					});
+				}
+			});
 		} else if (ex.getMessage().contains("No document")) {
 			error = "No plains to read yet :-(";
 		} else {
@@ -401,9 +458,12 @@ public class Plain extends SherlockFragmentActivity {
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;
-		case R.id.mRefresh:
-			setSupportProgressBarIndeterminateVisibility(true);
-			getData();
+		case R.id.mShare:
+			i = new Intent(android.content.Intent.ACTION_SEND);
+			i.setType("text/plain");
+			i.putExtra(android.content.Intent.EXTRA_TEXT,
+					getString(R.string.share_message));
+			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
 		}
 		return super.onOptionsItemSelected(item);
