@@ -2,6 +2,7 @@ package com.toe.plain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +27,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.shephertz.app42.paas.sdk.android.App42API;
+import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.App42CacheManager.Policy;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.toe.plain.PullToRefreshListView.OnRefreshListener;
@@ -35,7 +38,7 @@ import com.viewpagerindicator.TitlePageIndicator;
 
 public class Plain extends SherlockFragmentActivity {
 
-	ArrayList<ListItem> plains, likes;
+	ArrayList<ListItem> stories, likes, tags, admins;
 	PlainFragmentAdapter mAdapter;
 	ViewPager mPager;
 	Intent i;
@@ -44,10 +47,9 @@ public class Plain extends SherlockFragmentActivity {
 	PullToRefreshListView listView;
 	StorageService storageService;
 	String error;
-	EditText etPlain;
+	EditText etStory;
 	SherlockFragmentActivity activity;
 	ShimmerTextView tvNoListItem;
-	int max = 100;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,7 @@ public class Plain extends SherlockFragmentActivity {
 
 		App42API.initialize(getApplicationContext(),
 				getString(R.string.api_key), getString(R.string.secret_key));
+		App42CacheManager.setPolicy(Policy.NETWORK_FIRST);
 		storageService = App42API.buildStorageService();
 	}
 
@@ -97,7 +100,7 @@ public class Plain extends SherlockFragmentActivity {
 			growAndShrink.addAnimation(shrink);
 			ivBackground.startAnimation(growAndShrink);
 
-			etPlain = (EditText) findViewById(R.id.etPlain);
+			etStory = (EditText) findViewById(R.id.etStory);
 			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
 			ivDone.setOnClickListener(new View.OnClickListener() {
 
@@ -105,9 +108,9 @@ public class Plain extends SherlockFragmentActivity {
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					ivDone.setFlipped(true);
-					etPlain.setEnabled(false);
-					String plain = etPlain.getText().toString().trim();
-					publishPlain(plain);
+					etStory.setEnabled(false);
+					String story = etStory.getText().toString().trim();
+					publishStory(story);
 				}
 			});
 			break;
@@ -136,7 +139,9 @@ public class Plain extends SherlockFragmentActivity {
 	private void getData() {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
-
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByAscending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
 		storageService.findAllDocuments(getString(R.string.database_name),
 				getString(R.string.collection_name), new App42CallBack() {
 					public void onSuccess(Object response) {
@@ -174,24 +179,25 @@ public class Plain extends SherlockFragmentActivity {
 				});
 	}
 
-	private void publishPlain(String plain) {
+	private void publishStory(String story) {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
 		Toast.makeText(getApplicationContext(), "Just a moment",
 				Toast.LENGTH_SHORT).show();
 
-		JSONObject plainJson = new JSONObject();
+		JSONObject jsonStory = new JSONObject();
 		try {
-			plainJson.put("plain", plain);
-			plainJson.put("likes", 0);
-			plainJson.put("tag", RandomStringUtils.random(3, true, true));
+			jsonStory.put("story", story);
+			jsonStory.put("likes", 0);
+			jsonStory.put("tag", RandomStringUtils.random(3, true, true));
+			jsonStory.put("admin", false);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		storageService.insertJSONDocument(getString(R.string.database_name),
-				getString(R.string.collection_name), plainJson,
+				getString(R.string.collection_name), jsonStory,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
@@ -217,12 +223,13 @@ public class Plain extends SherlockFragmentActivity {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								etPlain.setEnabled(true);
-								etPlain.setText("");
+								etStory.setEnabled(true);
+								etStory.setText("");
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Story published!", Toast.LENGTH_SHORT)
 										.show();
+								getData();
 							}
 						});
 					}
@@ -249,18 +256,14 @@ public class Plain extends SherlockFragmentActivity {
 		Collections.reverse(jsonDocArray);
 		Collections.reverse(jsonIDArray);
 
-		plains = new ArrayList<ListItem>();
+		stories = new ArrayList<ListItem>();
 
-		int total = jsonDocArray.size();
-		if (total > max) {
-			total = max;
-		}
-
-		for (int i = 0; i < total; i++) {
+		for (int i = 0; i < jsonDocArray.size(); i++) {
 			try {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
-				plains.add(new ListItem(json.getString("plain"), json
-						.getInt("likes"), json.getString("tag")));
+				stories.add(new ListItem(json.getString("story"), json
+						.getInt("likes"), json.getString("tag"), json
+						.getBoolean("admin")));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -275,7 +278,7 @@ public class Plain extends SherlockFragmentActivity {
 				tvNoListItem.setVisibility(View.INVISIBLE);
 				setSupportProgressBarIndeterminateVisibility(false);
 				adapter = new ListItemAdapter(getApplicationContext(),
-						R.layout.list_item, plains);
+						R.layout.list_item, stories);
 				SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
 						adapter);
 				swing.setAbsListView(listView);
@@ -292,7 +295,11 @@ public class Plain extends SherlockFragmentActivity {
 									new JSONObject(jsonDocArray.get(arg2 - 1))
 											.getInt("likes"), new JSONObject(
 											jsonDocArray.get(arg2 - 1))
-											.getString("plain"));
+											.getString("story"),
+									new JSONObject(jsonDocArray.get(arg2 - 1))
+											.getString("tag"), new JSONObject(
+											jsonDocArray.get(arg2 - 1))
+											.getBoolean("admin"));
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -328,23 +335,26 @@ public class Plain extends SherlockFragmentActivity {
 		});
 	}
 
-	private void addLike(String jsonDocId, int currentLikes, String plain) {
+	private void addLike(String jsonDocId, int currentLikes, String story,
+			String tag, boolean admin) {
 		// TODO Auto-generated method stub
 		Toast.makeText(getApplicationContext(), "Liking...", Toast.LENGTH_SHORT)
 				.show();
 		setSupportProgressBarIndeterminateVisibility(false);
 
-		JSONObject newPlain = new JSONObject();
+		JSONObject likedStory = new JSONObject();
 		try {
-			newPlain.put("plain", plain);
-			newPlain.put("likes", currentLikes + 1);
+			likedStory.put("story", story);
+			likedStory.put("likes", currentLikes + 1);
+			likedStory.put("tag", tag);
+			likedStory.put("admin", admin);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		storageService.updateDocumentByDocId(getString(R.string.database_name),
-				getString(R.string.collection_name), jsonDocId, newPlain,
+				getString(R.string.collection_name), jsonDocId, likedStory,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
@@ -414,7 +424,7 @@ public class Plain extends SherlockFragmentActivity {
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {
-			error = "No plains to read yet :-(";
+			error = "No stories to read yet :-(";
 		} else {
 			error = ex.getMessage();
 		}

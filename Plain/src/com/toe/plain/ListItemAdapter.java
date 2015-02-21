@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,12 @@ public class ListItemAdapter extends
 
 			if (tvPlain != null) {
 				tvPlain.setText("\"" + i.getPlain() + "\"");
+
+				if (i.isAdmin()) {
+					tvPlain.setTextColor(Color.rgb(255, 0, 0));
+				} else {
+					tvPlain.setTextColor(Color.rgb(68, 68, 68));
+				}
 			}
 
 			if (tvLikes != null) {
@@ -52,7 +59,11 @@ public class ListItemAdapter extends
 			}
 
 			if (tvTag != null) {
-				tvTag.setText(i.getTag() + "");
+				if (i.isAdmin()) {
+					tvTag.setText("dev");
+				} else {
+					tvTag.setText(i.getTag().toLowerCase() + "");
+				}
 			}
 		}
 		return v;

@@ -4,11 +4,13 @@ public class ListItem {
 	private String plain;
 	private int likes;
 	private String tag;
+	private boolean admin;
 
-	public ListItem(String plain, int likes, String tag) {
+	public ListItem(String plain, int likes, String tag, boolean admin) {
 		this.setPlain(plain);
 		this.setLikes(likes);
 		this.setTag(tag);
+		this.setAdmin(admin);
 	}
 
 	public String getPlain() {
@@ -33,6 +35,14 @@ public class ListItem {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 }
