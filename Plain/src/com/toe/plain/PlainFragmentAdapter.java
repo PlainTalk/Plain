@@ -9,7 +9,8 @@ import android.view.View;
 
 class PlainFragmentAdapter extends PagerAdapter {
 
-	protected static final String[] CONTENT = new String[] { "You", "Stories" };
+	protected static final String[] CONTENT = new String[] { "You", "Stories",
+			"Favourites" };
 	private int mCount = CONTENT.length;
 
 	Plain activity;
@@ -28,6 +29,9 @@ class PlainFragmentAdapter extends PagerAdapter {
 			break;
 		case 1:
 			resId = R.layout.stories;
+			break;
+		case 2:
+			resId = R.layout.favourites;
 			break;
 		}
 		View view = inflater.inflate(resId, null);

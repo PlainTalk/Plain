@@ -1,24 +1,24 @@
 package com.toe.plain;
 
 public class ListItem {
-	private String plain;
+	private String story;
 	private int likes;
 	private String tag;
 	private boolean admin;
 
-	public ListItem(String plain, int likes, String tag, boolean admin) {
-		this.setPlain(plain);
+	public ListItem(String story, int likes, String tag, boolean admin) {
+		this.setStory(story);
 		this.setLikes(likes);
 		this.setTag(tag);
 		this.setAdmin(admin);
 	}
 
-	public String getPlain() {
-		return plain;
+	public String getStory() {
+		return story;
 	}
 
-	public void setPlain(String plain) {
-		this.plain = plain;
+	public void setStory(String story) {
+		this.story = story;
 	}
 
 	public int getLikes() {

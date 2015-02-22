@@ -39,18 +39,18 @@ public class ListItemAdapter extends
 
 		ListItem i = objects.get(position);
 		if (i != null) {
-			TextView tvPlain = (TextView) v.findViewById(R.id.plain);
-			tvPlain.setTypeface(font);
+			TextView tvStory = (TextView) v.findViewById(R.id.story);
+			tvStory.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.likes);
 			TextView tvTag = (TextView) v.findViewById(R.id.tag);
 
-			if (tvPlain != null) {
-				tvPlain.setText("\"" + i.getPlain() + "\"");
+			if (tvStory != null) {
+				tvStory.setText("\"" + i.getStory() + "\"");
 
 				if (i.isAdmin()) {
-					tvPlain.setTextColor(Color.rgb(255, 0, 0));
+					tvStory.setTextColor(Color.rgb(255, 0, 0));
 				} else {
-					tvPlain.setTextColor(Color.rgb(68, 68, 68));
+					tvStory.setTextColor(Color.rgb(68, 68, 68));
 				}
 			}
 
