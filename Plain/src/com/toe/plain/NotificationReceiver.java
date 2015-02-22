@@ -98,8 +98,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 			}
 
 			if (i == jsonIDArray.size())
-				notificationMessage = "New stories!";
-			else if (i > 1) {
+				notificationMessage = ":-)";
+			else if (i == 1) {
 				notificationMessage = "New story!";
 			} else {
 				notificationMessage = i + " new stories!";

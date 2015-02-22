@@ -85,16 +85,14 @@ public class Plain extends SherlockFragmentActivity {
 	private void setUp() {
 		// TODO Auto-generated method stub
 		activity = this;
+		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 
 		App42API.initialize(getApplicationContext(),
 				getString(R.string.api_key), getString(R.string.secret_key));
 		App42CacheManager.setPolicy(Policy.NETWORK_FIRST);
 		storageService = App42API.buildStorageService();
 
-		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-		if (sp.getBoolean("serviceStarted", false)) {
-			setNotificationAlarm();
-		}
+		setNotificationAlarm();
 	}
 
 	private void setNotificationAlarm() {
@@ -106,9 +104,7 @@ public class Plain extends SherlockFragmentActivity {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				getApplicationContext(), 0, intent, 0);
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-				System.currentTimeMillis(), 3600000, pendingIntent);
-
-		sp.edit().putBoolean("serviceStarted", true).commit();
+				System.currentTimeMillis(), 1800000, pendingIntent);
 	}
 
 	@SuppressLint({ "InlinedApi", "CutPasteId" })
