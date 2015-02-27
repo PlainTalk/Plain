@@ -431,7 +431,8 @@ int id likes 0x7f05004b
 int id listMode 0x7f050009
 int id listUi 0x7f050047
 int id lvListItems 0x7f050045
-int id mShare 0x7f050058
+int id mSearch 0x7f050058
+int id mShare 0x7f050059
 int id none 0x7f050002
 int id normal 0x7f050008
 int id pager 0x7f050056

@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
@@ -37,11 +39,17 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager.Policy;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.storage.OrderByType;
+import com.shephertz.app42.paas.sdk.android.storage.Query;
+import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
+import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.tjeannin.apprate.AppRate;
@@ -83,8 +91,10 @@ public class Plain extends SherlockFragmentActivity {
 		setContentView(R.layout.view_pager);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
-		setAdapter();
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+		setAdapter();
 		setUp();
 		rateApp();
 	}
@@ -127,7 +137,7 @@ public class Plain extends SherlockFragmentActivity {
 			final float growTo = 1.5f;
 			final float growFrom = 1.0f;
 			final float shrinkTo = 0.83f;
-			final float shrinkFrom = 1.2f;
+			final float shrinkFrom = 1.5f;
 			final long duration = 40000;
 
 			ScaleAnimation grow = new ScaleAnimation(growFrom, growTo,
@@ -702,7 +712,7 @@ public class Plain extends SherlockFragmentActivity {
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {
-			error = "No stories to read yet :-(";
+			error = "No stories found :-(";
 		} else {
 			error = ex.getMessage();
 		}
@@ -778,11 +788,118 @@ public class Plain extends SherlockFragmentActivity {
 		mIndicator.setViewPager(mPager);
 	}
 
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
 		getSupportMenuInflater().inflate(R.menu.plains_menu, menu);
+		try {
+			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			SearchView searchView = (SearchView) menu.findItem(R.id.mSearch)
+					.getActionView();
+
+			if (searchView != null) {
+				searchView.setSearchableInfo(searchManager
+						.getSearchableInfo(getComponentName()));
+				searchView.setIconifiedByDefault(false);
+				searchView.setIconified(false);
+				searchView.setQueryHint("Keyword or tag...");
+			}
+
+			searchView.setOnQueryTextListener(new OnQueryTextListener() {
+
+				@Override
+				public boolean onQueryTextSubmit(String query) {
+					// TODO Auto-generated method stub
+					try {
+						if (query.length() > 0) {
+							executeQuery(query);
+						} else {
+							Toast.makeText(getApplicationContext(),
+									"Haha, nice try", Toast.LENGTH_SHORT)
+									.show();
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						System.out.println("Exception: " + e.toString());
+					}
+					return false;
+				}
+
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+			});
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("Exception on Search: " + e.toString());
+		}
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	private void executeQuery(String queryString) {
+		// TODO Auto-generated method stub
+		Toast.makeText(getApplicationContext(), "Searching...",
+				Toast.LENGTH_SHORT).show();
+
+		String key1 = "story";
+		String value1 = queryString;
+		String key2 = "tag";
+		String value2 = queryString;
+		int max = 100;
+		int offset = 0;
+
+		Query q1 = QueryBuilder.build(key1, value1, Operator.LIKE);
+		Query q2 = QueryBuilder.build(key2, value2, Operator.LIKE);
+		Query query = QueryBuilder.compoundOperator(q1, Operator.OR, q2);
+		StorageService storageService = App42API.buildStorageService();
+		storageService.findDocsWithQueryPagingOrderBy(
+				getString(R.string.database_name),
+				getString(R.string.collection_name), query, max, offset, key1,
+				OrderByType.DESCENDING, new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+
+						System.out.println("dbName is " + storage.getDbName());
+						System.out.println("collection Name is "
+								+ storage.getCollectionName());
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							System.out.println("objectId is "
+									+ jsonDocList.get(i).getDocId());
+							System.out.println("CreatedAt is "
+									+ jsonDocList.get(i).getCreatedAt());
+							System.out.println("UpdatedAtis "
+									+ jsonDocList.get(i).getUpdatedAt());
+							System.out.println("Jsondoc is "
+									+ jsonDocList.get(i).getJsonDoc());
+
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+						}
+
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								Toast.makeText(activity, "Found some stories!",
+										Toast.LENGTH_SHORT).show();
+								populateList(jsonDocArray, jsonIdArray);
+							}
+						});
+
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
 	}
 
 	@Override

@@ -1466,7 +1466,8 @@ containing a value of this type.
         public static final int listMode=0x7f050009;
         public static final int listUi=0x7f050047;
         public static final int lvListItems=0x7f050045;
-        public static final int mShare=0x7f050058;
+        public static final int mSearch=0x7f050058;
+        public static final int mShare=0x7f050059;
         public static final int none=0x7f050002;
         public static final int normal=0x7f050008;
         public static final int pager=0x7f050056;
