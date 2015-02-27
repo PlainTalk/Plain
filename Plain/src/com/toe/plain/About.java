@@ -1,7 +1,10 @@
 package com.toe.plain;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -9,6 +12,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.skyfishjy.library.RippleBackground;
 
 public class About extends SherlockActivity {
+
+	Intent i;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,16 @@ public class About extends SherlockActivity {
 
 		TextView tvEasterEgg = (TextView) findViewById(R.id.tvEasterEgg);
 		tvEasterEgg.setTypeface(font);
+		tvEasterEgg
+				.setOnLongClickListener(new AdapterView.OnLongClickListener() {
+					@Override
+					public boolean onLongClick(View v) {
+						// TODO Auto-generated method stub\
+						i = new Intent(getApplicationContext(), EasterEgg.class);
+						startActivity(i);
+						return false;
+					}
+				});
 	}
 
 	@Override

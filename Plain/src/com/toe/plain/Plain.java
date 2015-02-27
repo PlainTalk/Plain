@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
@@ -33,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -42,6 +42,9 @@ import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
+import com.rockerhieu.emojicon.EmojiconGridFragment;
+import com.rockerhieu.emojicon.EmojiconsFragment;
+import com.rockerhieu.emojicon.emoji.Emojicon;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager.Policy;
@@ -57,7 +60,10 @@ import com.toe.plain.PullToRefreshListView.OnRefreshListener;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class Plain extends SherlockFragmentActivity {
+@SuppressWarnings("deprecation")
+public class Plain extends SherlockFragmentActivity implements
+		EmojiconGridFragment.OnEmojiconClickedListener,
+		EmojiconsFragment.OnEmojiconBackspaceClickedListener {
 
 	ArrayList<ListItem> stories;
 	PlainFragmentAdapter mAdapter;
@@ -74,15 +80,17 @@ public class Plain extends SherlockFragmentActivity {
 	ShimmerTextView tvNoListItem, tvNoFavouriteListItem;
 	SharedPreferences sp;
 	Button bShare, bFavourite;
+	ImageView ivHandle;
 	ArrayList<String> favouriteStories = new ArrayList<String>();
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
 	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
 	ArrayList<String> jsonDocArray, jsonIdArray;
-	OptionsCustomDialog ocDialog;
-	FavouriteOptionsCustomDialog focDialog;
+	StoryOptionsCustomDialog socDialog;
+	FavouriteOptionsCustomDialog fsocDialog;
 	AlertDialog.Builder builder;
 	AppRate rate;
+	SlidingDrawer drawer;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,8 +99,6 @@ public class Plain extends SherlockFragmentActivity {
 		setContentView(R.layout.view_pager);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setAdapter();
 		setUp();
@@ -136,7 +142,7 @@ public class Plain extends SherlockFragmentActivity {
 
 			final float growTo = 1.5f;
 			final float growFrom = 1.0f;
-			final float shrinkTo = 0.83f;
+			final float shrinkTo = 0.67f;
 			final float shrinkFrom = 1.5f;
 			final long duration = 40000;
 
@@ -156,6 +162,25 @@ public class Plain extends SherlockFragmentActivity {
 			ivBackground.startAnimation(growAndShrink);
 
 			etStory = (EditText) findViewById(R.id.etStory);
+			ivHandle = (ImageView) findViewById(R.id.handle);
+			drawer = (SlidingDrawer) findViewById(R.id.emojiDrawer);
+			drawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
+
+				@Override
+				public void onDrawerOpened() {
+					// TODO Auto-generated method stub
+					ivHandle.setImageResource(R.drawable.emoji_icon_selected);
+				}
+			});
+			drawer.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
+
+				@Override
+				public void onDrawerClosed() {
+					// TODO Auto-generated method stub
+					ivHandle.setImageResource(R.drawable.emoji_icon);
+				}
+			});
+
 			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
 			ivDone.setOnClickListener(new View.OnClickListener() {
 
@@ -192,7 +217,7 @@ public class Plain extends SherlockFragmentActivity {
 			break;
 		case 2:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
-			new Shimmer().start(tvNoListItem);
+			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
 
 			favouritesListView = (ListView) findViewById(R.id.lvListItems);
@@ -207,12 +232,12 @@ public class Plain extends SherlockFragmentActivity {
 						public boolean onItemLongClick(AdapterView<?> arg0,
 								View arg1, final int arg2, long arg3) {
 							// TODO Auto-generated method stub
-							focDialog = new FavouriteOptionsCustomDialog(
+							fsocDialog = new FavouriteOptionsCustomDialog(
 									activity);
-							focDialog.getWindow().setBackgroundDrawable(
+							fsocDialog.getWindow().setBackgroundDrawable(
 									new ColorDrawable(Color.TRANSPARENT));
-							focDialog.show();
-							focDialog.share
+							fsocDialog.show();
+							fsocDialog.share
 									.setOnClickListener(new View.OnClickListener() {
 
 										@Override
@@ -232,7 +257,7 @@ public class Plain extends SherlockFragmentActivity {
 													"Share the story using..."));
 										}
 									});
-							focDialog.delete
+							fsocDialog.delete
 									.setOnClickListener(new View.OnClickListener() {
 
 										@Override
@@ -282,7 +307,7 @@ public class Plain extends SherlockFragmentActivity {
 													getApplicationContext(),
 													"Deleted",
 													Toast.LENGTH_SHORT).show();
-											focDialog.dismiss();
+											fsocDialog.dismiss();
 										}
 									});
 							return false;
@@ -396,11 +421,11 @@ public class Plain extends SherlockFragmentActivity {
 					public boolean onItemLongClick(AdapterView<?> arg0,
 							View arg1, final int arg2, long arg3) {
 						// TODO Auto-generated method stub
-						ocDialog = new OptionsCustomDialog(activity);
-						ocDialog.getWindow().setBackgroundDrawable(
+						socDialog = new StoryOptionsCustomDialog(activity);
+						socDialog.getWindow().setBackgroundDrawable(
 								new ColorDrawable(Color.TRANSPARENT));
-						ocDialog.show();
-						ocDialog.share
+						socDialog.show();
+						socDialog.share
 								.setOnClickListener(new View.OnClickListener() {
 
 									@Override
@@ -426,7 +451,7 @@ public class Plain extends SherlockFragmentActivity {
 												"Share the story using..."));
 									}
 								});
-						ocDialog.favourite
+						socDialog.favourite
 								.setOnClickListener(new View.OnClickListener() {
 
 									@Override
@@ -614,7 +639,7 @@ public class Plain extends SherlockFragmentActivity {
 			e.printStackTrace();
 		}
 
-		ocDialog.dismiss();
+		socDialog.dismiss();
 		getFavourites();
 		setFavourites();
 		favouritesListView.invalidateViews();
@@ -798,9 +823,10 @@ public class Plain extends SherlockFragmentActivity {
 			if (searchView != null) {
 				searchView.setSearchableInfo(searchManager
 						.getSearchableInfo(getComponentName()));
-				searchView.setIconifiedByDefault(false);
-				searchView.setIconified(false);
+				searchView.setIconifiedByDefault(true);
+				searchView.setIconified(true);
 				searchView.setQueryHint("Keyword or tag...");
+				searchView.clearFocus();
 			}
 
 			searchView.setOnQueryTextListener(new OnQueryTextListener() {
@@ -856,7 +882,7 @@ public class Plain extends SherlockFragmentActivity {
 		storageService.findDocsWithQueryPagingOrderBy(
 				getString(R.string.database_name),
 				getString(R.string.collection_name), query, max, offset, key1,
-				OrderByType.DESCENDING, new App42CallBack() {
+				OrderByType.ASCENDING, new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
 						jsonDocArray = new ArrayList<String>();
@@ -924,8 +950,17 @@ public class Plain extends SherlockFragmentActivity {
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		super.onBackPressed();
-		finish();
+		// Do nothing
+	}
+
+	@Override
+	public void onEmojiconClicked(Emojicon emojicon) {
+		EmojiconsFragment.input(etStory, emojicon);
+	}
+
+	@Override
+	public void onEmojiconBackspaceClicked(View v) {
+		EmojiconsFragment.backspace(etStory);
 	}
 
 }

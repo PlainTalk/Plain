@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:id="@+id/listUi"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -9,7 +10,7 @@
     android:orientation="vertical"
     android:padding="8dp" >
 
-    <TextView
+    <com.rockerhieu.emojicon.EmojiconTextView
         android:id="@+id/story"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -18,7 +19,8 @@
         android:text="Lorem ipsum dolor sit amet"
         android:textColor="#444"
         android:textSize="30.0dip"
-        android:textStyle="bold" />
+        android:textStyle="bold" >
+   </com.rockerhieu.emojicon.EmojiconTextView>
 
     <LinearLayout
         android:layout_width="match_parent"
