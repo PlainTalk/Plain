@@ -24,21 +24,7 @@ public class Welcome extends SherlockActivity {
 		setContentView(R.layout.welcome);
 		getSupportActionBar().hide();
 
-		checkUserRegistration();
 		setUp();
-	}
-
-	private void checkUserRegistration() {
-		// TODO Auto-generated method stub
-		SharedPreferences sp = this.getSharedPreferences(getPackageName(),
-				MODE_PRIVATE);
-		Boolean registered = sp.getBoolean("registered", false);
-		if (registered == true) {
-			Intent i = new Intent(getApplicationContext(), Plain.class);
-			startActivity(i);
-			finish();
-		}
-
 	}
 
 	private void setUp() {

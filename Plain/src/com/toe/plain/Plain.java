@@ -9,13 +9,16 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -41,6 +44,7 @@ import com.shephertz.app42.paas.sdk.android.App42CacheManager.Policy;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
+import com.tjeannin.apprate.AppRate;
 import com.toe.plain.PullToRefreshListView.OnRefreshListener;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
@@ -69,6 +73,8 @@ public class Plain extends SherlockFragmentActivity {
 	ArrayList<String> jsonDocArray, jsonIdArray;
 	OptionsCustomDialog ocDialog;
 	FavouriteOptionsCustomDialog focDialog;
+	AlertDialog.Builder builder;
+	AppRate rate;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,7 @@ public class Plain extends SherlockFragmentActivity {
 		setAdapter();
 
 		setUp();
+		rateApp();
 	}
 
 	private void setUp() {
@@ -221,11 +228,6 @@ public class Plain extends SherlockFragmentActivity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											Toast.makeText(
-													getApplicationContext(),
-													"Deleting...",
-													Toast.LENGTH_SHORT).show();
-
 											favouriteStories.remove(arg2);
 											favouriteLikes.remove(arg2);
 											favouriteTags.remove(arg2);
@@ -420,10 +422,6 @@ public class Plain extends SherlockFragmentActivity {
 									@Override
 									public void onClick(View v) {
 										// TODO Auto-generated method stub
-										Toast.makeText(getApplicationContext(),
-												"Favouriting...",
-												Toast.LENGTH_SHORT).show();
-
 										try {
 											String story = new JSONObject(
 													jsonDocArray.get(arg2 - 1))
@@ -719,6 +717,53 @@ public class Plain extends SherlockFragmentActivity {
 						Toast.LENGTH_SHORT).show();
 			}
 		});
+	}
+
+	private void rateApp() {
+		// TODO Auto-generated method stub
+		builder = new AlertDialog.Builder(Plain.this);
+		rate = new AppRate(Plain.this);
+		builder.setTitle("Hi, rate 'Plain?")
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setMessage("Pretty pleeeeeeaaaaaaase!")
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method stub
+								Intent i = new Intent(
+										Intent.ACTION_VIEW,
+										Uri.parse(getString(R.string.playstore_link)));
+								startActivity(i);
+								AppRate.reset(Plain.this);
+								rate.setMinDaysUntilPrompt(120);
+							}
+						})
+				.setNeutralButton("Later",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								// TODO Auto-generated method stub
+								AppRate.reset(Plain.this);
+								rate.setMinDaysUntilPrompt(3);
+							}
+						})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						AppRate.reset(Plain.this);
+						rate.setMinDaysUntilPrompt(10);
+					}
+				});
+
+		rate.setShowIfAppHasCrashed(false).setMinLaunchesUntilPrompt(10)
+				.setCustomDialog(builder).init();
 	}
 
 	private void setAdapter() {
