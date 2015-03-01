@@ -1,6 +1,7 @@
 package com.toe.plain;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 	private int mRefreshViewHeight;
 	private int mRefreshOriginalTopPadding;
 	private int mLastMotionY;
+	private Typeface font;
 
 	private boolean mBounceHack;
 
@@ -71,6 +73,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
 	private void init(Context context) {
 		// Load all of the animations we need in code rather than through XML
+		font = Typeface.createFromAsset(context.getAssets(),
+				context.getString(R.string.font));
+		
 		mFlipAnimation = new RotateAnimation(0, -180,
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f,
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f);
@@ -91,12 +96,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 				R.layout.pull_to_refresh_header, this, false);
 		mRefreshViewText = (TextView) mRefreshView
 				.findViewById(R.id.pull_to_refresh_text);
+		mRefreshViewText.setTypeface(font);
 		mRefreshViewImage = (ImageView) mRefreshView
 				.findViewById(R.id.pull_to_refresh_image);
 		mRefreshViewProgress = (ProgressBar) mRefreshView
 				.findViewById(R.id.pull_to_refresh_progress);
 		mRefreshViewLastUpdated = (TextView) mRefreshView
 				.findViewById(R.id.pull_to_refresh_updated_at);
+		mRefreshViewLastUpdated.setTypeface(font);
 
 		mRefreshViewImage.setMinimumHeight(50);
 		mRefreshView.setOnClickListener(new OnClickRefreshListener());

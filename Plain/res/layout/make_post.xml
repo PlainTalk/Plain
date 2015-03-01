@@ -9,7 +9,7 @@
     android:background="@color/background_color"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.toe.plain.Plain" >
+    tools:context="com.toe.plain.Plain$PlaceholderFragment" >
 
     <ImageView
         android:id="@+id/ivBackground"

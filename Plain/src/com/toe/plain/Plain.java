@@ -88,6 +88,7 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<String> jsonDocArray, jsonIdArray;
 	StoryOptionsCustomDialog socDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
+	ExitCustomDialog ecDialog;
 	AlertDialog.Builder builder;
 	AppRate rate;
 	SlidingDrawer drawer;
@@ -808,6 +809,7 @@ public class Plain extends SherlockFragmentActivity implements
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(adapter);
 		mPager.setCurrentItem(1);
+		mPager.setOffscreenPageLimit(2);
 
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
@@ -950,7 +952,30 @@ public class Plain extends SherlockFragmentActivity implements
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		// Do nothing
+		if (drawer.isOpened()) {
+			drawer.close();
+		} else {
+			ecDialog = new ExitCustomDialog(activity);
+			ecDialog.getWindow().setBackgroundDrawable(
+					new ColorDrawable(Color.TRANSPARENT));
+			ecDialog.show();
+			ecDialog.bExitNo.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					ecDialog.dismiss();
+				}
+			});
+			ecDialog.bExitYes.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					finish();
+				}
+			});
+		}
 	}
 
 	@Override

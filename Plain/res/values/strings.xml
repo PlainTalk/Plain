@@ -10,7 +10,8 @@
     <string name="database_name">PLAINDB</string>
     <string name="collection_name">STORIES</string>
     <string name="by">by Theory of Everything</string>
-    <string name="about">We don\'t care about any of your data and none of your posts can be attributed to you so feel free to just be yourself.</string>
+    <string name="about">We don\'t collect any of your data and all your posts are anonymous so feel free to just be yourself and say it all</string>
+    <string name="exit">Wanna leave?</string>
     <string name="share_message">Say anything. Get \'Plain.\n\nplay.google.com/store/apps/details?id=com.toe.plain</string>
     <string name="playstore_link">play.google.com/store/apps/details?id=com.toe.plain</string>
     <string name="pull_to_refresh_pull_label">Pull to refresh...</string>
