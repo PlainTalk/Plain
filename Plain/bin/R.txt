@@ -1,3 +1,4 @@
+int array banned_words 0x7f0b0000
 int attr actionBarDivider 0x7f010035
 int attr actionBarItemBackground 0x7f010036
 int attr actionBarSize 0x7f010034
@@ -1412,7 +1413,7 @@ int layout stories 0x7f030022
 int layout story_options_custom_dialog 0x7f030023
 int layout view_pager 0x7f030024
 int layout welcome 0x7f030025
-int menu plains_menu 0x7f0b0000
+int menu plain_menu 0x7f0c0000
 int string about 0x7f040016
 int string abs__action_bar_home_description 0x7f040001
 int string abs__action_bar_up_description 0x7f040002

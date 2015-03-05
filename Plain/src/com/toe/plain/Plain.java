@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
@@ -92,6 +93,7 @@ public class Plain extends SherlockFragmentActivity implements
 	AlertDialog.Builder builder;
 	AppRate rate;
 	SlidingDrawer drawer;
+	boolean storyIsClean = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -140,27 +142,7 @@ public class Plain extends SherlockFragmentActivity implements
 		switch (position) {
 		case 0:
 			ImageView ivBackground = (ImageView) findViewById(R.id.ivBackground);
-
-			final float growTo = 1.5f;
-			final float growFrom = 1.0f;
-			final float shrinkTo = 0.67f;
-			final float shrinkFrom = 1.5f;
-			final long duration = 40000;
-
-			ScaleAnimation grow = new ScaleAnimation(growFrom, growTo,
-					growFrom, growTo, Animation.RELATIVE_TO_SELF, 0.5f,
-					Animation.RELATIVE_TO_SELF, 0.5f);
-			grow.setDuration(duration / 2);
-			ScaleAnimation shrink = new ScaleAnimation(shrinkFrom, shrinkTo,
-					shrinkFrom, shrinkTo, Animation.RELATIVE_TO_SELF, 0.5f,
-					Animation.RELATIVE_TO_SELF, 0.5f);
-			shrink.setDuration(duration / 2);
-			shrink.setStartOffset(duration / 2);
-			AnimationSet growAndShrink = new AnimationSet(true);
-			growAndShrink.setInterpolator(new LinearInterpolator());
-			growAndShrink.addAnimation(grow);
-			growAndShrink.addAnimation(shrink);
-			ivBackground.startAnimation(growAndShrink);
+			handleAnimation(ivBackground);
 
 			etStory = (EditText) findViewById(R.id.etStory);
 			ivHandle = (ImageView) findViewById(R.id.handle);
@@ -189,13 +171,19 @@ public class Plain extends SherlockFragmentActivity implements
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					String story = etStory.getText().toString().trim();
+					storyIsClean = true;
+					storyIsClean = filterWords(story);
 
-					if (story.length() > 1) {
-						ivDone.setFlipped(true);
-						etStory.setEnabled(false);
-						publishStory(story);
+					if (storyIsClean) {
+						if (story.length() > 1) {
+							ivDone.setFlipped(true);
+							etStory.setEnabled(false);
+							publishStory(story);
+						} else {
+							etStory.setError("Please say something...");
+						}
 					} else {
-						etStory.setError("Please say something...");
+						etStory.setError("Nice try. Try something less dirty now...");
 					}
 				}
 			});
@@ -316,6 +304,43 @@ public class Plain extends SherlockFragmentActivity implements
 					});
 			break;
 		}
+	}
+
+	private boolean filterWords(String story) {
+		// TODO Auto-generated method stub
+		String bannedWords[] = getResources().getStringArray(
+				R.array.banned_words);
+
+		for (int i = 0; i < bannedWords.length; i++) {
+			if (story.contains(bannedWords[i])) {
+				storyIsClean = false;
+			}
+		}
+		return storyIsClean;
+	}
+
+	private void handleAnimation(ImageView ivBackground) {
+		// TODO Auto-generated method stub
+		final float growTo = 1.5f;
+		final float growFrom = 1.0f;
+		final float shrinkTo = 0.67f;
+		final float shrinkFrom = 1.5f;
+		final long duration = 40000;
+
+		ScaleAnimation grow = new ScaleAnimation(growFrom, growTo, growFrom,
+				growTo, Animation.RELATIVE_TO_SELF, 0.5f,
+				Animation.RELATIVE_TO_SELF, 0.5f);
+		grow.setDuration(duration / 2);
+		ScaleAnimation shrink = new ScaleAnimation(shrinkFrom, shrinkTo,
+				shrinkFrom, shrinkTo, Animation.RELATIVE_TO_SELF, 0.5f,
+				Animation.RELATIVE_TO_SELF, 0.5f);
+		shrink.setDuration(duration / 2);
+		shrink.setStartOffset(duration / 2);
+		AnimationSet growAndShrink = new AnimationSet(true);
+		growAndShrink.setInterpolator(new LinearInterpolator());
+		growAndShrink.addAnimation(grow);
+		growAndShrink.addAnimation(shrink);
+		ivBackground.startAnimation(growAndShrink);
 	}
 
 	private void getData() {
@@ -816,7 +841,7 @@ public class Plain extends SherlockFragmentActivity implements
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.plains_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.plain_menu, menu);
 		try {
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.mSearch)
@@ -827,7 +852,9 @@ public class Plain extends SherlockFragmentActivity implements
 						.getSearchableInfo(getComponentName()));
 				searchView.setIconifiedByDefault(true);
 				searchView.setIconified(true);
-				searchView.setQueryHint("Keyword or tag...");
+				searchView
+						.setQueryHint(Html
+								.fromHtml("<font color = #ffffff>Keyword or tag...</font>"));
 				searchView.clearFocus();
 			}
 

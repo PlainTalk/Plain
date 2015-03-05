@@ -8,6 +8,9 @@
 package com.toe.plain;
 
 public final class R {
+    public static final class array {
+        public static final int banned_words=0x7f0b0000;
+    }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -2464,7 +2467,7 @@ containing a value of this type.
         public static final int welcome=0x7f030025;
     }
     public static final class menu {
-        public static final int plains_menu=0x7f0b0000;
+        public static final int plain_menu=0x7f0c0000;
     }
     public static final class string {
         public static final int about=0x7f040016;
