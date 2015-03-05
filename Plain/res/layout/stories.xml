@@ -14,7 +14,8 @@
         android:fastScrollEnabled="true"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbarSize="0dp"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:transcriptMode="normal" />
 
     <com.toe.plain.ShimmerTextView
         android:id="@+id/tvNoListItem"

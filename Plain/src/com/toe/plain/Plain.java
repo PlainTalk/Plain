@@ -66,7 +66,7 @@ public class Plain extends SherlockFragmentActivity implements
 		EmojiconGridFragment.OnEmojiconClickedListener,
 		EmojiconsFragment.OnEmojiconBackspaceClickedListener {
 
-	ArrayList<ListItem> stories;
+	ArrayList<ListItem> stories = new ArrayList<ListItem>();
 	PlainFragmentAdapter mAdapter;
 	ViewPager mPager;
 	Intent i;
@@ -288,8 +288,8 @@ public class Plain extends SherlockFragmentActivity implements
 
 											getFavourites();
 											setFavourites();
-											favouritesListView
-													.invalidateViews();
+											// favouritesListView
+											// .invalidateViews();
 											favouritesAdapter
 													.notifyDataSetChanged();
 											Toast.makeText(
@@ -390,7 +390,7 @@ public class Plain extends SherlockFragmentActivity implements
 	private void populateList(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> jsonIDArray) {
 		// TODO Auto-generated method stub
-		stories = new ArrayList<ListItem>();
+		stories.clear();
 
 		for (int i = 0; i < jsonDocArray.size(); i++) {
 			try {
@@ -411,12 +411,26 @@ public class Plain extends SherlockFragmentActivity implements
 				// TODO Auto-generated method stub
 				tvNoListItem.setVisibility(View.INVISIBLE);
 				setSupportProgressBarIndeterminateVisibility(false);
-				adapter = new ListItemAdapter(getApplicationContext(),
-						R.layout.list_item, stories);
-				SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
-						adapter);
-				swing.setAbsListView(listView);
-				listView.setAdapter(swing);
+
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						if (adapter == null) {
+							adapter = new ListItemAdapter(
+									getApplicationContext(),
+									R.layout.list_item, stories);
+							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
+									adapter);
+							swing.setAbsListView(listView);
+							listView.setAdapter(swing);
+						} else {
+							adapter.notifyDataSetChanged();
+							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
+									adapter);
+							swing.setAbsListView(listView);
+						}
+					}
+				});
+
 				listView.onRefreshComplete();
 				listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
