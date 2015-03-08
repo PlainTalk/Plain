@@ -3,6 +3,8 @@ package com.toe.plain;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,9 +27,8 @@ import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.ScaleAnimation;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +68,7 @@ public class Plain extends SherlockFragmentActivity implements
 		EmojiconsFragment.OnEmojiconBackspaceClickedListener {
 
 	ArrayList<ListItem> stories = new ArrayList<ListItem>();
+	ArrayList<ListItem> favourites;
 	PlainFragmentAdapter mAdapter;
 	ViewPager mPager;
 	Intent i;
@@ -141,8 +143,17 @@ public class Plain extends SherlockFragmentActivity implements
 
 		switch (position) {
 		case 0:
-			ImageView ivBackground = (ImageView) findViewById(R.id.ivBackground);
-			handleAnimation(ivBackground);
+			final ImageView ivBackground = (ImageView) findViewById(R.id.ivBackground);
+
+			Timer t = new Timer();
+			t.scheduleAtFixedRate(new TimerTask() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					backgroundAnimation(ivBackground);
+				}
+			}, 0, 40000);
 
 			etStory = (EditText) findViewById(R.id.etStory);
 			ivHandle = (ImageView) findViewById(R.id.handle);
@@ -319,28 +330,22 @@ public class Plain extends SherlockFragmentActivity implements
 		return storyIsClean;
 	}
 
-	private void handleAnimation(ImageView ivBackground) {
+	private void backgroundAnimation(final ImageView ivBackground) {
 		// TODO Auto-generated method stub
-		final float growTo = 1.5f;
-		final float growFrom = 1.0f;
-		final float shrinkTo = 0.67f;
-		final float shrinkFrom = 1.5f;
-		final long duration = 40000;
+		runOnUiThread(new Runnable() {
 
-		ScaleAnimation grow = new ScaleAnimation(growFrom, growTo, growFrom,
-				growTo, Animation.RELATIVE_TO_SELF, 0.5f,
-				Animation.RELATIVE_TO_SELF, 0.5f);
-		grow.setDuration(duration / 2);
-		ScaleAnimation shrink = new ScaleAnimation(shrinkFrom, shrinkTo,
-				shrinkFrom, shrinkTo, Animation.RELATIVE_TO_SELF, 0.5f,
-				Animation.RELATIVE_TO_SELF, 0.5f);
-		shrink.setDuration(duration / 2);
-		shrink.setStartOffset(duration / 2);
-		AnimationSet growAndShrink = new AnimationSet(true);
-		growAndShrink.setInterpolator(new LinearInterpolator());
-		growAndShrink.addAnimation(grow);
-		growAndShrink.addAnimation(shrink);
-		ivBackground.startAnimation(growAndShrink);
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				RotateAnimation anim = new RotateAnimation(0.0f, 360.0f,
+						Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				anim.setInterpolator(new LinearInterpolator());
+				anim.setRepeatCount(Animation.INFINITE);
+				anim.setDuration(50000);
+				ivBackground.startAnimation(anim);
+			}
+		});
 	}
 
 	private void getData() {
@@ -624,18 +629,18 @@ public class Plain extends SherlockFragmentActivity implements
 
 	private void setFavourites() {
 		// TODO Auto-generated method stub
-		stories = new ArrayList<ListItem>();
+		favourites = new ArrayList<ListItem>();
 
 		if (favouriteStories.size() > 0 && favouriteStories != null) {
 			for (int i = 0; i < favouriteStories.size(); i++) {
-				stories.add(new ListItem(favouriteStories.get(i),
+				favourites.add(new ListItem(favouriteStories.get(i),
 						favouriteLikes.get(i), favouriteTags.get(i),
 						favouriteAdmins.get(i)));
 			}
 			tvNoFavouriteListItem.setVisibility(View.INVISIBLE);
 		}
 		favouritesAdapter = new ListItemAdapter(getApplicationContext(),
-				R.layout.list_item, stories);
+				R.layout.list_item, favourites);
 		SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
 				favouritesAdapter);
 		swing.setAbsListView(listView);
@@ -1013,7 +1018,7 @@ public class Plain extends SherlockFragmentActivity implements
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					finish();
+					android.os.Process.killProcess(android.os.Process.myPid());
 				}
 			});
 		}
