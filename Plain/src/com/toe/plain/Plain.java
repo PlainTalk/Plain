@@ -88,6 +88,7 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
 	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
+	ArrayList<String> storedTags = new ArrayList<String>();
 	ArrayList<String> jsonDocArray, jsonIdArray;
 	StoryOptionsCustomDialog socDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
@@ -216,6 +217,9 @@ public class Plain extends SherlockFragmentActivity implements
 			});
 			break;
 		case 2:
+			storedTags = getTags();
+			break;
+		case 3:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
@@ -752,6 +756,40 @@ public class Plain extends SherlockFragmentActivity implements
 					}
 				});
 
+	}
+
+	private void storeTag(String tag) {
+		// TODO Auto-generated method stub
+		getFavourites();
+
+		try {
+			storedTags.add(0, tag);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.toString());
+		}
+
+		try {
+			sp.edit()
+					.putString("storedTags",
+							ObjectSerializer.serialize(storedTags)).commit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<String> getTags() {
+		// TODO Auto-generated method stub
+		try {
+			storedTags = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp.getString("storedTags",
+							ObjectSerializer.serialize(new ArrayList<String>())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return storedTags;
 	}
 
 	private void errorHandler(Exception ex) {

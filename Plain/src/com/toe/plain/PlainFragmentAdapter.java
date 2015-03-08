@@ -10,7 +10,7 @@ import android.view.View;
 class PlainFragmentAdapter extends PagerAdapter {
 
 	protected static final String[] CONTENT = new String[] { "You", "Stories",
-			"Favourites" };
+			"Replys", "Favourites" };
 	private int mCount = CONTENT.length;
 
 	Plain activity;
@@ -31,6 +31,9 @@ class PlainFragmentAdapter extends PagerAdapter {
 			resId = R.layout.stories;
 			break;
 		case 2:
+			resId = R.layout.replys;
+			break;
+		case 3:
 			resId = R.layout.favourites;
 			break;
 		}

@@ -2459,12 +2459,13 @@ containing a value of this type.
         public static final int list_item=0x7f03001d;
         public static final int make_post=0x7f03001e;
         public static final int pull_to_refresh_header=0x7f03001f;
-        public static final int sherlock_spinner_dropdown_item=0x7f030020;
-        public static final int sherlock_spinner_item=0x7f030021;
-        public static final int stories=0x7f030022;
-        public static final int story_options_custom_dialog=0x7f030023;
-        public static final int view_pager=0x7f030024;
-        public static final int welcome=0x7f030025;
+        public static final int replys=0x7f030020;
+        public static final int sherlock_spinner_dropdown_item=0x7f030021;
+        public static final int sherlock_spinner_item=0x7f030022;
+        public static final int stories=0x7f030023;
+        public static final int story_options_custom_dialog=0x7f030024;
+        public static final int view_pager=0x7f030025;
+        public static final int welcome=0x7f030026;
     }
     public static final class menu {
         public static final int plain_menu=0x7f0c0000;
