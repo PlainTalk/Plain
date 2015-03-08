@@ -4,8 +4,13 @@
         android:id="@+id/mSearch"
         android:actionViewClass="com.actionbarsherlock.widget.SearchView"
         android:icon="@drawable/search_icon"
-        android:showAsAction="ifRoom|collapseActionView"
+        android:showAsAction="always|collapseActionView"
         android:title="Search"/>
+    <item
+        android:id="@+id/mExplore"
+        android:icon="@drawable/tag_cloud"
+        android:showAsAction="always"
+        android:title="Explore"/>
     <item
         android:id="@+id/mShare"
         android:icon="@drawable/share"

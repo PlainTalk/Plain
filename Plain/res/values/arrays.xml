@@ -15,5 +15,39 @@
         <item>horny</item>
         <item>fuck me</item>
     </string-array>
+    <string-array name="explore_words">
+        <item>Happy</item>
+        <item>Trust</item>
+        <item>Excited</item>
+        <item>Love</item>
+        <item>Admiration</item>
+        <item>High</item>
+        <item>Relaxed</item>
+        <item>Optimistic</item>
+        <item>Inspired</item>
+        <item>Pleased</item>
+        <item>Peaceful</item>
+        <item>Proud</item>
+        <item>Sad</item>
+        <item>Fearful</item>
+        <item>Bored</item>
+        <item>Hate</item>
+        <item>Disgusted</item>
+        <item>Low</item>
+        <item>Stressed</item>
+        <item>Pessimistic</item>
+        <item>Depressed</item>
+        <item>Frustrated</item>
+        <item>Angry</item>
+        <item>Ashamed</item>
+        <item>Sexy</item>
+        <item>Cheeky</item>
+        <item>Funky</item>
+        <item>Naughty</item>
+        <item>Crazy</item>
+        <item>Cool</item>
+        <item>Hot</item>
+        <item>Giggly</item>
+    </string-array>
 
 </resources>

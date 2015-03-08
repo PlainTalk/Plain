@@ -33,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
@@ -75,7 +74,7 @@ public class Plain extends SherlockFragmentActivity implements
 	PageIndicator mIndicator;
 	ListItemAdapter adapter, favouritesAdapter;
 	PullToRefreshListView listView;
-	ListView favouritesListView;
+	PullToRefreshListView favouritesListView;
 	StorageService storageService;
 	String error;
 	EditText etStory;
@@ -97,6 +96,7 @@ public class Plain extends SherlockFragmentActivity implements
 	AppRate rate;
 	SlidingDrawer drawer;
 	boolean storyIsClean = true;
+	int animationDuration = 100000;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -154,7 +154,7 @@ public class Plain extends SherlockFragmentActivity implements
 					// TODO Auto-generated method stub
 					backgroundAnimation(ivBackground);
 				}
-			}, 0, 40000);
+			}, 0, animationDuration + 1000);
 
 			etStory = (EditText) findViewById(R.id.etStory);
 			ivHandle = (ImageView) findViewById(R.id.handle);
@@ -217,14 +217,30 @@ public class Plain extends SherlockFragmentActivity implements
 			});
 			break;
 		case 2:
+			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			new Shimmer().start(tvNoFavouriteListItem);
+			tvNoFavouriteListItem.setTypeface(font);
 			storedTags = getTags();
+
 			break;
 		case 3:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
 
-			favouritesListView = (ListView) findViewById(R.id.lvListItems);
+			favouritesListView = (PullToRefreshListView) findViewById(R.id.lvListItems);
+			favouritesListView.setOnRefreshListener(new OnRefreshListener() {
+
+				@Override
+				public void onRefresh() {
+					// TODO Auto-generated method stub
+					getFavourites();
+					setFavourites();
+					favouritesListView.invalidateViews();
+					favouritesAdapter.notifyDataSetChanged();
+					favouritesListView.onRefreshComplete();
+				}
+			});
 
 			getFavourites();
 			setFavourites();
@@ -254,7 +270,7 @@ public class Plain extends SherlockFragmentActivity implements
 													android.content.Intent.EXTRA_TEXT,
 													"\""
 															+ favouriteStories
-																	.get(arg2)
+																	.get(arg2 - 1)
 															+ "\"\n\n- story from 'Plain");
 											startActivity(Intent.createChooser(
 													i,
@@ -267,10 +283,10 @@ public class Plain extends SherlockFragmentActivity implements
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											favouriteStories.remove(arg2);
-											favouriteLikes.remove(arg2);
-											favouriteTags.remove(arg2);
-											favouriteAdmins.remove(arg2);
+											favouriteStories.remove(arg2 - 1);
+											favouriteLikes.remove(arg2 - 1);
+											favouriteTags.remove(arg2 - 1);
+											favouriteAdmins.remove(arg2 - 1);
 
 											try {
 												sp.edit()
@@ -346,7 +362,7 @@ public class Plain extends SherlockFragmentActivity implements
 						Animation.RELATIVE_TO_SELF, 0.5f);
 				anim.setInterpolator(new LinearInterpolator());
 				anim.setRepeatCount(Animation.INFINITE);
-				anim.setDuration(50000);
+				anim.setDuration(animationDuration);
 				ivBackground.startAnimation(anim);
 			}
 		});
@@ -891,7 +907,7 @@ public class Plain extends SherlockFragmentActivity implements
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(adapter);
 		mPager.setCurrentItem(1);
-		mPager.setOffscreenPageLimit(2);
+		mPager.setOffscreenPageLimit(3);
 
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
@@ -964,7 +980,6 @@ public class Plain extends SherlockFragmentActivity implements
 		Query q1 = QueryBuilder.build(key1, value1, Operator.LIKE);
 		Query q2 = QueryBuilder.build(key2, value2, Operator.LIKE);
 		Query query = QueryBuilder.compoundOperator(q1, Operator.OR, q2);
-		StorageService storageService = App42API.buildStorageService();
 		storageService.findDocsWithQueryPagingOrderBy(
 				getString(R.string.database_name),
 				getString(R.string.collection_name), query, max, offset, key1,
@@ -998,8 +1013,17 @@ public class Plain extends SherlockFragmentActivity implements
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								Toast.makeText(activity, "Found some stories!",
-										Toast.LENGTH_SHORT).show();
+								if (jsonDocArray.size() > 1) {
+									Toast.makeText(
+											activity,
+											"Found " + jsonDocArray.size()
+													+ " stories!",
+											Toast.LENGTH_SHORT).show();
+								} else {
+									Toast.makeText(activity, "Found a story!",
+											Toast.LENGTH_SHORT).show();
+								}
+
 								populateList(jsonDocArray, jsonIdArray);
 							}
 						});
@@ -1020,6 +1044,10 @@ public class Plain extends SherlockFragmentActivity implements
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			i = new Intent(getApplicationContext(), About.class);
+			startActivity(i);
+			break;
+		case R.id.mExplore:
+			i = new Intent(getApplicationContext(), Explore.class);
 			startActivity(i);
 			break;
 		case R.id.mShare:

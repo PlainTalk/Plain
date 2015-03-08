@@ -37,6 +37,16 @@
             android:label="About" >
         </activity>
         <activity
+            android:name="com.toe.plain.Explore"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Explore" >
+        </activity>
+        <activity
+            android:name="com.toe.plain.ExploreSearchResults"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Results" >
+        </activity>
+        <activity
             android:name="com.toe.plain.EasterEgg"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="You found it!" >
