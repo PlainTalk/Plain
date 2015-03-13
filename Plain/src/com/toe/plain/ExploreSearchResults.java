@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
@@ -52,9 +53,11 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.stories);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		setSupportProgressBarIndeterminateVisibility(true);
 
 		initialize();
 		setUp();
@@ -83,22 +86,19 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 
 	private void getKeyword() {
 		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
 		Bundle b = getIntent().getExtras();
 		keyword = b.getString("keyword");
-		getSupportActionBar().setTitle("Results for '" + keyword + "'");
+		getSupportActionBar().setTitle("Stories with '" + keyword + "'");
 		fetchResults(keyword);
 	}
 
 	private void fetchResults(String keyword) {
 		// TODO Auto-generated method stub
-		String key1 = "story";
-		String value1 = keyword.toLowerCase();
-		String key2 = "tag";
-		String value2 = keyword.toLowerCase();
+		String key = "story";
+		String value = keyword.toLowerCase();
 
-		Query q1 = QueryBuilder.build(key1, value1, Operator.LIKE);
-		Query q2 = QueryBuilder.build(key2, value2, Operator.LIKE);
-		Query query = QueryBuilder.compoundOperator(q1, Operator.OR, q2);
+		Query query = QueryBuilder.build(key, value, Operator.LIKE);
 		storageService.findDocumentsByQuery(getString(R.string.database_name),
 				getString(R.string.collection_name), query,
 				new App42CallBack() {
@@ -189,6 +189,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 						}
 					}
 				});
+				setSupportProgressBarIndeterminateVisibility(false);
 				listView.setOnRefreshListener(new OnRefreshListener() {
 
 					@Override
@@ -448,6 +449,24 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 			});
 		} else if (ex.getMessage().contains("No document")) {
 			error = "No stories found :-(";
+
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					tvNoListItem.setVisibility(View.VISIBLE);
+					tvNoListItem.setText("Refresh");
+					tvNoListItem.setOnClickListener(new View.OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							getKeyword();
+						}
+					});
+				}
+			});
 		} else {
 			error = ex.getMessage();
 		}

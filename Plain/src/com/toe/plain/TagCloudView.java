@@ -29,6 +29,7 @@ public class TagCloudView extends RelativeLayout {
 															// text size
 	}
 
+	@SuppressWarnings("rawtypes")
 	public TagCloudView(Context mContext, int width, int height,
 			List<Tag> tagList, int textSizeMin, int textSizeMax, int scrollSpeed) {
 
@@ -144,6 +145,7 @@ public class TagCloudView extends RelativeLayout {
 				.setOnClickListener(OnTagClickListener(newTag.getUrl()));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public boolean Replace(Tag newTag, String oldTagText) {
 		boolean result = false;
 		int j = mTagCloud.Replace(newTag, oldTagText);
@@ -170,6 +172,7 @@ public class TagCloudView extends RelativeLayout {
 		return result;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void reset() {
 		mTagCloud.reset();
 
@@ -191,6 +194,7 @@ public class TagCloudView extends RelativeLayout {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean onTrackballEvent(MotionEvent e) {
 		float x = e.getX();
@@ -222,6 +226,7 @@ public class TagCloudView extends RelativeLayout {
 		return true;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
 		float x = e.getX();
@@ -277,6 +282,7 @@ public class TagCloudView extends RelativeLayout {
 
 	// the filter function makes sure that there all elements are having unique
 	// Text field:
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	List<Tag> Filter(List<Tag> tagList) {
 		// current implementation is O(n^2) but since the number of tags are not
 		// that many,
@@ -327,6 +333,7 @@ public class TagCloudView extends RelativeLayout {
 	private float centerX, centerY;
 	private float radius;
 	private Context mContext;
+	@SuppressWarnings("unused")
 	private int textSizeMin, textSizeMax;
 	private List<TextView> mTextView;
 	private List<RelativeLayout.LayoutParams> mParams;

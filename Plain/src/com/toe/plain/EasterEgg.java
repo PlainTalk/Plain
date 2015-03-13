@@ -1,12 +1,9 @@
 package com.toe.plain;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.skyfishjy.library.RippleBackground;
 
 public class EasterEgg extends SherlockActivity {
 

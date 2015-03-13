@@ -9,8 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import android.graphics.Paint;
-
+@SuppressWarnings("rawtypes")
 public class TagCloud implements Iterable{
 
 	public TagCloud(){
@@ -134,6 +133,7 @@ public class TagCloud implements Iterable{
 		return tagCloud.iterator();
 	}	
 
+	@SuppressWarnings("unused")
 	private void position(boolean distrEven, Tag newTag){
 		double phi = 0;
 		double theta = 0;

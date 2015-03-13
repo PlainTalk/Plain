@@ -100,13 +100,13 @@ public class NotificationReceiver extends BroadcastReceiver {
 			if (i == jsonIDArray.size())
 				notificationMessage = ":-)";
 			else if (i == 1) {
-				notificationMessage = "New story!";
-			} else {
-				notificationMessage = i + " new stories!";
+				notificationMessage = "New plain!";
+			} else if (i == 100) {
+				notificationMessage = i + " new plain!";
 			}
 
 		} else {
-			notificationMessage = "New stories!";
+			notificationMessage = "New plains!";
 		}
 
 		showNotification(context, notificationMessage);

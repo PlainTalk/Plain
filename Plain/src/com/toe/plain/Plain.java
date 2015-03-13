@@ -23,13 +23,18 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.LiveFolders;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -72,14 +77,13 @@ public class Plain extends SherlockFragmentActivity implements
 	ViewPager mPager;
 	Intent i;
 	PageIndicator mIndicator;
-	ListItemAdapter adapter, favouritesAdapter;
-	PullToRefreshListView listView;
-	PullToRefreshListView favouritesListView;
+	ListItemAdapter adapter, repliesAdapter, favouritesAdapter;
+	PullToRefreshListView listView, repliesListView, favouritesListView;
 	StorageService storageService;
 	String error;
 	EditText etStory;
 	SherlockFragmentActivity activity;
-	ShimmerTextView tvNoListItem, tvNoFavouriteListItem;
+	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoFavouriteListItem;
 	SharedPreferences sp;
 	Button bShare, bFavourite;
 	ImageView ivHandle;
@@ -88,15 +92,19 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<String> favouriteTags = new ArrayList<String>();
 	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
 	ArrayList<String> storedTags = new ArrayList<String>();
+	ArrayList<String> fetchedTagStories = new ArrayList<String>();
+	ArrayList<ListItem> replies = new ArrayList<ListItem>();
 	ArrayList<String> jsonDocArray, jsonIdArray;
 	StoryOptionsCustomDialog socDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
+	EditDataCustomDialog edcDialog;
 	ExitCustomDialog ecDialog;
 	AlertDialog.Builder builder;
 	AppRate rate;
 	SlidingDrawer drawer;
 	boolean storyIsClean = true;
-	int animationDuration = 100000;
+	int animationDuration = 150000;
+	private int preLast;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -195,7 +203,7 @@ public class Plain extends SherlockFragmentActivity implements
 							etStory.setError("Please say something...");
 						}
 					} else {
-						etStory.setError("Nice try. Try something less dirty now...");
+						etStory.setError(getString(R.string.et_not_clean_error));
 					}
 				}
 			});
@@ -205,23 +213,65 @@ public class Plain extends SherlockFragmentActivity implements
 			new Shimmer().start(tvNoListItem);
 			tvNoListItem.setTypeface(font);
 
-			getData();
+			getStories();
 			listView = (PullToRefreshListView) findViewById(R.id.lvListItems);
+			listView.setOnScrollListener(new OnScrollListener() {
+
+				@Override
+				public void onScrollStateChanged(AbsListView view,
+						int scrollState) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem,
+						int visibleItemCount, int totalItemCount) {
+					// TODO Auto-generated method stub
+					// if (listView.getLastVisiblePosition() == listView
+					// .getAdapter().getCount() - 1
+					// && listView
+					// .getChildAt(listView.getChildCount() - 1)
+					// .getBottom() <= listView.getHeight()) {
+					//
+					//
+					//
+					// }
+				}
+			});
 			listView.setOnRefreshListener(new OnRefreshListener() {
 
 				@Override
 				public void onRefresh() {
 					// TODO Auto-generated method stub
-					getData();
+					getStories();
 				}
 			});
 			break;
 		case 2:
-			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
-			new Shimmer().start(tvNoFavouriteListItem);
-			tvNoFavouriteListItem.setTypeface(font);
-			storedTags = getTags();
+			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			new Shimmer().start(tvNoReplyListItem);
+			tvNoReplyListItem.setTypeface(font);
+			tvNoReplyListItem.setOnClickListener(new OnClickListener() {
 
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					getStoriesForReplies(getTags());
+				}
+			});
+
+			repliesListView = (PullToRefreshListView) findViewById(R.id.lvListItems);
+			repliesListView.setOnRefreshListener(new OnRefreshListener() {
+
+				@Override
+				public void onRefresh() {
+					// TODO Auto-generated method stub
+					getStoriesForReplies(getTags());
+				}
+			});
+
+			getStoriesForReplies(getTags());
 			break;
 		case 3:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
@@ -319,8 +369,7 @@ public class Plain extends SherlockFragmentActivity implements
 
 											getFavourites();
 											setFavourites();
-											// favouritesListView
-											// .invalidateViews();
+
 											favouritesAdapter
 													.notifyDataSetChanged();
 											Toast.makeText(
@@ -368,7 +417,7 @@ public class Plain extends SherlockFragmentActivity implements
 		});
 	}
 
-	private void getData() {
+	private void getStories() {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
 
@@ -412,8 +461,52 @@ public class Plain extends SherlockFragmentActivity implements
 				});
 	}
 
+	private void getStoriesForReplies(final ArrayList<String> storedTags) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findAllDocuments(getString(R.string.database_name),
+				getString(R.string.collection_name), new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						System.out.println("dbName is " + storage.getDbName());
+						System.out.println("collection Name is "
+								+ storage.getCollectionName());
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							System.out.println("objectId is "
+									+ jsonDocList.get(i).getDocId());
+							System.out.println("CreatedAt is "
+									+ jsonDocList.get(i).getCreatedAt());
+							System.out.println("UpdatedAtis "
+									+ jsonDocList.get(i).getUpdatedAt());
+							System.out.println("Jsondoc is "
+									+ jsonDocList.get(i).getJsonDoc());
+
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+						}
+
+						fetchReplies(jsonDocArray, storedTags, jsonIdArray);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
+	}
+
 	private void populateList(final ArrayList<String> jsonDocArray,
-			final ArrayList<String> jsonIDArray) {
+			final ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
 		stories.clear();
 
@@ -464,7 +557,7 @@ public class Plain extends SherlockFragmentActivity implements
 							int arg2, long arg3) {
 						// TODO Auto-generated method stub
 						try {
-							addLike(jsonIDArray.get(arg2 - 1),
+							addLike(jsonIdArray.get(arg2 - 1),
 									new JSONObject(jsonDocArray.get(arg2 - 1))
 											.getInt("likes"), new JSONObject(
 											jsonDocArray.get(arg2 - 1))
@@ -560,10 +653,13 @@ public class Plain extends SherlockFragmentActivity implements
 
 		JSONObject jsonStory = new JSONObject();
 		try {
+			String tag = RandomStringUtils.random(3, true, true);
 			jsonStory.put("story", story);
 			jsonStory.put("likes", 0);
-			jsonStory.put("tag", RandomStringUtils.random(3, true, true));
+			jsonStory.put("tag", tag);
 			jsonStory.put("admin", false);
+
+			storeTag(tag);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -602,7 +698,7 @@ public class Plain extends SherlockFragmentActivity implements
 								Toast.makeText(getApplicationContext(),
 										"Story published!", Toast.LENGTH_SHORT)
 										.show();
-								getData();
+								getStories();
 							}
 						});
 					}
@@ -760,7 +856,7 @@ public class Plain extends SherlockFragmentActivity implements
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Liked!", Toast.LENGTH_SHORT).show();
-								getData();
+								getStories();
 							}
 						});
 					}
@@ -774,9 +870,219 @@ public class Plain extends SherlockFragmentActivity implements
 
 	}
 
+	private void fetchReplies(final ArrayList<String> jsonDocArray,
+			final ArrayList<String> storedTags,
+			final ArrayList<String> jsonIdArray) {
+		// TODO Auto-generated method stub
+		fetchedTagStories.clear();
+		replies.clear();
+
+		for (int i = 0; i < jsonDocArray.size(); i++) {
+			try {
+				JSONObject json = new JSONObject(jsonDocArray.get(i));
+				fetchedTagStories.add(json.getString("story"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		for (int i = 0; i < storedTags.size(); i++) {
+			for (int j = 0; j < 100; j++) {
+				if (fetchedTagStories.get(j).contains(
+						"@" + storedTags.get(i).toLowerCase())) {
+					try {
+						JSONObject json = new JSONObject(jsonDocArray.get(j));
+						replies.add(new ListItem(json.getString("story"), json
+								.getInt("likes"), json.getString("tag"), json
+								.getBoolean("admin")));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				tvNoReplyListItem.setVisibility(View.INVISIBLE);
+				setSupportProgressBarIndeterminateVisibility(false);
+
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						repliesAdapter = new ListItemAdapter(
+								getApplicationContext(), R.layout.list_item,
+								replies);
+						SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
+								repliesAdapter);
+						swing.setAbsListView(repliesListView);
+						repliesListView.setAdapter(swing);
+
+						repliesListView.onRefreshComplete();
+						repliesListView
+								.setOnItemClickListener(new OnItemClickListener() {
+
+									@Override
+									public void onItemClick(
+											AdapterView<?> arg0, View arg1,
+											int arg2, long arg3) {
+										// TODO Auto-generated method stub
+										edcDialog = new EditDataCustomDialog(
+												activity);
+										edcDialog
+												.getWindow()
+												.setBackgroundDrawable(
+														new ColorDrawable(
+																Color.TRANSPARENT));
+										edcDialog.title = "Reply to @"
+												+ replies.get(arg2 - 1)
+														.getTag().toLowerCase();
+										edcDialog.tag = "@"
+												+ replies.get(arg2 - 1)
+														.getTag().toLowerCase()
+												+ " ";
+
+										edcDialog.show();
+										edcDialog.bDone
+												.setOnClickListener(new OnClickListener() {
+
+													@Override
+													public void onClick(View v) {
+														// TODO Auto-generated
+														// method
+														// stub
+														String story = edcDialog.etDataField
+																.getText()
+																.toString()
+																.trim();
+														storyIsClean = true;
+														storyIsClean = filterWords(story);
+
+														if (storyIsClean) {
+															if (story.length() > 1) {
+																edcDialog.etDataField
+																		.setEnabled(false);
+																publishStory(story);
+																edcDialog
+																		.dismiss();
+															} else {
+																edcDialog.etDataField
+																		.setError("Please say something...");
+															}
+														} else {
+															edcDialog.etDataField
+																	.setError(getString(R.string.et_not_clean_error));
+														}
+													}
+												});
+									}
+								});
+
+						repliesListView
+								.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+									@Override
+									public boolean onItemLongClick(
+											AdapterView<?> arg0, View arg1,
+											final int arg2, long arg3) {
+										// TODO Auto-generated method stub
+										socDialog = new StoryOptionsCustomDialog(
+												activity);
+										socDialog
+												.getWindow()
+												.setBackgroundDrawable(
+														new ColorDrawable(
+																Color.TRANSPARENT));
+										socDialog.show();
+										socDialog.share
+												.setOnClickListener(new View.OnClickListener() {
+
+													@Override
+													public void onClick(View v) {
+														// TODO Auto-generated
+														// method
+														// stub
+														i = new Intent(
+																android.content.Intent.ACTION_SEND);
+														i.setType("text/plain");
+														try {
+															i.putExtra(
+																	android.content.Intent.EXTRA_TEXT,
+																	"\""
+																			+ new JSONObject(
+																					jsonDocArray
+																							.get(arg2 - 1))
+																					.getString("story")
+																			+ "\"\n\n- story from 'Plain");
+														} catch (JSONException e) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e.printStackTrace();
+														}
+														startActivity(Intent
+																.createChooser(
+																		i,
+																		"Share the story using..."));
+													}
+												});
+										socDialog.favourite
+												.setOnClickListener(new View.OnClickListener() {
+
+													@Override
+													public void onClick(View v) {
+														// TODO Auto-generated
+														// method
+														// stub
+														try {
+															String story = new JSONObject(
+																	jsonDocArray
+																			.get(arg2 - 1))
+																	.getString("story");
+															int likes = new JSONObject(
+																	jsonDocArray
+																			.get(arg2 - 1))
+																	.getInt("likes");
+															String tag = new JSONObject(
+																	jsonDocArray
+																			.get(arg2 - 1))
+																	.getString("tag");
+															boolean admin = new JSONObject(
+																	jsonDocArray
+																			.get(arg2 - 1))
+																	.getBoolean("admin");
+
+															favouriteStory(
+																	story,
+																	likes, tag,
+																	admin);
+
+														} catch (JSONException e) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e.printStackTrace();
+														}
+													}
+												});
+										return false;
+									}
+								});
+					}
+				});
+			}
+		});
+	}
+
 	private void storeTag(String tag) {
 		// TODO Auto-generated method stub
-		getFavourites();
+		storedTags = getTags();
 
 		try {
 			storedTags.add(0, tag);
@@ -830,7 +1136,7 @@ public class Plain extends SherlockFragmentActivity implements
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							getData();
+							getStories();
 						}
 					});
 				}

@@ -6,7 +6,6 @@ import java.util.Random;
 
 import android.os.Bundle;
 import android.view.Display;
-import android.view.Window;
 import android.view.WindowManager;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -18,8 +17,7 @@ public class Explore extends SherlockActivity {
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 		getSupportActionBar().hide();
@@ -54,6 +52,5 @@ public class Explore extends SherlockActivity {
 		// TODO Auto-generated method stub
 		super.onPause();
 		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-		finish();
 	}
 }
