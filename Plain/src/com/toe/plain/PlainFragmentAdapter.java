@@ -9,7 +9,7 @@ import android.view.View;
 
 class PlainFragmentAdapter extends PagerAdapter {
 
-	protected static final String[] CONTENT = new String[] { "You", "Plains",
+	protected static final String[] CONTENT = new String[] { "Post", "Plains",
 			"Replies", "Favourites" };
 
 	private int mCount = CONTENT.length;

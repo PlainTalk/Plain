@@ -23,7 +23,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.LiveFolders;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.view.View;
@@ -252,14 +251,6 @@ public class Plain extends SherlockFragmentActivity implements
 			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoReplyListItem);
 			tvNoReplyListItem.setTypeface(font);
-			tvNoReplyListItem.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					getStoriesForReplies(getTags());
-				}
-			});
 
 			repliesListView = (PullToRefreshListView) findViewById(R.id.lvListItems);
 			repliesListView.setOnRefreshListener(new OnRefreshListener() {
@@ -1139,6 +1130,18 @@ public class Plain extends SherlockFragmentActivity implements
 							getStories();
 						}
 					});
+
+					tvNoReplyListItem.setVisibility(View.VISIBLE);
+					tvNoReplyListItem.setText("Refresh");
+					tvNoReplyListItem
+							.setOnClickListener(new View.OnClickListener() {
+
+								@Override
+								public void onClick(View v) {
+									// TODO Auto-generated method stub
+									getStoriesForReplies(getTags());
+								}
+							});
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {

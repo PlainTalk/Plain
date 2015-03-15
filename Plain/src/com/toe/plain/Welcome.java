@@ -1,6 +1,8 @@
 package com.toe.plain;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +16,7 @@ import com.skyfishjy.library.RippleBackground;
 public class Welcome extends SherlockActivity {
 
 	Intent i;
+	SharedPreferences sp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,12 @@ public class Welcome extends SherlockActivity {
 
 	private void setUp() {
 		// TODO Auto-generated method stub
+		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+		if (!sp.getBoolean("firstTime", true)) {
+			i = new Intent(getApplicationContext(), Plain.class);
+			startActivity(i);
+		}
+
 		Typeface font = Typeface.createFromAsset(getAssets(),
 				getString(R.string.font));
 
@@ -47,6 +56,7 @@ public class Welcome extends SherlockActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				sp.edit().putBoolean("firstTime", false).commit();
 				i = new Intent(getApplicationContext(), Plain.class);
 				startActivity(i);
 			}

@@ -101,8 +101,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 				notificationMessage = ":-)";
 			else if (i == 1) {
 				notificationMessage = "New plain!";
-			} else if (i == 100) {
-				notificationMessage = i + " new plain!";
+			} else {
+				notificationMessage = i + " new plains!";
 			}
 
 		} else {
