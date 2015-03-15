@@ -32,7 +32,7 @@ class PlainFragmentAdapter extends PagerAdapter {
 			resId = R.layout.stories;
 			break;
 		case 2:
-			resId = R.layout.replies;
+			resId = R.layout.stories;
 			break;
 		case 3:
 			resId = R.layout.stories;

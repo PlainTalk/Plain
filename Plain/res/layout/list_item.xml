@@ -46,7 +46,7 @@
             android:id="@+id/imageView1"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/like" />
+            android:src="@drawable/like_icon" />
 
         <TextView
             android:id="@+id/likes"

@@ -7,6 +7,7 @@ import java.util.Random;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
@@ -14,7 +15,6 @@ public class Explore extends SherlockActivity {
 
 	private TagCloudView mTagCloudView;
 
-	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -22,6 +22,14 @@ public class Explore extends SherlockActivity {
 		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 		getSupportActionBar().hide();
 
+		Toast.makeText(getApplicationContext(),
+				"Drag on the edges to navigate", Toast.LENGTH_SHORT).show();
+		setUp();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void setUp() {
+		// TODO Auto-generated method stub
 		Display display = getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
 		int height = display.getHeight();

@@ -47,6 +47,11 @@
             android:label="Results" >
         </activity>
         <activity
+            android:name="com.toe.plain.Rules"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Rules" >
+        </activity>
+        <activity
             android:name="com.toe.plain.EasterEgg"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="You found it!" >

@@ -30,8 +30,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -43,6 +41,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
@@ -61,7 +60,7 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.tjeannin.apprate.AppRate;
-import com.toe.plain.PullToRefreshListView.OnRefreshListener;
+import com.toe.plain.XListView.IXListViewListener;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -77,7 +76,7 @@ public class Plain extends SherlockFragmentActivity implements
 	Intent i;
 	PageIndicator mIndicator;
 	ListItemAdapter adapter, repliesAdapter, favouritesAdapter;
-	PullToRefreshListView listView, repliesListView, favouritesListView;
+	XListView listView, repliesListView, favouritesListView;
 	StorageService storageService;
 	String error;
 	EditText etStory;
@@ -93,7 +92,8 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<String> storedTags = new ArrayList<String>();
 	ArrayList<String> fetchedTagStories = new ArrayList<String>();
 	ArrayList<ListItem> replies = new ArrayList<ListItem>();
-	ArrayList<String> jsonDocArray, jsonIdArray;
+	ArrayList<String> jsonDocArray, jsonIdArray, appendJsonDocArray,
+			appendJsonIdArray;
 	StoryOptionsCustomDialog socDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
 	EditDataCustomDialog edcDialog;
@@ -102,8 +102,8 @@ public class Plain extends SherlockFragmentActivity implements
 	AppRate rate;
 	SlidingDrawer drawer;
 	boolean storyIsClean = true;
-	int animationDuration = 150000;
-	private int preLast;
+	int animationDuration = 140000;
+	int offset = 100;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -213,37 +213,20 @@ public class Plain extends SherlockFragmentActivity implements
 			tvNoListItem.setTypeface(font);
 
 			getStories();
-			listView = (PullToRefreshListView) findViewById(R.id.lvListItems);
-			listView.setOnScrollListener(new OnScrollListener() {
-
-				@Override
-				public void onScrollStateChanged(AbsListView view,
-						int scrollState) {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem,
-						int visibleItemCount, int totalItemCount) {
-					// TODO Auto-generated method stub
-					// if (listView.getLastVisiblePosition() == listView
-					// .getAdapter().getCount() - 1
-					// && listView
-					// .getChildAt(listView.getChildCount() - 1)
-					// .getBottom() <= listView.getHeight()) {
-					//
-					//
-					//
-					// }
-				}
-			});
-			listView.setOnRefreshListener(new OnRefreshListener() {
+			listView = (XListView) findViewById(R.id.lvListItems);
+			listView.setPullLoadEnable(true);
+			listView.setXListViewListener(new IXListViewListener() {
 
 				@Override
 				public void onRefresh() {
 					// TODO Auto-generated method stub
 					getStories();
+				}
+
+				@Override
+				public void onLoadMore() {
+					// TODO Auto-generated method stub
+					fetchMoreStories();
 				}
 			});
 			break;
@@ -252,13 +235,20 @@ public class Plain extends SherlockFragmentActivity implements
 			new Shimmer().start(tvNoReplyListItem);
 			tvNoReplyListItem.setTypeface(font);
 
-			repliesListView = (PullToRefreshListView) findViewById(R.id.lvListItems);
-			repliesListView.setOnRefreshListener(new OnRefreshListener() {
+			repliesListView = (XListView) findViewById(R.id.lvListItems);
+			repliesListView.setPullLoadEnable(false);
+			repliesListView.setXListViewListener(new IXListViewListener() {
 
 				@Override
 				public void onRefresh() {
 					// TODO Auto-generated method stub
 					getStoriesForReplies(getTags());
+				}
+
+				@Override
+				public void onLoadMore() {
+					// TODO Auto-generated method stub
+
 				}
 			});
 
@@ -268,9 +258,11 @@ public class Plain extends SherlockFragmentActivity implements
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
+			tvNoFavouriteListItem.setText("No favourites");
 
-			favouritesListView = (PullToRefreshListView) findViewById(R.id.lvListItems);
-			favouritesListView.setOnRefreshListener(new OnRefreshListener() {
+			favouritesListView = (XListView) findViewById(R.id.lvListItems);
+			favouritesListView.setPullLoadEnable(false);
+			favouritesListView.setXListViewListener(new IXListViewListener() {
 
 				@Override
 				public void onRefresh() {
@@ -279,7 +271,13 @@ public class Plain extends SherlockFragmentActivity implements
 					setFavourites();
 					favouritesListView.invalidateViews();
 					favouritesAdapter.notifyDataSetChanged();
-					favouritesListView.onRefreshComplete();
+					favouritesListView.stopRefresh();
+				}
+
+				@Override
+				public void onLoadMore() {
+					// TODO Auto-generated method stub
+
 				}
 			});
 
@@ -540,7 +538,8 @@ public class Plain extends SherlockFragmentActivity implements
 					}
 				});
 
-				listView.onRefreshComplete();
+				listView.stopRefresh();
+				listView.stopLoadMore();
 				listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 					@Override
@@ -636,6 +635,81 @@ public class Plain extends SherlockFragmentActivity implements
 		});
 	}
 
+	private void fetchMoreStories() {
+		// TODO Auto-generated method stub
+		Toast.makeText(getApplicationContext(), "Getting more plains...",
+				Toast.LENGTH_SHORT).show();
+		setSupportProgressBarIndeterminateVisibility(true);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findAllDocuments(getString(R.string.database_name),
+				getString(R.string.collection_name), 100, offset,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						System.out.println("dbName is " + storage.getDbName());
+						System.out.println("collection Name is "
+								+ storage.getCollectionName());
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+
+						appendJsonDocArray = new ArrayList<String>();
+						appendJsonIdArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							System.out.println("objectId is "
+									+ jsonDocList.get(i).getDocId());
+							System.out.println("CreatedAt is "
+									+ jsonDocList.get(i).getCreatedAt());
+							System.out.println("UpdatedAtis "
+									+ jsonDocList.get(i).getUpdatedAt());
+							System.out.println("Jsondoc is "
+									+ jsonDocList.get(i).getJsonDoc());
+
+							appendJsonDocArray.add(jsonDocList.get(i)
+									.getJsonDoc());
+							appendJsonIdArray
+									.add(jsonDocList.get(i).getDocId());
+						}
+
+						appendDataToList(appendJsonDocArray, appendJsonIdArray);
+
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								offset += 100;
+							}
+						});
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
+	}
+
+	protected void appendDataToList(final ArrayList<String> appendJsonDocArray,
+			final ArrayList<String> appendJsonIdArray) {
+		// TODO Auto-generated method stub
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				jsonDocArray.addAll(appendJsonDocArray);
+				jsonIdArray.addAll(appendJsonIdArray);
+				populateList(jsonDocArray, jsonIdArray);
+				setSupportProgressBarIndeterminateVisibility(false);
+			}
+		});
+	}
+
 	private void publishStory(String story) {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -687,7 +761,7 @@ public class Plain extends SherlockFragmentActivity implements
 								etStory.setText("");
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
-										"Story published!", Toast.LENGTH_SHORT)
+										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
 								getStories();
 							}
@@ -913,7 +987,7 @@ public class Plain extends SherlockFragmentActivity implements
 						swing.setAbsListView(repliesListView);
 						repliesListView.setAdapter(swing);
 
-						repliesListView.onRefreshComplete();
+						repliesListView.stopRefresh();
 						repliesListView
 								.setOnItemClickListener(new OnItemClickListener() {
 
@@ -1224,6 +1298,19 @@ public class Plain extends SherlockFragmentActivity implements
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.plain_menu, menu);
+
+		SubMenu subMenu = menu.addSubMenu("Options");
+		subMenu.add(0, 0, 0, "Menu:");
+		subMenu.add(1, 1, 1, "Explore");
+		subMenu.add(2, 2, 2, "Share");
+		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(4, 4, 4, "About");
+
+		MenuItem subMenuItem = subMenu.getItem();
+		subMenuItem.setIcon(R.drawable.more_menu_icon);
+		subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS
+				| MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
 		try {
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.mSearch)
@@ -1355,16 +1442,24 @@ public class Plain extends SherlockFragmentActivity implements
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;
-		case R.id.mExplore:
+		case 1:
 			i = new Intent(getApplicationContext(), Explore.class);
 			startActivity(i);
 			break;
-		case R.id.mShare:
+		case 2:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
+			break;
+		case 3:
+			i = new Intent(getApplicationContext(), Rules.class);
+			startActivity(i);
+			break;
+		case 4:
+			i = new Intent(getApplicationContext(), About.class);
+			startActivity(i);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -1408,5 +1503,4 @@ public class Plain extends SherlockFragmentActivity implements
 	public void onEmojiconBackspaceClicked(View v) {
 		EmojiconsFragment.backspace(etStory);
 	}
-
 }

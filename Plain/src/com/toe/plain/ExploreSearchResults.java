@@ -29,14 +29,14 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
-import com.toe.plain.PullToRefreshListView.OnRefreshListener;
+import com.toe.plain.XListView.IXListViewListener;
 
 public class ExploreSearchResults extends SherlockFragmentActivity {
 
 	ArrayList<ListItem> stories = new ArrayList<ListItem>();
 	Intent i;
 	ListItemAdapter adapter;
-	PullToRefreshListView listView;
+	XListView listView;
 	StorageService storageService;
 	String keyword, error;
 	ArrayList<String> jsonDocArray, jsonIdArray;
@@ -170,7 +170,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 							Toast.LENGTH_SHORT).show();
 				}
 
-				listView = (PullToRefreshListView) findViewById(R.id.lvListItems);
+				listView = (XListView) findViewById(R.id.lvListItems);
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						if (adapter == null) {
@@ -190,15 +190,21 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 					}
 				});
 				setSupportProgressBarIndeterminateVisibility(false);
-				listView.setOnRefreshListener(new OnRefreshListener() {
+				listView.setXListViewListener(new IXListViewListener() {
 
 					@Override
 					public void onRefresh() {
 						// TODO Auto-generated method stub
 						getKeyword();
 					}
+
+					@Override
+					public void onLoadMore() {
+						// TODO Auto-generated method stub
+
+					}
 				});
-				listView.onRefreshComplete();
+				listView.stopRefresh();
 				listView.setOnItemClickListener(new OnItemClickListener() {
 
 					@Override
