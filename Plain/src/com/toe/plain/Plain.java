@@ -95,6 +95,7 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<String> jsonDocArray, jsonIdArray, appendJsonDocArray,
 			appendJsonIdArray;
 	StoryOptionsCustomDialog socDialog;
+	ReplyOptionsCustomDialog rocDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
 	EditDataCustomDialog edcDialog;
 	ExitCustomDialog ecDialog;
@@ -195,9 +196,13 @@ public class Plain extends SherlockFragmentActivity implements
 
 					if (storyIsClean) {
 						if (story.length() > 1) {
-							ivDone.setFlipped(true);
-							etStory.setEnabled(false);
-							publishStory(story);
+							if (story.length() < 1000) {
+								ivDone.setFlipped(true);
+								etStory.setEnabled(false);
+								publishStory(story);
+							} else {
+								etStory.setError("Try shortening that a bit...");
+							}
 						} else {
 							etStory.setError("Please say something...");
 						}
@@ -310,7 +315,7 @@ public class Plain extends SherlockFragmentActivity implements
 													"\""
 															+ favouriteStories
 																	.get(arg2 - 1)
-															+ "\"\n\n- story from 'Plain");
+															+ "\"\n\n- 'Plain");
 											startActivity(Intent.createChooser(
 													i,
 													"Share the story using..."));
@@ -417,24 +422,12 @@ public class Plain extends SherlockFragmentActivity implements
 				getString(R.string.collection_name), new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
@@ -461,29 +454,17 @@ public class Plain extends SherlockFragmentActivity implements
 				getString(R.string.collection_name), new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
 
-						fetchReplies(jsonDocArray, storedTags, jsonIdArray);
+						extractReplies(jsonDocArray, storedTags, jsonIdArray);
 					}
 
 					public void onException(Exception ex) {
@@ -573,6 +554,67 @@ public class Plain extends SherlockFragmentActivity implements
 						socDialog.getWindow().setBackgroundDrawable(
 								new ColorDrawable(Color.TRANSPARENT));
 						socDialog.show();
+						socDialog.reply
+								.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+										edcDialog = new EditDataCustomDialog(
+												activity);
+										edcDialog
+												.getWindow()
+												.setBackgroundDrawable(
+														new ColorDrawable(
+																Color.TRANSPARENT));
+										String tag = null;
+
+										if (stories.get(arg2 - 1).isAdmin()) {
+											tag = "dev";
+										} else {
+											tag = stories.get(arg2 - 1)
+													.getTag().toLowerCase();
+										}
+
+										edcDialog.title = "Reply to @" + tag;
+										edcDialog.tag = "@" + tag + " ";
+
+										edcDialog.show();
+										edcDialog.bDone
+												.setOnClickListener(new OnClickListener() {
+
+													@Override
+													public void onClick(View v) {
+														// TODO Auto-generated
+														// method
+														// stub
+														String story = edcDialog.etDataField
+																.getText()
+																.toString()
+																.trim();
+														storyIsClean = true;
+														storyIsClean = filterWords(story);
+
+														if (storyIsClean) {
+															if (story.length() > 1) {
+																edcDialog.etDataField
+																		.setEnabled(false);
+																publishStory(story);
+																edcDialog
+																		.dismiss();
+															} else {
+																edcDialog.etDataField
+																		.setError("Please say something...");
+															}
+														} else {
+															edcDialog.etDataField
+																	.setError(getString(R.string.et_not_clean_error));
+														}
+													}
+												});
+										socDialog.dismiss();
+									}
+								});
 						socDialog.share
 								.setOnClickListener(new View.OnClickListener() {
 
@@ -649,9 +691,7 @@ public class Plain extends SherlockFragmentActivity implements
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
+
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
 
@@ -659,15 +699,6 @@ public class Plain extends SherlockFragmentActivity implements
 						appendJsonIdArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							appendJsonDocArray.add(jsonDocList.get(i)
 									.getJsonDoc());
 							appendJsonIdArray
@@ -734,24 +765,6 @@ public class Plain extends SherlockFragmentActivity implements
 				getString(R.string.collection_name), jsonStory,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
-						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
-						final ArrayList<Storage.JSONDocument> jsonDocList = storage
-								.getJsonDocList();
-
-						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-						}
-
 						activity.runOnUiThread(new Runnable() {
 
 							@Override
@@ -896,23 +909,6 @@ public class Plain extends SherlockFragmentActivity implements
 				getString(R.string.collection_name), jsonDocId, likedStory,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
-						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
-						ArrayList<Storage.JSONDocument> jsonDocList = storage
-								.getJsonDocList();
-						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-						}
-
 						activity.runOnUiThread(new Runnable() {
 
 							@Override
@@ -935,7 +931,7 @@ public class Plain extends SherlockFragmentActivity implements
 
 	}
 
-	private void fetchReplies(final ArrayList<String> jsonDocArray,
+	private void extractReplies(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> storedTags,
 			final ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
@@ -974,8 +970,14 @@ public class Plain extends SherlockFragmentActivity implements
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				tvNoReplyListItem.setVisibility(View.INVISIBLE);
+
 				setSupportProgressBarIndeterminateVisibility(false);
+				if (replies != null && replies.size() > 0) {
+					tvNoReplyListItem.setVisibility(View.INVISIBLE);
+				} else {
+					tvNoReplyListItem.setVisibility(View.VISIBLE);
+					tvNoReplyListItem.setText("No replies :-(");
+				}
 
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -1055,15 +1057,15 @@ public class Plain extends SherlockFragmentActivity implements
 											AdapterView<?> arg0, View arg1,
 											final int arg2, long arg3) {
 										// TODO Auto-generated method stub
-										socDialog = new StoryOptionsCustomDialog(
+										rocDialog = new ReplyOptionsCustomDialog(
 												activity);
-										socDialog
+										rocDialog
 												.getWindow()
 												.setBackgroundDrawable(
 														new ColorDrawable(
 																Color.TRANSPARENT));
-										socDialog.show();
-										socDialog.share
+										rocDialog.show();
+										rocDialog.share
 												.setOnClickListener(new View.OnClickListener() {
 
 													@Override
@@ -1096,7 +1098,7 @@ public class Plain extends SherlockFragmentActivity implements
 																		"Share the story using..."));
 													}
 												});
-										socDialog.favourite
+										rocDialog.favourite
 												.setOnClickListener(new View.OnClickListener() {
 
 													@Override
@@ -1194,6 +1196,8 @@ public class Plain extends SherlockFragmentActivity implements
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
+					listView.stopRefresh();
+					listView.stopLoadMore();
 					tvNoListItem.setVisibility(View.VISIBLE);
 					tvNoListItem.setText("Refresh");
 					tvNoListItem.setOnClickListener(new View.OnClickListener() {
@@ -1205,6 +1209,7 @@ public class Plain extends SherlockFragmentActivity implements
 						}
 					});
 
+					repliesListView.stopRefresh();
 					tvNoReplyListItem.setVisibility(View.VISIBLE);
 					tvNoReplyListItem.setText("Refresh");
 					tvNoReplyListItem
@@ -1302,8 +1307,8 @@ public class Plain extends SherlockFragmentActivity implements
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
 		subMenu.add(1, 1, 1, "Explore");
-		subMenu.add(2, 2, 2, "Share");
-		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(2, 2, 2, "Rules");
+		subMenu.add(3, 3, 3, "Invite");
 		subMenu.add(4, 4, 4, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
@@ -1376,6 +1381,10 @@ public class Plain extends SherlockFragmentActivity implements
 		Query q1 = QueryBuilder.build(key1, value1, Operator.LIKE);
 		Query q2 = QueryBuilder.build(key2, value2, Operator.LIKE);
 		Query query = QueryBuilder.compoundOperator(q1, Operator.OR, q2);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
 		storageService.findDocsWithQueryPagingOrderBy(
 				getString(R.string.database_name),
 				getString(R.string.collection_name), query, max, offset, key1,
@@ -1384,22 +1393,9 @@ public class Plain extends SherlockFragmentActivity implements
 						Storage storage = (Storage) response;
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
-
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
@@ -1447,15 +1443,15 @@ public class Plain extends SherlockFragmentActivity implements
 			startActivity(i);
 			break;
 		case 2:
+			i = new Intent(getApplicationContext(), Rules.class);
+			startActivity(i);
+			break;
+		case 3:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
-			break;
-		case 3:
-			i = new Intent(getApplicationContext(), Rules.class);
-			startActivity(i);
 			break;
 		case 4:
 			i = new Intent(getApplicationContext(), About.class);

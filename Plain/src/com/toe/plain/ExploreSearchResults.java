@@ -2,6 +2,7 @@ package com.toe.plain;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,14 +100,15 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 		String value = keyword.toLowerCase();
 
 		Query query = QueryBuilder.build(key, value, Operator.LIKE);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
 		storageService.findDocumentsByQuery(getString(R.string.database_name),
 				getString(R.string.collection_name), query,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
 
@@ -114,15 +116,6 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 						jsonIdArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
@@ -171,6 +164,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 				}
 
 				listView = (XListView) findViewById(R.id.lvListItems);
+				listView.setPullLoadEnable(false);
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						if (adapter == null) {
@@ -387,23 +381,6 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 				getString(R.string.collection_name), jsonDocId, likedStory,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
-						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
-						ArrayList<Storage.JSONDocument> jsonDocList = storage
-								.getJsonDocList();
-						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-						}
-
 						activity.runOnUiThread(new Runnable() {
 
 							@Override

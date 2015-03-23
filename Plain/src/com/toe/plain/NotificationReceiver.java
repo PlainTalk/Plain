@@ -1,7 +1,11 @@
 package com.toe.plain;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,14 +25,18 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	StorageService storageService;
 	SharedPreferences sp;
-	String notificationMessage, lastId;
-	int i;
+	String plainsMessage, repliesMessage, notificationMessage, lastId,
+			lastReplyId;
+	ArrayList<String> storedTags = new ArrayList<String>();
+	ArrayList<String> jsonDocArray, jsonIdArray,
+			fetchedTagStories = new ArrayList<String>();
+	int i, numberOfReplies = 0;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		// TODO Auto-generated method stub
 		setUp(context);
-		getData(context);
+		getStoriesForReplies(context);
 	}
 
 	private void setUp(Context context) {
@@ -36,9 +44,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 		App42API.initialize(context, context.getString(R.string.api_key),
 				context.getString(R.string.secret_key));
 		storageService = App42API.buildStorageService();
+
+		sp = context.getSharedPreferences(context.getPackageName(),
+				Context.MODE_PRIVATE);
 	}
 
-	private void getData(final Context context) {
+	private void getStories(final Context context, final int numberOfReplies) {
 		// TODO Auto-generated method stub
 		HashMap<String, String> metaHeaders = new HashMap<String, String>();
 		metaHeaders.put("orderByDescending", "_$createdAt");
@@ -49,29 +60,17 @@ public class NotificationReceiver extends BroadcastReceiver {
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						System.out.println("dbName is " + storage.getDbName());
-						System.out.println("collection Name is "
-								+ storage.getCollectionName());
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
-						ArrayList<String> jsonDocArray = new ArrayList<String>();
-						ArrayList<String> jsonIDArray = new ArrayList<String>();
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
-							System.out.println("objectId is "
-									+ jsonDocList.get(i).getDocId());
-							System.out.println("CreatedAt is "
-									+ jsonDocList.get(i).getCreatedAt());
-							System.out.println("UpdatedAtis "
-									+ jsonDocList.get(i).getUpdatedAt());
-							System.out.println("Jsondoc is "
-									+ jsonDocList.get(i).getJsonDoc());
-
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
-							jsonIDArray.add(jsonDocList.get(i).getDocId());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
 
-						processData(context, jsonIDArray);
+						processData(context, jsonIdArray, numberOfReplies);
 					}
 
 					public void onException(Exception ex) {
@@ -81,32 +80,113 @@ public class NotificationReceiver extends BroadcastReceiver {
 				});
 	}
 
-	private void processData(final Context context,
-			final ArrayList<String> jsonIDArray) {
+	@SuppressWarnings("unchecked")
+	private ArrayList<String> getTags() {
 		// TODO Auto-generated method stub
-		sp = context.getSharedPreferences(context.getPackageName(),
-				Context.MODE_PRIVATE);
+		try {
+			storedTags = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp.getString("storedTags",
+							ObjectSerializer.serialize(new ArrayList<String>())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+		return storedTags;
+	}
+
+	private void getStoriesForReplies(final Context context) {
+		// TODO Auto-generated method stub
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findAllDocuments(
+				context.getString(R.string.database_name),
+				context.getString(R.string.collection_name),
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+						}
+
+						fetchReplies(context, jsonDocArray, getTags(),
+								jsonIdArray);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+					}
+				});
+	}
+
+	private void fetchReplies(Context context, ArrayList<String> jsonDocArray,
+			ArrayList<String> tags, ArrayList<String> jsonIdArray) {
+		// TODO Auto-generated method stub
+		lastReplyId = sp.getString("lastReplyId", null);
+		sp.edit().putString("lastReplyId", jsonIdArray.get(0)).commit();
+
+		for (int i = 0; i < jsonDocArray.size(); i++) {
+			try {
+				JSONObject json = new JSONObject(jsonDocArray.get(i));
+				fetchedTagStories.add(json.getString("story"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		for (int i = 0; i < storedTags.size(); i++) {
+			for (int j = 0; j < 100; j++) {
+				if (fetchedTagStories.get(j).contains(
+						"@" + storedTags.get(i).toLowerCase())) {
+					numberOfReplies++;
+				}
+			}
+		}
+
+		getStories(context, numberOfReplies);
+	}
+
+	private void processData(final Context context,
+			final ArrayList<String> jsonIdArray, int numberOfReplies) {
+		// TODO Auto-generated method stub
 		lastId = sp.getString("lastId", null);
-		sp.edit().putString("lastId", jsonIDArray.get(0)).commit();
+		sp.edit().putString("lastId", jsonIdArray.get(0)).commit();
 
 		if (lastId != null) {
-			for (i = 1; i < jsonIDArray.size(); i++) {
-				if (lastId.equals(jsonIDArray.get(i))) {
+			for (i = 1; i < jsonIdArray.size(); i++) {
+				if (lastId.equals(jsonIdArray.get(i))) {
 					break;
 				}
 			}
 
-			if (i == jsonIDArray.size())
-				notificationMessage = ":-)";
+			if (i == jsonIdArray.size())
+				plainsMessage = "How's your day?";
 			else if (i == 1) {
-				notificationMessage = "New plain!";
+				plainsMessage = "New plain,";
 			} else {
-				notificationMessage = i + " new plains!";
+				plainsMessage = i + " new plains,";
 			}
 
+			if (numberOfReplies == 0) {
+				repliesMessage = ":-)";
+			} else if (numberOfReplies == 1) {
+				repliesMessage = "One reply!";
+			} else {
+				repliesMessage = numberOfReplies + " replies!";
+			}
+
+			notificationMessage = plainsMessage + " " + repliesMessage;
+
 		} else {
-			notificationMessage = "New plains!";
+			notificationMessage = "New plains and replies!";
 		}
 
 		showNotification(context, notificationMessage);
