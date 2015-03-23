@@ -39,7 +39,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 	ListItemAdapter adapter;
 	XListView listView;
 	StorageService storageService;
-	String keyword, error;
+	String hashtag, error;
 	ArrayList<String> jsonDocArray, jsonIdArray;
 	ShimmerTextView tvNoListItem;
 	StoryOptionsCustomDialog socDialog;
@@ -55,7 +55,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.stories);
+		setContentView(R.layout.list_view);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -89,9 +89,9 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
 		Bundle b = getIntent().getExtras();
-		keyword = b.getString("keyword");
-		getSupportActionBar().setTitle("Stories with '" + keyword + "'");
-		fetchResults(keyword);
+		hashtag = b.getString("hashtag");
+		getSupportActionBar().setTitle(hashtag);
+		fetchResults(hashtag);
 	}
 
 	private void fetchResults(String keyword) {
@@ -156,10 +156,10 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 
 				if (stories.size() > 1) {
 					Toast.makeText(getApplicationContext(),
-							"Found " + stories.size() + " stories!",
+							"Found " + stories.size() + " plains!",
 							Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(getApplicationContext(), "Found a story!",
+					Toast.makeText(getApplicationContext(), "Found a plains!",
 							Toast.LENGTH_SHORT).show();
 				}
 
@@ -431,7 +431,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {
-			error = "No stories found :-(";
+			error = "No plains found :-(";
 
 			runOnUiThread(new Runnable() {
 

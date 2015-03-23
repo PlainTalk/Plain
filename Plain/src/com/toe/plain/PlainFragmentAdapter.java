@@ -29,13 +29,13 @@ class PlainFragmentAdapter extends PagerAdapter {
 			resId = R.layout.make_post;
 			break;
 		case 1:
-			resId = R.layout.stories;
+			resId = R.layout.list_view;
 			break;
 		case 2:
-			resId = R.layout.stories;
+			resId = R.layout.list_view;
 			break;
 		case 3:
-			resId = R.layout.stories;
+			resId = R.layout.list_view;
 			break;
 		}
 		View view = inflater.inflate(resId, null);
