@@ -9,6 +9,7 @@
     <string name="secret_key">a5d824ee9cee6fca6231dada0ba3dc49a0712a64b6ce9fccca40a6003cfd8969</string>
     <string name="database_name">PLAINDB</string>
     <string name="collection_name">STORIES</string>
+    <string name="forums_collection">FORUMS</string>
     <string name="by">by Theory of Everything</string>
     <string name="about">We don\'t collect any of your data and all your posts are anonymous so feel free to just be yourself and say it all</string>
     <string name="rules">-No trolling.\n-No bullying.\n-No mentioning specific names, phone numbers or any other unique identifiers.\n-No overly adult content.\n-No advertisements or links.\n-No spoilers. Seriously.\n-Oh and if you want to announce a bombing, genocide, murder, suicide or anything along those lines, please use Twitter instead.</string>

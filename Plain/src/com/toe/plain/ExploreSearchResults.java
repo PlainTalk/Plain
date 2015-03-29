@@ -159,7 +159,7 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 							"Found " + stories.size() + " plains!",
 							Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(getApplicationContext(), "Found a plains!",
+					Toast.makeText(getApplicationContext(), "Found a plain!",
 							Toast.LENGTH_SHORT).show();
 				}
 
@@ -248,13 +248,13 @@ public class ExploreSearchResults extends SherlockFragmentActivity {
 																	jsonDocArray
 																			.get(arg2 - 1))
 																	.getString("story")
-															+ "\"\n\n- story from 'Plain");
+															+ "\"\n\n- 'Plain");
 										} catch (JSONException e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
 										startActivity(Intent.createChooser(i,
-												"Share the story using..."));
+												"Share the plain using..."));
 									}
 								});
 						socDialog.favourite

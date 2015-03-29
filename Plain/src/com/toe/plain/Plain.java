@@ -663,7 +663,7 @@ public class Plain extends SherlockFragmentActivity implements
 
 											favouriteStory(story, likes, tag,
 													admin);
-
+											socDialog.dismiss();
 										} catch (JSONException e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
@@ -878,7 +878,6 @@ public class Plain extends SherlockFragmentActivity implements
 			e.printStackTrace();
 		}
 
-		socDialog.dismiss();
 		getFavourites();
 		setFavourites();
 		favouritesListView.invalidateViews();
@@ -1076,22 +1075,13 @@ public class Plain extends SherlockFragmentActivity implements
 														i = new Intent(
 																android.content.Intent.ACTION_SEND);
 														i.setType("text/plain");
-														try {
-															i.putExtra(
-																	android.content.Intent.EXTRA_TEXT,
-																	"\""
-																			+ new JSONObject(
-																					jsonDocArray
-																							.get(arg2 - 1))
-																					.getString("story")
-																			+ "\"\n\n- story from 'Plain");
-														} catch (JSONException e) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e.printStackTrace();
-														}
+														i.putExtra(
+																android.content.Intent.EXTRA_TEXT,
+																"\""
+																		+ replies
+																				.get(arg2 - 1)
+																				.getStory()
+																		+ "\"\n\n- story from 'Plain");
 														startActivity(Intent
 																.createChooser(
 																		i,
@@ -1106,36 +1096,23 @@ public class Plain extends SherlockFragmentActivity implements
 														// TODO Auto-generated
 														// method
 														// stub
-														try {
-															String story = new JSONObject(
-																	jsonDocArray
-																			.get(arg2 - 1))
-																	.getString("story");
-															int likes = new JSONObject(
-																	jsonDocArray
-																			.get(arg2 - 1))
-																	.getInt("likes");
-															String tag = new JSONObject(
-																	jsonDocArray
-																			.get(arg2 - 1))
-																	.getString("tag");
-															boolean admin = new JSONObject(
-																	jsonDocArray
-																			.get(arg2 - 1))
-																	.getBoolean("admin");
+														String story = replies
+																.get(arg2 - 1)
+																.getStory();
+														int likes = replies
+																.get(arg2 - 1)
+																.getLikes();
+														String tag = replies
+																.get(arg2 - 1)
+																.getTag();
+														boolean admin = replies
+																.get(arg2 - 1)
+																.isAdmin();
 
-															favouriteStory(
-																	story,
-																	likes, tag,
-																	admin);
-
-														} catch (JSONException e) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e.printStackTrace();
-														}
+														favouriteStory(story,
+																likes, tag,
+																admin);
+														rocDialog.dismiss();
 													}
 												});
 										return false;
@@ -1307,9 +1284,10 @@ public class Plain extends SherlockFragmentActivity implements
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
 		subMenu.add(1, 1, 1, "Explore");
-		subMenu.add(2, 2, 2, "Rules");
-		subMenu.add(3, 3, 3, "Invite");
-		subMenu.add(4, 4, 4, "About");
+		subMenu.add(2, 2, 2, "Forums");
+		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(4, 4, 4, "Invite");
+		subMenu.add(5, 5, 5, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
@@ -1443,17 +1421,21 @@ public class Plain extends SherlockFragmentActivity implements
 			startActivity(i);
 			break;
 		case 2:
-			i = new Intent(getApplicationContext(), Rules.class);
+			i = new Intent(getApplicationContext(), Forums.class);
 			startActivity(i);
 			break;
 		case 3:
+			i = new Intent(getApplicationContext(), Rules.class);
+			startActivity(i);
+			break;
+		case 4:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
-		case 4:
+		case 5:
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;
