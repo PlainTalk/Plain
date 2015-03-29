@@ -32,7 +32,7 @@ class PlainFragmentAdapter extends PagerAdapter {
 			resId = R.layout.list_view;
 			break;
 		case 2:
-			resId = R.layout.list_view;
+			resId = R.layout.replies_list_view;
 			break;
 		case 3:
 			resId = R.layout.list_view;

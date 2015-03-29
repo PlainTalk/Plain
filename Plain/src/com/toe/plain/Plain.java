@@ -79,7 +79,8 @@ public class Plain extends SherlockFragmentActivity implements
 	XListView listView, repliesListView, favouritesListView;
 	StorageService storageService;
 	String error;
-	EditText etStory;
+	EditText etStory, etSearchForTag;
+	Button bSearchForTag;
 	SherlockFragmentActivity activity;
 	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoFavouriteListItem;
 	SharedPreferences sp;
@@ -92,6 +93,11 @@ public class Plain extends SherlockFragmentActivity implements
 	ArrayList<String> storedTags = new ArrayList<String>();
 	ArrayList<String> fetchedTagStories = new ArrayList<String>();
 	ArrayList<ListItem> replies = new ArrayList<ListItem>();
+	ArrayList<ListItem> queryResults = new ArrayList<ListItem>();
+	ArrayList<String> queryResultStories = new ArrayList<String>();
+	ArrayList<Integer> queryResultLikes = new ArrayList<Integer>();
+	ArrayList<String> queryResultTags = new ArrayList<String>();
+	ArrayList<Boolean> queryResultAdmins = new ArrayList<Boolean>();
 	ArrayList<String> jsonDocArray, jsonIdArray, appendJsonDocArray,
 			appendJsonIdArray;
 	StoryOptionsCustomDialog socDialog;
@@ -240,6 +246,19 @@ public class Plain extends SherlockFragmentActivity implements
 			new Shimmer().start(tvNoReplyListItem);
 			tvNoReplyListItem.setTypeface(font);
 
+			etSearchForTag = (EditText) findViewById(R.id.etSearchForTag);
+			bSearchForTag = (Button) findViewById(R.id.bSearchForTag);
+			bSearchForTag.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					String tagQuery = etSearchForTag.getText().toString()
+							.replace("@", "").trim();
+					searchForTag(tagQuery);
+				}
+			});
+
 			repliesListView = (XListView) findViewById(R.id.lvListItems);
 			repliesListView.setPullLoadEnable(false);
 			repliesListView.setXListViewListener(new IXListViewListener() {
@@ -378,6 +397,86 @@ public class Plain extends SherlockFragmentActivity implements
 					});
 			break;
 		}
+	}
+
+	protected void searchForTag(String tagQuery) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+		Toast.makeText(getApplicationContext(), "Just a moment",
+				Toast.LENGTH_SHORT).show();
+
+		String key = "tag";
+		Query query = QueryBuilder.build(key, tagQuery, Operator.LIKE);
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findDocumentsByQuery(getString(R.string.database_name),
+				getString(R.string.collection_name), query,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+						}
+						
+						queryResultStories.clear();
+						queryResultLikes.clear();
+						queryResultTags.clear();
+						queryResultAdmins.clear();
+						queryResults.clear();
+
+						for (int i = 0; i < jsonDocArray.size(); i++) {
+							try {
+								JSONObject json = new JSONObject(jsonDocArray
+										.get(i));
+								queryResultStories.add(json.getString("story"));
+								queryResultLikes.add(json.getInt("likes"));
+								queryResultTags.add(json.getString("tag"));
+								queryResultAdmins.add(json.getBoolean("admin"));
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+						for (int i = 0; i < queryResultStories.size(); i++) {
+							queryResults.add(new ListItem(queryResultStories
+									.get(i), queryResultLikes.get(i),
+									queryResultTags.get(i), queryResultAdmins
+											.get(i)));
+						}
+
+						runOnUiThread(new Runnable() {
+							public void run() {
+								if (jsonDocArray.size() > 1) {
+									Toast.makeText(
+											activity,
+											"Found " + jsonDocArray.size()
+													+ " stories!",
+											Toast.LENGTH_SHORT).show();
+								} else {
+									Toast.makeText(activity, "Found a story!",
+											Toast.LENGTH_SHORT).show();
+								}
+							}
+						});
+						
+						populateReplies(queryResults);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
 	}
 
 	private boolean filterWords(String story) {
@@ -752,7 +851,7 @@ public class Plain extends SherlockFragmentActivity implements
 			String tag = RandomStringUtils.random(3, true, true);
 			jsonStory.put("story", story);
 			jsonStory.put("likes", 0);
-			jsonStory.put("tag", tag);
+			jsonStory.put("tag", tag.toLowerCase());
 			jsonStory.put("admin", false);
 
 			storeTag(tag);
@@ -965,6 +1064,11 @@ public class Plain extends SherlockFragmentActivity implements
 			}
 		}
 
+		populateReplies(replies);
+	}
+
+	private void populateReplies(final ArrayList<ListItem> replies) {
+		// TODO Auto-generated method stub
 		activity.runOnUiThread(new Runnable() {
 
 			@Override
