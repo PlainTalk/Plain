@@ -53,6 +53,11 @@
             android:label="Results" >
         </activity>
         <activity
+            android:name="com.toe.plain.Tribes"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Forums" >
+        </activity>
+        <activity
             android:name="com.toe.plain.Rules"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Rules" >
