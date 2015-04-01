@@ -26,6 +26,12 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.toe.plain.PlainTutorial"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Hey"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="com.toe.plain.Plain"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="&apos;Plain"

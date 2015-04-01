@@ -22,6 +22,7 @@ public class Welcome extends SherlockActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome);
 		getSupportActionBar().hide();
+		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
 		setUp();
 	}
@@ -29,7 +30,12 @@ public class Welcome extends SherlockActivity {
 	private void setUp() {
 		// TODO Auto-generated method stub
 		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-		if (!sp.getBoolean("firstTime", true)) {
+		if (sp.getBoolean("hasSeenTutorial", false) == false) {
+			i = new Intent(getApplicationContext(), PlainTutorial.class);
+			startActivity(i);
+		} else if (sp.getBoolean("firstTime", true) == true) {
+			// Do nothing
+		} else {
 			i = new Intent(getApplicationContext(), Plain.class);
 			startActivity(i);
 		}
@@ -64,7 +70,7 @@ public class Welcome extends SherlockActivity {
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
+		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 		finish();
 	}
-
 }

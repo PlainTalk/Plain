@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/background_color"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <com.toe.plain.FlipImageView
+        android:id="@+id/ivXoxoTutorial"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:scaleType="fitXY"
+        android:src="@drawable/xoxo_tutorial_two"
+        app:flipDrawable="@drawable/xoxo_tutorial_two"
+        app:flipDuration="2000"
+        app:flipInterpolator="@android:anim/anticipate_overshoot_interpolator"
+        app:flipRotations="y"
+        app:reverseRotation="true" />
+
+</LinearLayout>
