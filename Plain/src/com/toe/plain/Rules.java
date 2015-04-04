@@ -34,8 +34,8 @@ public class Rules extends SherlockActivity {
 		TextView tvRules = (TextView) findViewById(R.id.tvRules);
 		tvRules.setTypeface(font);
 
-		TextView tvRulesSignature = (TextView) findViewById(R.id.tvRulesSignature);
-		tvRulesSignature.setTypeface(font);
+		TextView tvSignature = (TextView) findViewById(R.id.tvSignature);
+		tvSignature.setTypeface(font);
 	}
 
 	@Override

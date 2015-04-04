@@ -4,11 +4,16 @@
  * aapt tool from the resource data it found.  It
  * should not be modified by hand.
  */
-package com.rockerhieu.emojicon;
+package github.ankushsachdeva.emojicon;
 
 public final class R {
 	public static final class attr {
 		public static final int emojiconSize = 0x7f010000;
+		public static final int emojiconTextLength = 0x7f010002;
+		public static final int emojiconTextStart = 0x7f010001;
+	}
+	public static final class dimen {
+		public static final int keyboard_height = 0x7f050000;
 	}
 	public static final class drawable {
 		public static final int emoji_0023 = 0x7f02007f;
@@ -855,58 +860,79 @@ public final class R {
 		public static final int emoji_303d = 0x7f0203c8;
 		public static final int emoji_3297 = 0x7f0203c9;
 		public static final int emoji_3299 = 0x7f0203ca;
-		public static final int ic_launcher = 0x7f0203d1;
-		public static final int orca_attach_camera_normal = 0x7f0203d9;
-		public static final int orca_attach_camera_pressed = 0x7f0203da;
-		public static final int orca_attach_location_normal = 0x7f0203db;
-		public static final int orca_attach_location_pressed = 0x7f0203dc;
-		public static final int orca_attach_photo_normal = 0x7f0203dd;
-		public static final int orca_attach_photo_pressed = 0x7f0203de;
-		public static final int orca_attachments_arrow = 0x7f0203df;
-		public static final int orca_attachments_arrow_reversed = 0x7f0203e0;
-		public static final int orca_composer_attach_camera_button = 0x7f0203e1;
-		public static final int orca_composer_attach_location_button = 0x7f0203e2;
-		public static final int orca_composer_attach_photo_button = 0x7f0203e3;
-		public static final int orca_composer_divider_horizontal = 0x7f0203e4;
-		public static final int orca_composer_divider_vertical = 0x7f0203e5;
-		public static final int orca_composer_popup_active_normal = 0x7f0203e6;
-		public static final int orca_composer_popup_active_pressed = 0x7f0203e7;
-		public static final int orca_composer_popup_button = 0x7f0203e8;
-		public static final int orca_composer_popup_button_active = 0x7f0203e9;
-		public static final int orca_composer_popup_normal = 0x7f0203ea;
-		public static final int orca_composer_popup_pressed = 0x7f0203eb;
-		public static final int orca_composer_tab = 0x7f0203ec;
-		public static final int orca_composer_tab_active = 0x7f0203ed;
-		public static final int orca_composer_tab_dark = 0x7f0203ee;
-		public static final int orca_composer_tab_pressed = 0x7f0203ef;
-		public static final int orca_composer_top_divider = 0x7f0203f0;
-		public static final int orca_emoji_backspace_back_normal = 0x7f0203f1;
-		public static final int orca_emoji_backspace_front_button = 0x7f0203f2;
-		public static final int orca_emoji_backspace_front_normal = 0x7f0203f3;
-		public static final int orca_emoji_backspace_front_pressed = 0x7f0203f4;
-		public static final int orca_emoji_category_cars = 0x7f0203f5;
-		public static final int orca_emoji_category_nature = 0x7f0203f6;
-		public static final int orca_emoji_category_objects = 0x7f0203f7;
-		public static final int orca_emoji_category_people = 0x7f0203f8;
-		public static final int orca_emoji_category_punctuation = 0x7f0203f9;
-		public static final int orca_emoji_more_back_normal = 0x7f0203fa;
-		public static final int orca_emoji_more_front_button = 0x7f0203fb;
-		public static final int orca_emoji_more_front_normal = 0x7f0203fc;
-		public static final int orca_emoji_more_front_pressed = 0x7f0203fd;
-		public static final int orca_emoji_tab_background = 0x7f0203fe;
-		public static final int orca_emoji_tab_dark_background = 0x7f0203ff;
+		public static final int ic_emoji_nature_light = 0x7f0203d2;
+		public static final int ic_emoji_nature_light_activated = 0x7f0203d3;
+		public static final int ic_emoji_nature_light_normal = 0x7f0203d4;
+		public static final int ic_emoji_objects_light = 0x7f0203d5;
+		public static final int ic_emoji_objects_light_activated = 0x7f0203d6;
+		public static final int ic_emoji_objects_light_normal = 0x7f0203d7;
+		public static final int ic_emoji_people_light = 0x7f0203d8;
+		public static final int ic_emoji_people_light_activated = 0x7f0203d9;
+		public static final int ic_emoji_people_light_normal = 0x7f0203da;
+		public static final int ic_emoji_places_light = 0x7f0203db;
+		public static final int ic_emoji_places_light_activated = 0x7f0203dc;
+		public static final int ic_emoji_places_light_normal = 0x7f0203dd;
+		public static final int ic_emoji_recent_light = 0x7f0203de;
+		public static final int ic_emoji_recent_light_activated = 0x7f0203df;
+		public static final int ic_emoji_recent_light_normal = 0x7f0203e0;
+		public static final int ic_emoji_symbols_light = 0x7f0203e1;
+		public static final int ic_emoji_symbols_light_activated = 0x7f0203e2;
+		public static final int ic_emoji_symbols_light_normal = 0x7f0203e3;
+		public static final int ic_launcher = 0x7f0203e4;
+		public static final int keyboard_background_holo = 0x7f0203e5;
+		public static final int orca_attach_camera_normal = 0x7f0203ed;
+		public static final int orca_attach_camera_pressed = 0x7f0203ee;
+		public static final int orca_attach_location_normal = 0x7f0203ef;
+		public static final int orca_attach_location_pressed = 0x7f0203f0;
+		public static final int orca_attach_photo_normal = 0x7f0203f1;
+		public static final int orca_attach_photo_pressed = 0x7f0203f2;
+		public static final int orca_attachments_arrow = 0x7f0203f3;
+		public static final int orca_attachments_arrow_reversed = 0x7f0203f4;
+		public static final int orca_composer_attach_camera_button = 0x7f0203f5;
+		public static final int orca_composer_attach_location_button = 0x7f0203f6;
+		public static final int orca_composer_attach_photo_button = 0x7f0203f7;
+		public static final int orca_composer_divider_horizontal = 0x7f0203f8;
+		public static final int orca_composer_divider_vertical = 0x7f0203f9;
+		public static final int orca_composer_popup_active_normal = 0x7f0203fa;
+		public static final int orca_composer_popup_active_pressed = 0x7f0203fb;
+		public static final int orca_composer_popup_button = 0x7f0203fc;
+		public static final int orca_composer_popup_button_active = 0x7f0203fd;
+		public static final int orca_composer_popup_normal = 0x7f0203fe;
+		public static final int orca_composer_popup_pressed = 0x7f0203ff;
+		public static final int orca_composer_tab = 0x7f020400;
+		public static final int orca_composer_tab_active = 0x7f020401;
+		public static final int orca_composer_tab_dark = 0x7f020402;
+		public static final int orca_composer_tab_pressed = 0x7f020403;
+		public static final int orca_composer_top_divider = 0x7f020404;
+		public static final int orca_emoji_backspace_back_normal = 0x7f020405;
+		public static final int orca_emoji_backspace_front_button = 0x7f020406;
+		public static final int orca_emoji_backspace_front_normal = 0x7f020407;
+		public static final int orca_emoji_backspace_front_pressed = 0x7f020408;
+		public static final int orca_emoji_category_cars = 0x7f020409;
+		public static final int orca_emoji_category_nature = 0x7f02040a;
+		public static final int orca_emoji_category_objects = 0x7f02040b;
+		public static final int orca_emoji_category_people = 0x7f02040c;
+		public static final int orca_emoji_category_punctuation = 0x7f02040d;
+		public static final int orca_emoji_more_back_normal = 0x7f02040e;
+		public static final int orca_emoji_more_front_button = 0x7f02040f;
+		public static final int orca_emoji_more_front_normal = 0x7f020410;
+		public static final int orca_emoji_more_front_pressed = 0x7f020411;
+		public static final int orca_emoji_tab_background = 0x7f020412;
+		public static final int orca_emoji_tab_dark_background = 0x7f020413;
+		public static final int sym_keyboard_delete_holo_dark = 0x7f020420;
 	}
 	public static final class id {
-		public static final int Emoji_GridView = 0x7f060049;
-		public static final int emojicon_icon = 0x7f06004a;
-		public static final int emojis_backspace = 0x7f060052;
-		public static final int emojis_pager = 0x7f06004c;
-		public static final int emojis_tab = 0x7f06004b;
-		public static final int emojis_tab_0_people = 0x7f06004d;
-		public static final int emojis_tab_1_nature = 0x7f06004e;
-		public static final int emojis_tab_2_objects = 0x7f06004f;
-		public static final int emojis_tab_3_cars = 0x7f060050;
-		public static final int emojis_tab_4_punctuation = 0x7f060051;
+		public static final int Emoji_GridView = 0x7f080049;
+		public static final int emojicon_icon = 0x7f08004a;
+		public static final int emojis_backspace = 0x7f080052;
+		public static final int emojis_pager = 0x7f080053;
+		public static final int emojis_tab = 0x7f08004b;
+		public static final int emojis_tab_0_recents = 0x7f08004c;
+		public static final int emojis_tab_1_people = 0x7f08004d;
+		public static final int emojis_tab_2_nature = 0x7f08004e;
+		public static final int emojis_tab_3_objects = 0x7f08004f;
+		public static final int emojis_tab_4_cars = 0x7f080050;
+		public static final int emojis_tab_5_punctuation = 0x7f080051;
 	}
 	public static final class layout {
 		public static final int emojicon_grid = 0x7f030019;
@@ -914,10 +940,15 @@ public final class R {
 		public static final int emojicons = 0x7f03001b;
 	}
 	public static final class string {
-		public static final int app_name = 0x7f050000;
+		public static final int app_name = 0x7f070000;
+	}
+	public static final class style {
+		public static final int emojiDialog = 0x7f060000;
 	}
 	public static final class styleable {
-		public static final int[] Emojicon = { 0x7f010000 };
+		public static final int[] Emojicon = { 0x7f010000, 0x7f010001, 0x7f010002 };
 		public static final int Emojicon_emojiconSize = 0;
+		public static final int Emojicon_emojiconTextLength = 2;
+		public static final int Emojicon_emojiconTextStart = 1;
 	}
 }

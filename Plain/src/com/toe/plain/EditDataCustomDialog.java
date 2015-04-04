@@ -14,7 +14,7 @@ import com.actionbarsherlock.view.Window;
 public class EditDataCustomDialog extends Dialog {
 
 	public SherlockFragmentActivity activity;
-	public Button bDone;
+	public Button bEmojiKeyboard, bDone;
 	public TextView tvTitle;
 	public EditText etDataField;
 	public String title, message, tag;
@@ -47,6 +47,7 @@ public class EditDataCustomDialog extends Dialog {
 		if (numberInput) {
 			etDataField.setInputType(InputType.TYPE_CLASS_NUMBER);
 		}
+		bEmojiKeyboard = (Button) findViewById(R.id.bEmojiKeyboard);
 
 		bDone = (Button) findViewById(R.id.bDone);
 	}

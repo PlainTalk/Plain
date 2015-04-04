@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
-    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@color/background_color"
     android:gravity="center"
-    android:orientation="vertical"
-    tools:context="com.toe.plain.Plain$PlaceholderFragment" >
+    android:orientation="vertical" >
 
     <ImageView
         android:id="@+id/ivBackground"
@@ -36,7 +34,7 @@
             android:gravity="center"
             android:orientation="horizontal" >
 
-            <com.rockerhieu.emojicon.EmojiconEditText
+            <github.ankushsachdeva.emojicon.EmojiconEditText
                 android:id="@+id/etStory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,37 +61,5 @@
             app:flipRotations="y"
             app:reverseRotation="true" />
     </LinearLayout>
-
-    <SlidingDrawer
-        android:id="@+id/emojiDrawer"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:content="@+id/content"
-        android:handle="@+id/handle"
-        android:orientation="vertical" >
-
-        <ImageView
-            android:id="@+id/handle"
-            android:layout_width="50dp"
-            android:layout_height="72.5dp"
-            android:layout_gravity="center"
-            android:padding="8dp"
-            android:src="@drawable/emoji_icon" />
-
-        <LinearLayout
-            android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/button_selected"
-            android:orientation="vertical" >
-
-            <fragment
-                android:id="@+id/emojicons"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                class="com.rockerhieu.emojicon.EmojiconsFragment" />
-        </LinearLayout>
-    </SlidingDrawer>
 
 </FrameLayout>

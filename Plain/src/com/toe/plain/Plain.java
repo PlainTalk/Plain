@@ -35,7 +35,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -46,14 +45,10 @@ import com.actionbarsherlock.view.Window;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
-import com.rockerhieu.emojicon.EmojiconGridFragment;
-import com.rockerhieu.emojicon.EmojiconsFragment;
-import com.rockerhieu.emojicon.emoji.Emojicon;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager.Policy;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
-import com.shephertz.app42.paas.sdk.android.storage.OrderByType;
 import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
@@ -64,10 +59,7 @@ import com.toe.plain.XListView.IXListViewListener;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-@SuppressWarnings("deprecation")
-public class Plain extends SherlockFragmentActivity implements
-		EmojiconGridFragment.OnEmojiconClickedListener,
-		EmojiconsFragment.OnEmojiconBackspaceClickedListener {
+public class Plain extends SherlockFragmentActivity {
 
 	ArrayList<ListItem> stories = new ArrayList<ListItem>();
 	ArrayList<ListItem> favourites;
@@ -85,7 +77,6 @@ public class Plain extends SherlockFragmentActivity implements
 	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoFavouriteListItem;
 	SharedPreferences sp;
 	Button bShare, bFavourite;
-	ImageView ivHandle;
 	ArrayList<String> favouriteStories = new ArrayList<String>();
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
@@ -107,7 +98,6 @@ public class Plain extends SherlockFragmentActivity implements
 	ExitCustomDialog ecDialog;
 	AlertDialog.Builder builder;
 	AppRate rate;
-	SlidingDrawer drawer;
 	boolean storyIsClean = true;
 	int animationDuration = 140000;
 	int offset = 100;
@@ -171,24 +161,6 @@ public class Plain extends SherlockFragmentActivity implements
 			}, 0, animationDuration + 1000);
 
 			etStory = (EditText) findViewById(R.id.etStory);
-			ivHandle = (ImageView) findViewById(R.id.handle);
-			drawer = (SlidingDrawer) findViewById(R.id.emojiDrawer);
-			drawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
-
-				@Override
-				public void onDrawerOpened() {
-					// TODO Auto-generated method stub
-					ivHandle.setImageResource(R.drawable.emoji_icon_selected);
-				}
-			});
-			drawer.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
-
-				@Override
-				public void onDrawerClosed() {
-					// TODO Auto-generated method stub
-					ivHandle.setImageResource(R.drawable.emoji_icon);
-				}
-			});
 
 			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
 			ivDone.setOnClickListener(new View.OnClickListener() {
@@ -636,6 +608,23 @@ public class Plain extends SherlockFragmentActivity implements
 											.getString("tag"), new JSONObject(
 											jsonDocArray.get(arg2 - 1))
 											.getBoolean("admin"));
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						try {
+							if (new JSONObject(jsonDocArray.get(arg2 - 1))
+									.getBoolean("admin") == true
+									&& new JSONObject(jsonDocArray
+											.get(arg2 - 1))
+											.getString("story")
+											.contains("update on the PlayStore")) {
+								String url = getString(R.string.playstore_link);
+								Intent i = new Intent(Intent.ACTION_VIEW);
+								i.setData(Uri.parse(url));
+								startActivity(i);
+							}
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -1387,9 +1376,8 @@ public class Plain extends SherlockFragmentActivity implements
 
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
-		subMenu.add(1, 1, 1, "Explore");
-		subMenu.add(2, 2, 2, "Tribes");
-		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(1, 1, 1, "Tribes");
+		subMenu.add(2, 2, 2, "Rules");
 		subMenu.add(4, 4, 4, "Invite");
 		subMenu.add(5, 5, 5, "About");
 
@@ -1408,9 +1396,8 @@ public class Plain extends SherlockFragmentActivity implements
 						.getSearchableInfo(getComponentName()));
 				searchView.setIconifiedByDefault(true);
 				searchView.setIconified(true);
-				searchView
-						.setQueryHint(Html
-								.fromHtml("<font color = #ffffff>Keyword or tag...</font>"));
+				searchView.setQueryHint(Html
+						.fromHtml("<font color = #ffffff>Keyword...</font>"));
 				searchView.clearFocus();
 			}
 
@@ -1453,24 +1440,16 @@ public class Plain extends SherlockFragmentActivity implements
 		Toast.makeText(getApplicationContext(), "Searching...",
 				Toast.LENGTH_SHORT).show();
 
-		String key1 = "story";
-		String value1 = queryString;
-		String key2 = "tag";
-		String value2 = queryString;
-		int max = 100;
-		int offset = 0;
+		String key = "story";
 
-		Query q1 = QueryBuilder.build(key1, value1, Operator.LIKE);
-		Query q2 = QueryBuilder.build(key2, value2, Operator.LIKE);
-		Query query = QueryBuilder.compoundOperator(q1, Operator.OR, q2);
+		Query query = QueryBuilder.build(key, queryString, Operator.LIKE);
 
 		HashMap<String, String> metaHeaders = new HashMap<String, String>();
 		metaHeaders.put("orderByDescending", "_$createdAt");
 		storageService.setOtherMetaHeaders(metaHeaders);
-		storageService.findDocsWithQueryPagingOrderBy(
-				getString(R.string.database_name),
-				getString(R.string.collection_name), query, max, offset, key1,
-				OrderByType.ASCENDING, new App42CallBack() {
+		storageService.findDocumentsByQuery(getString(R.string.database_name),
+				getString(R.string.collection_name), query,
+				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
 						jsonDocArray = new ArrayList<String>();
@@ -1521,68 +1500,25 @@ public class Plain extends SherlockFragmentActivity implements
 			startActivity(i);
 			break;
 		case 1:
-			i = new Intent(getApplicationContext(), Explore.class);
-			startActivity(i);
-			break;
-		case 2:
 			i = new Intent(getApplicationContext(), Tribes.class);
 			startActivity(i);
 			break;
-		case 3:
+		case 2:
 			i = new Intent(getApplicationContext(), Rules.class);
 			startActivity(i);
 			break;
-		case 4:
+		case 3:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
-		case 5:
+		case 4:
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		if (drawer.isOpened()) {
-			drawer.close();
-		} else {
-			ecDialog = new ExitCustomDialog(activity);
-			ecDialog.getWindow().setBackgroundDrawable(
-					new ColorDrawable(Color.TRANSPARENT));
-			ecDialog.show();
-			ecDialog.bExitNo.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					ecDialog.dismiss();
-				}
-			});
-			ecDialog.bExitYes.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					android.os.Process.killProcess(android.os.Process.myPid());
-				}
-			});
-		}
-	}
-
-	@Override
-	public void onEmojiconClicked(Emojicon emojicon) {
-		EmojiconsFragment.input(etStory, emojicon);
-	}
-
-	@Override
-	public void onEmojiconBackspaceClicked(View v) {
-		EmojiconsFragment.backspace(etStory);
 	}
 }

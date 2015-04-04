@@ -1,11 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/mNewTribe"
-        android:icon="@drawable/new_tribe"
-        android:showAsAction="always"
-        android:title="New tribe"/>
-    <item
         android:id="@+id/mNewPlain"
         android:icon="@drawable/new_plain"
         android:showAsAction="always"
