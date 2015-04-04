@@ -22,30 +22,15 @@
         android:textSize="30dp"
         android:textStyle="bold" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <github.ankushsachdeva.emojicon.EmojiconEditText
-            android:id="@+id/etDataField"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittext_selector"
-            android:padding="10dp"
-            android:textSize="30dp" />
-
-        <Button
-            android:id="@+id/bEmojiKeyboard"
-            android:layout_width="30dp"
-            android:layout_height="37dp"
-            android:layout_gravity="right|center"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="3dp"
-            android:background="@drawable/emoji_icon"
-            android:gravity="center" />
-    </FrameLayout>
+    <github.ankushsachdeva.emojicon.EmojiconEditText
+        android:id="@+id/etDataField"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_selector"
+        android:padding="10dp"
+        android:textSize="30dp" />
 
     <Button
         android:id="@+id/bDone"

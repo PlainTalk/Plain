@@ -1,56 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent"
+    android:background="@color/background_color" >
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/etSearchForTag"
-            android:layout_width="fill_parent"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/etSearchForTag"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:background="#fff"
+                android:hint="Search for a tag"
+                android:padding="10dp"
+                android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/bSearchForTag"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="right|center"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/search_icon_dark"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <com.toe.plain.XListView
+            android:id="@+id/lvListItems"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="1dp"
-            android:background="#fff"
-            android:hint="Search for a tag"
-            android:padding="10dp"
-            android:textSize="20dp" />
+            android:fadingEdge="none"
+            android:fastScrollAlwaysVisible="true"
+            android:fastScrollEnabled="true"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="0dp"
+            android:scrollbars="vertical"
+            android:transcriptMode="normal" />
 
-        <Button
-            android:id="@+id/bSearchForTag"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="right|center"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/search_icon_dark"
-            android:gravity="center" />
-    </FrameLayout>
+        <com.toe.plain.ShimmerTextView
+            android:id="@+id/tvNoListItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:text="Loading..."
+            android:textColor="#aaa"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-    <com.toe.plain.XListView
-        android:id="@+id/lvListItems"
+    <RelativeLayout
+        android:id="@+id/root_view_replies"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fadingEdge="none"
-        android:fastScrollAlwaysVisible="true"
-        android:fastScrollEnabled="true"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarSize="0dp"
-        android:scrollbars="vertical"
-        android:transcriptMode="normal" />
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="5dp"
+        android:gravity="center|bottom" >
 
-    <com.toe.plain.ShimmerTextView
-        android:id="@+id/tvNoListItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="60dp"
-        android:gravity="center"
-        android:text="Loading..."
-        android:textColor="#aaa"
-        android:textSize="25dp"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/emoji_btn_replies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:minHeight="45dp"
+            android:padding="4dp"
+            android:src="@drawable/smiley" />
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/submit_btn_replies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:minHeight="45dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_action_send_now" />
+
+        <github.ankushsachdeva.emojicon.EmojiconEditText
+            android:id="@+id/emojicon_edit_text_replies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/submit_btn_replies"
+            android:layout_toRightOf="@id/emoji_btn_replies"
+            android:background="@drawable/edittext_selector"
+            android:gravity="center"
+            android:hint="Say anything..."
+            android:minHeight="45dp"
+            android:padding="8dp" />
+    </RelativeLayout>
+
+</FrameLayout>

@@ -1,10 +1,15 @@
 package com.toe.plain;
 
+import github.ankushsachdeva.emojicon.EmojiconEditText;
+import github.ankushsachdeva.emojicon.EmojiconGridView.OnEmojiconClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnEmojiconBackspaceClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnSoftKeyboardOpenCloseListener;
+import github.ankushsachdeva.emojicon.emoji.Emojicon;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,16 +30,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -101,6 +106,11 @@ public class Plain extends SherlockFragmentActivity {
 	boolean storyIsClean = true;
 	int animationDuration = 140000;
 	int offset = 100;
+	EmojiconEditText emojiconEditText, emojiconEditTextReplies;
+	View rootView, rootViewReplies;
+	ImageView emojiButton, emojiconButtonReplies;
+	ImageView submitButton, submitButtonReplies;
+	EmojiconsPopup popup, popupReplies;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -148,53 +158,11 @@ public class Plain extends SherlockFragmentActivity {
 
 		switch (position) {
 		case 0:
-			final ImageView ivBackground = (ImageView) findViewById(R.id.ivBackground);
-
-			Timer t = new Timer();
-			t.scheduleAtFixedRate(new TimerTask() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					backgroundAnimation(ivBackground);
-				}
-			}, 0, animationDuration + 1000);
-
-			etStory = (EditText) findViewById(R.id.etStory);
-
-			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
-			ivDone.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					String story = etStory.getText().toString().trim();
-					storyIsClean = true;
-					storyIsClean = filterWords(story);
-
-					if (storyIsClean) {
-						if (story.length() > 1) {
-							if (story.length() < 1000) {
-								ivDone.setFlipped(true);
-								etStory.setEnabled(false);
-								publishStory(story);
-							} else {
-								etStory.setError("Try shortening that a bit...");
-							}
-						} else {
-							etStory.setError("Please say something...");
-						}
-					} else {
-						etStory.setError(getString(R.string.et_not_clean_error));
-					}
-				}
-			});
-			break;
-		case 1:
 			tvNoListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoListItem);
 			tvNoListItem.setTypeface(font);
 
+			setUpEmojiKeyboard();
 			getStories();
 			listView = (XListView) findViewById(R.id.lvListItems);
 			listView.setPullLoadEnable(true);
@@ -213,12 +181,15 @@ public class Plain extends SherlockFragmentActivity {
 				}
 			});
 			break;
-		case 2:
+		case 1:
 			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoReplyListItem);
 			tvNoReplyListItem.setTypeface(font);
 
+			setUpEmojiKeyboardReplies();
+			rootViewReplies.setVisibility(View.INVISIBLE);
 			etSearchForTag = (EditText) findViewById(R.id.etSearchForTag);
+			etSearchForTag.clearFocus();
 			bSearchForTag = (Button) findViewById(R.id.bSearchForTag);
 			bSearchForTag.setOnClickListener(new OnClickListener() {
 
@@ -250,7 +221,7 @@ public class Plain extends SherlockFragmentActivity {
 
 			getStoriesForReplies(getTags());
 			break;
-		case 3:
+		case 2:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
@@ -371,6 +342,261 @@ public class Plain extends SherlockFragmentActivity {
 		}
 	}
 
+	private void setUpEmojiKeyboard() {
+		// TODO Auto-generated method stub
+		emojiconEditText = (EmojiconEditText) findViewById(R.id.emojicon_edit_text);
+		rootView = findViewById(R.id.root_view);
+		emojiButton = (ImageView) findViewById(R.id.emoji_btn);
+		submitButton = (ImageView) findViewById(R.id.submit_btn);
+		popup = new EmojiconsPopup(rootView, this);
+
+		popup.setSizeForSoftKeyboard();
+		popup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				emojiconEditText.append(emojicon.getEmoji());
+			}
+		});
+		popup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0,
+						0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				emojiconEditText.dispatchKeyEvent(event);
+			}
+		});
+		popup.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley);
+			}
+		});
+		popup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
+
+			@Override
+			public void onKeyboardOpen(int keyBoardHeight) {
+
+			}
+
+			@Override
+			public void onKeyboardClose() {
+				if (popup.isShowing())
+					popup.dismiss();
+			}
+		});
+		popup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				emojiconEditText.append(emojicon.getEmoji());
+			}
+		});
+		popup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0,
+						0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				emojiconEditText.dispatchKeyEvent(event);
+			}
+		});
+		emojiButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (!popup.isShowing()) {
+
+					if (popup.isKeyBoardOpen()) {
+						popup.showAtBottom();
+						changeEmojiKeyboardIcon(emojiButton,
+								R.drawable.ic_action_keyboard);
+					}
+
+					else {
+						emojiconEditText.setFocusableInTouchMode(true);
+						emojiconEditText.requestFocus();
+						popup.showAtBottomPending();
+						final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputMethodManager.showSoftInput(emojiconEditText,
+								InputMethodManager.SHOW_IMPLICIT);
+						changeEmojiKeyboardIcon(emojiButton,
+								R.drawable.ic_action_keyboard);
+					}
+				}
+
+				else {
+					popup.dismiss();
+				}
+			}
+		});
+
+		submitButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String story = emojiconEditText.getText().toString().trim();
+				storyIsClean = true;
+				storyIsClean = filterWords(story);
+
+				if (storyIsClean) {
+					if (story.length() > 1) {
+						if (story.length() < 1000) {
+							publishStory(story);
+							emojiconEditText.setText("");
+						} else {
+							emojiconEditText
+									.setError("Try shortening that a bit...");
+						}
+					} else {
+						emojiconEditText.setError("Please say something...");
+					}
+				} else {
+					emojiconEditText
+							.setError(getString(R.string.et_not_clean_error));
+				}
+			}
+		});
+	}
+
+	private void setUpEmojiKeyboardReplies() {
+		// TODO Auto-generated method stub
+		emojiconEditTextReplies = (EmojiconEditText) findViewById(R.id.emojicon_edit_text_replies);
+		rootViewReplies = findViewById(R.id.root_view_replies);
+		emojiconButtonReplies = (ImageView) findViewById(R.id.emoji_btn_replies);
+		submitButtonReplies = (ImageView) findViewById(R.id.submit_btn_replies);
+		popupReplies = new EmojiconsPopup(rootViewReplies, this);
+
+		popupReplies.setSizeForSoftKeyboard();
+		popupReplies
+				.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+					@Override
+					public void onEmojiconClicked(Emojicon emojicon) {
+						emojiconEditTextReplies.append(emojicon.getEmoji());
+					}
+				});
+		popupReplies
+				.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+					@Override
+					public void onEmojiconBackspaceClicked(View v) {
+						KeyEvent event = new KeyEvent(0, 0, 0,
+								KeyEvent.KEYCODE_DEL, 0, 0, 0, 0,
+								KeyEvent.KEYCODE_ENDCALL);
+						emojiconEditTextReplies.dispatchKeyEvent(event);
+					}
+				});
+		popupReplies.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				changeEmojiKeyboardIcon(emojiconButtonReplies,
+						R.drawable.smiley);
+			}
+		});
+		popupReplies
+				.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
+
+					@Override
+					public void onKeyboardOpen(int keyBoardHeight) {
+
+					}
+
+					@Override
+					public void onKeyboardClose() {
+						if (popupReplies.isShowing())
+							popupReplies.dismiss();
+					}
+				});
+		popupReplies
+				.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+					@Override
+					public void onEmojiconClicked(Emojicon emojicon) {
+						emojiconEditTextReplies.append(emojicon.getEmoji());
+					}
+				});
+		popupReplies
+				.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+					@Override
+					public void onEmojiconBackspaceClicked(View v) {
+						KeyEvent event = new KeyEvent(0, 0, 0,
+								KeyEvent.KEYCODE_DEL, 0, 0, 0, 0,
+								KeyEvent.KEYCODE_ENDCALL);
+						emojiconEditTextReplies.dispatchKeyEvent(event);
+					}
+				});
+		emojiconButtonReplies.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (!popupReplies.isShowing()) {
+
+					if (popupReplies.isKeyBoardOpen()) {
+						popupReplies.showAtBottom();
+						changeEmojiKeyboardIcon(emojiconButtonReplies,
+								R.drawable.ic_action_keyboard);
+					}
+
+					else {
+						emojiconEditTextReplies.setFocusableInTouchMode(true);
+						emojiconEditTextReplies.requestFocus();
+						popupReplies.showAtBottomPending();
+						final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputMethodManager.showSoftInput(
+								emojiconEditTextReplies,
+								InputMethodManager.SHOW_IMPLICIT);
+						changeEmojiKeyboardIcon(emojiconButtonReplies,
+								R.drawable.ic_action_keyboard);
+					}
+				}
+
+				else {
+					popupReplies.dismiss();
+				}
+			}
+		});
+
+		submitButtonReplies.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String story = emojiconEditTextReplies.getText().toString()
+						.trim();
+				storyIsClean = true;
+				storyIsClean = filterWords(story);
+
+				if (storyIsClean) {
+					if (story.length() > 1) {
+						if (story.length() < 1000) {
+							publishStory(story);
+							rootViewReplies.setVisibility(View.INVISIBLE);
+							emojiconEditTextReplies.getText().clear();
+						} else {
+							emojiconEditTextReplies
+									.setError("Try shortening that a bit...");
+						}
+					} else {
+						emojiconEditTextReplies
+								.setError("Please say something...");
+					}
+				} else {
+					emojiconEditTextReplies
+							.setError(getString(R.string.et_not_clean_error));
+				}
+			}
+		});
+	}
+
+	private void changeEmojiKeyboardIcon(ImageView iconToBeChanged,
+			int drawableResourceId) {
+		iconToBeChanged.setImageResource(drawableResourceId);
+	}
+
 	protected void searchForTag(String tagQuery) {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
@@ -462,24 +688,6 @@ public class Plain extends SherlockFragmentActivity {
 			}
 		}
 		return storyIsClean;
-	}
-
-	private void backgroundAnimation(final ImageView ivBackground) {
-		// TODO Auto-generated method stub
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				RotateAnimation anim = new RotateAnimation(0.0f, 360.0f,
-						Animation.RELATIVE_TO_SELF, 0.5f,
-						Animation.RELATIVE_TO_SELF, 0.5f);
-				anim.setInterpolator(new LinearInterpolator());
-				anim.setRepeatCount(Animation.INFINITE);
-				anim.setDuration(animationDuration);
-				ivBackground.startAnimation(anim);
-			}
-		});
 	}
 
 	private void getStories() {
@@ -648,13 +856,6 @@ public class Plain extends SherlockFragmentActivity {
 									@Override
 									public void onClick(View v) {
 										// TODO Auto-generated method stub
-										edcDialog = new EditDataCustomDialog(
-												activity);
-										edcDialog
-												.getWindow()
-												.setBackgroundDrawable(
-														new ColorDrawable(
-																Color.TRANSPARENT));
 										String tag = null;
 
 										if (stories.get(arg2 - 1).isAdmin()) {
@@ -664,42 +865,8 @@ public class Plain extends SherlockFragmentActivity {
 													.getTag().toLowerCase();
 										}
 
-										edcDialog.title = "Reply to @" + tag;
-										edcDialog.tag = "@" + tag + " ";
-
-										edcDialog.show();
-										edcDialog.bDone
-												.setOnClickListener(new OnClickListener() {
-
-													@Override
-													public void onClick(View v) {
-														// TODO Auto-generated
-														// method
-														// stub
-														String story = edcDialog.etDataField
-																.getText()
-																.toString()
-																.trim();
-														storyIsClean = true;
-														storyIsClean = filterWords(story);
-
-														if (storyIsClean) {
-															if (story.length() > 1) {
-																edcDialog.etDataField
-																		.setEnabled(false);
-																publishStory(story);
-																edcDialog
-																		.dismiss();
-															} else {
-																edcDialog.etDataField
-																		.setError("Please say something...");
-															}
-														} else {
-															edcDialog.etDataField
-																	.setError(getString(R.string.et_not_clean_error));
-														}
-													}
-												});
+										emojiconEditText.setText("@" + tag
+												+ " ");
 										socDialog.dismiss();
 									}
 								});
@@ -858,8 +1025,6 @@ public class Plain extends SherlockFragmentActivity {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								etStory.setEnabled(true);
-								etStory.setText("");
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
@@ -1090,54 +1255,12 @@ public class Plain extends SherlockFragmentActivity {
 											AdapterView<?> arg0, View arg1,
 											int arg2, long arg3) {
 										// TODO Auto-generated method stub
-										edcDialog = new EditDataCustomDialog(
-												activity);
-										edcDialog
-												.getWindow()
-												.setBackgroundDrawable(
-														new ColorDrawable(
-																Color.TRANSPARENT));
-										edcDialog.title = "Reply to @"
-												+ replies.get(arg2 - 1)
-														.getTag().toLowerCase();
-										edcDialog.tag = "@"
+										rootViewReplies
+												.setVisibility(View.VISIBLE);
+										emojiconEditTextReplies.setText("@"
 												+ replies.get(arg2 - 1)
 														.getTag().toLowerCase()
-												+ " ";
-
-										edcDialog.show();
-										edcDialog.bDone
-												.setOnClickListener(new OnClickListener() {
-
-													@Override
-													public void onClick(View v) {
-														// TODO Auto-generated
-														// method
-														// stub
-														String story = edcDialog.etDataField
-																.getText()
-																.toString()
-																.trim();
-														storyIsClean = true;
-														storyIsClean = filterWords(story);
-
-														if (storyIsClean) {
-															if (story.length() > 1) {
-																edcDialog.etDataField
-																		.setEnabled(false);
-																publishStory(story);
-																edcDialog
-																		.dismiss();
-															} else {
-																edcDialog.etDataField
-																		.setError("Please say something...");
-															}
-														} else {
-															edcDialog.etDataField
-																	.setError(getString(R.string.et_not_clean_error));
-														}
-													}
-												});
+												+ " ");
 									}
 								});
 
@@ -1364,7 +1487,7 @@ public class Plain extends SherlockFragmentActivity {
 
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(adapter);
-		mPager.setCurrentItem(1);
+		mPager.setCurrentItem(0);
 		mPager.setOffscreenPageLimit(3);
 
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
@@ -1520,5 +1643,34 @@ public class Plain extends SherlockFragmentActivity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		if (rootViewReplies.getVisibility() == View.VISIBLE) {
+			rootViewReplies.setVisibility(View.INVISIBLE);
+		} else {
+			ecDialog = new ExitCustomDialog(activity);
+			ecDialog.getWindow().setBackgroundDrawable(
+					new ColorDrawable(Color.TRANSPARENT));
+			ecDialog.show();
+			ecDialog.bExitNo.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					ecDialog.dismiss();
+				}
+			});
+			ecDialog.bExitYes.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					android.os.Process.killProcess(android.os.Process.myPid());
+				}
+			});
+		}
 	}
 }

@@ -9,7 +9,7 @@ import android.view.View;
 
 class PlainFragmentAdapter extends PagerAdapter {
 
-	protected static final String[] CONTENT = new String[] { "Post", "Plains",
+	protected static final String[] CONTENT = new String[] { "Plains",
 			"Replies", "Favourites" };
 
 	private int mCount = CONTENT.length;
@@ -26,15 +26,12 @@ class PlainFragmentAdapter extends PagerAdapter {
 		int resId = 0;
 		switch (position) {
 		case 0:
-			resId = R.layout.make_post;
+			resId = R.layout.plains_list_view;
 			break;
 		case 1:
-			resId = R.layout.list_view;
-			break;
-		case 2:
 			resId = R.layout.replies_list_view;
 			break;
-		case 3:
+		case 2:
 			resId = R.layout.list_view;
 			break;
 		}

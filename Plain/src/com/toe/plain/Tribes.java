@@ -1,5 +1,12 @@
 package com.toe.plain;
 
+import github.ankushsachdeva.emojicon.EmojiconEditText;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import github.ankushsachdeva.emojicon.EmojiconGridView.OnEmojiconClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnEmojiconBackspaceClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnSoftKeyboardOpenCloseListener;
+import github.ankushsachdeva.emojicon.emoji.Emojicon;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,11 +23,16 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -60,13 +72,20 @@ public class Tribes extends SherlockFragmentActivity {
 	String defaultTribe = "#tribes";
 	boolean storyIsClean = true;
 	ArrayList<String> savedHashtags;
+	EmojiconEditText emojiconEditText;
+	View rootView;
+	ImageView emojiButton;
+	ImageView submitButton;
+	EmojiconsPopup popup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.list_view);
+		setContentView(R.layout.plains_list_view);
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
@@ -74,7 +93,6 @@ public class Tribes extends SherlockFragmentActivity {
 		initialize();
 		setUp();
 		getKeyword();
-
 	}
 
 	private void initialize() {
@@ -87,7 +105,7 @@ public class Tribes extends SherlockFragmentActivity {
 	private void setUp() {
 		// TODO Auto-generated method stub
 		activity = this;
-		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+		setUpEmojiKeyboard();
 		Typeface font = Typeface.createFromAsset(getAssets(),
 				getString(R.string.font));
 
@@ -96,9 +114,135 @@ public class Tribes extends SherlockFragmentActivity {
 		tvNoListItem.setTypeface(font);
 	}
 
+	private void setUpEmojiKeyboard() {
+		// TODO Auto-generated method stub
+		emojiconEditText = (EmojiconEditText) findViewById(R.id.emojicon_edit_text);
+		rootView = findViewById(R.id.root_view);
+		emojiButton = (ImageView) findViewById(R.id.emoji_btn);
+		submitButton = (ImageView) findViewById(R.id.submit_btn);
+		popup = new EmojiconsPopup(rootView, this);
+
+		popup.setSizeForSoftKeyboard();
+		popup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				emojiconEditText.append(emojicon.getEmoji());
+			}
+		});
+		popup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0,
+						0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				emojiconEditText.dispatchKeyEvent(event);
+			}
+		});
+		popup.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley);
+			}
+		});
+		popup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
+
+			@Override
+			public void onKeyboardOpen(int keyBoardHeight) {
+
+			}
+
+			@Override
+			public void onKeyboardClose() {
+				if (popup.isShowing())
+					popup.dismiss();
+			}
+		});
+		popup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				emojiconEditText.append(emojicon.getEmoji());
+			}
+		});
+		popup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0,
+						0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				emojiconEditText.dispatchKeyEvent(event);
+			}
+		});
+		emojiButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (!popup.isShowing()) {
+
+					if (popup.isKeyBoardOpen()) {
+						popup.showAtBottom();
+						changeEmojiKeyboardIcon(emojiButton,
+								R.drawable.ic_action_keyboard);
+					}
+
+					else {
+						emojiconEditText.setFocusableInTouchMode(true);
+						emojiconEditText.requestFocus();
+						popup.showAtBottomPending();
+						final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputMethodManager.showSoftInput(emojiconEditText,
+								InputMethodManager.SHOW_IMPLICIT);
+						changeEmojiKeyboardIcon(emojiButton,
+								R.drawable.ic_action_keyboard);
+					}
+				}
+
+				else {
+					popup.dismiss();
+				}
+			}
+		});
+
+		submitButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				String story = emojiconEditText.getText().toString().trim();
+				storyIsClean = true;
+				storyIsClean = filterWords(story);
+
+				if (storyIsClean) {
+					if (story.length() > 1) {
+						if (story.length() < 1000) {
+							publishStory(story);
+							emojiconEditText.setText(hashtag + " ");
+						} else {
+							emojiconEditText
+									.setError("Try shortening that a bit...");
+						}
+					} else {
+						emojiconEditText.setError("Please say something...");
+					}
+				} else {
+					emojiconEditText
+							.setError(getString(R.string.et_not_clean_error));
+				}
+			}
+		});
+	}
+
+	private void changeEmojiKeyboardIcon(ImageView iconToBeChanged,
+			int drawableResourceId) {
+		iconToBeChanged.setImageResource(drawableResourceId);
+	}
+
 	private void getKeyword() {
 		// TODO Auto-generated method stub
+		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 		hashtag = sp.getString("tribeHashtag", null);
+		emojiconEditText.setText(hashtag + " ");
 
 		if (hashtag == null) {
 			getSupportActionBar().setTitle(defaultTribe);
@@ -243,13 +387,6 @@ public class Tribes extends SherlockFragmentActivity {
 									@Override
 									public void onClick(View v) {
 										// TODO Auto-generated method stub
-										edcDialog = new EditDataCustomDialog(
-												activity);
-										edcDialog
-												.getWindow()
-												.setBackgroundDrawable(
-														new ColorDrawable(
-																Color.TRANSPARENT));
 										String tag = null;
 
 										if (stories.get(arg2 - 1).isAdmin()) {
@@ -259,43 +396,9 @@ public class Tribes extends SherlockFragmentActivity {
 													.getTag().toLowerCase();
 										}
 
-										edcDialog.title = "Reply to @" + tag;
-										edcDialog.tag = hashtag + " @" + tag
-												+ " ";
+										emojiconEditText.setText(hashtag + " @"
+												+ tag + " ");
 
-										edcDialog.show();
-										edcDialog.bDone
-												.setOnClickListener(new OnClickListener() {
-
-													@Override
-													public void onClick(View v) {
-														// TODO Auto-generated
-														// method
-														// stub
-														String story = edcDialog.etDataField
-																.getText()
-																.toString()
-																.trim();
-														storyIsClean = true;
-														storyIsClean = filterWords(story);
-
-														if (storyIsClean) {
-															if (story.length() > 1) {
-																edcDialog.etDataField
-																		.setEnabled(false);
-																publishStory(story);
-																edcDialog
-																		.dismiss();
-															} else {
-																edcDialog.etDataField
-																		.setError("Please say something...");
-															}
-														} else {
-															edcDialog.etDataField
-																	.setError(getString(R.string.et_not_clean_error));
-														}
-													}
-												});
 										socDialog.dismiss();
 									}
 								});
@@ -574,8 +677,6 @@ public class Tribes extends SherlockFragmentActivity {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								edcDialog.etDataField.setEnabled(true);
-								edcDialog.etDataField.setText("");
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
@@ -641,8 +742,6 @@ public class Tribes extends SherlockFragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		getSupportMenuInflater().inflate(R.menu.tribes_menu, menu);
-
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
 		subMenu.add(1, 1, 1, "Switch tribes");
@@ -663,44 +762,6 @@ public class Tribes extends SherlockFragmentActivity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
-			break;
-		case R.id.mNewPlain:
-			if (hashtag == null) {
-				getKeyword();
-			} else {
-				edcDialog = new EditDataCustomDialog(activity);
-				edcDialog.getWindow().setBackgroundDrawable(
-						new ColorDrawable(Color.TRANSPARENT));
-				edcDialog.title = "Say something...";
-				edcDialog.tag = hashtag + " ";
-				edcDialog.show();
-				edcDialog.bDone.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						String story = edcDialog.etDataField.getText()
-								.toString().trim();
-						storyIsClean = true;
-						storyIsClean = filterWords(story);
-
-						if (story.contains("#")) {
-							if (storyIsClean) {
-								publishStory(story);
-								edcDialog.etDataField.setEnabled(false);
-								edcDialog.dismiss();
-								getKeyword();
-							} else {
-								edcDialog.etDataField
-										.setError(getString(R.string.et_not_clean_error));
-							}
-						} else {
-							edcDialog.etDataField
-									.setError("Try including the tribe hashtag");
-						}
-					}
-				});
-			}
 			break;
 		case 1:
 			edcDialog = new EditDataCustomDialog(activity);
