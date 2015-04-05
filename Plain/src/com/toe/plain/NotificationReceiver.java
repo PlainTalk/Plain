@@ -18,6 +18,9 @@ import android.support.v4.app.NotificationCompat;
 
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.storage.Query;
+import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
+import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 
@@ -25,12 +28,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	StorageService storageService;
 	SharedPreferences sp;
-	String plainsMessage, repliesMessage, notificationMessage, lastId,
-			lastReplyId;
+	String plainsMessage, repliesMessage, tribesMessage, hashtag,
+			notificationMessage, lastId, lastTribeId;
 	ArrayList<String> storedTags = new ArrayList<String>();
 	ArrayList<String> jsonDocArray, jsonIdArray,
 			fetchedTagStories = new ArrayList<String>();
-	int i, numberOfReplies = 0;
+	int i, j, numberOfReplies = 0;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -70,7 +73,50 @@ public class NotificationReceiver extends BroadcastReceiver {
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
 						}
 
-						processData(context, jsonIdArray, numberOfReplies);
+						fetchTribePlains(context, jsonIdArray, numberOfReplies);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+					}
+				});
+	}
+
+	private void fetchTribePlains(final Context context,
+			final ArrayList<String> jsonIdArray, final int numberOfReplies) {
+		// TODO Auto-generated method stub
+		sp = context.getSharedPreferences(context.getPackageName(),
+				Context.MODE_PRIVATE);
+		hashtag = sp.getString("tribeHashtag", null);
+
+		if (hashtag == null) {
+			hashtag = "#tribes";
+		}
+
+		String key = "story";
+		Query query = QueryBuilder.build(key, hashtag + " ", Operator.LIKE);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findDocumentsByQuery(
+				context.getString(R.string.database_name),
+				context.getString(R.string.forums_collection), query,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+
+						ArrayList<String> jsonTribeArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							jsonTribeArray.add(jsonDocList.get(i).getDocId());
+						}
+
+						processData(context, jsonIdArray, numberOfReplies,
+								jsonTribeArray);
 					}
 
 					public void onException(Exception ex) {
@@ -129,9 +175,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 	private void fetchReplies(Context context, ArrayList<String> jsonDocArray,
 			ArrayList<String> tags, ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
-		lastReplyId = sp.getString("lastReplyId", null);
-		sp.edit().putString("lastReplyId", jsonIdArray.get(0)).commit();
-
 		for (int i = 0; i < jsonDocArray.size(); i++) {
 			try {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
@@ -155,10 +198,14 @@ public class NotificationReceiver extends BroadcastReceiver {
 	}
 
 	private void processData(final Context context,
-			final ArrayList<String> jsonIdArray, int numberOfReplies) {
+			final ArrayList<String> jsonIdArray, int numberOfReplies,
+			ArrayList<String> jsonTribeArray) {
 		// TODO Auto-generated method stub
 		lastId = sp.getString("lastId", null);
 		sp.edit().putString("lastId", jsonIdArray.get(0)).commit();
+
+		// lastTribeId = sp.getString("lastReplyId", null);
+		// sp.edit().putString("lastReplyId", jsonIdArray.get(0)).commit();
 
 		if (lastId != null) {
 			for (i = 1; i < jsonIdArray.size(); i++) {
@@ -167,8 +214,14 @@ public class NotificationReceiver extends BroadcastReceiver {
 				}
 			}
 
+			// for (int j = 1; j < jsonTribeArray.size(); i++) {
+			// if (lastTribeId.equals(jsonTribeArray.get(j))) {
+			// break;
+			// }
+			// }
+
 			if (i == jsonIdArray.size())
-				plainsMessage = "How's your day?";
+				plainsMessage = "";
 			else if (i == 1) {
 				plainsMessage = "New plain,";
 			} else {
@@ -178,12 +231,19 @@ public class NotificationReceiver extends BroadcastReceiver {
 			if (numberOfReplies == 0) {
 				repliesMessage = ":-)";
 			} else if (numberOfReplies == 1) {
-				repliesMessage = "One reply!";
+				repliesMessage = numberOfReplies + " reply!";
 			} else {
 				repliesMessage = numberOfReplies + " replies!";
 			}
 
-			notificationMessage = plainsMessage + " " + repliesMessage;
+			if (jsonTribeArray.size() == 0) {
+				tribesMessage = "";
+			} else {
+				tribesMessage = " " + hashtag + ": " + jsonTribeArray.size();
+			}
+
+			notificationMessage = plainsMessage + " " + repliesMessage
+					+ tribesMessage;
 
 		} else {
 			notificationMessage = "New plains and replies!";

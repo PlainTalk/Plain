@@ -187,7 +187,9 @@ public class Plain extends SherlockFragmentActivity {
 			tvNoReplyListItem.setTypeface(font);
 
 			setUpEmojiKeyboardReplies();
-			rootViewReplies.setVisibility(View.INVISIBLE);
+			emojiconEditTextReplies.setVisibility(View.INVISIBLE);
+			emojiconButtonReplies.setVisibility(View.INVISIBLE);
+			submitButtonReplies.setVisibility(View.INVISIBLE);
 			etSearchForTag = (EditText) findViewById(R.id.etSearchForTag);
 			etSearchForTag.clearFocus();
 			bSearchForTag = (Button) findViewById(R.id.bSearchForTag);
@@ -574,7 +576,10 @@ public class Plain extends SherlockFragmentActivity {
 					if (story.length() > 1) {
 						if (story.length() < 1000) {
 							publishStory(story);
-							rootViewReplies.setVisibility(View.INVISIBLE);
+							emojiconEditTextReplies
+									.setVisibility(View.INVISIBLE);
+							emojiconButtonReplies.setVisibility(View.INVISIBLE);
+							submitButtonReplies.setVisibility(View.INVISIBLE);
 							emojiconEditTextReplies.getText().clear();
 						} else {
 							emojiconEditTextReplies
@@ -1233,7 +1238,7 @@ public class Plain extends SherlockFragmentActivity {
 					tvNoReplyListItem.setVisibility(View.INVISIBLE);
 				} else {
 					tvNoReplyListItem.setVisibility(View.VISIBLE);
-					tvNoReplyListItem.setText("No replies :-(");
+					tvNoReplyListItem.setText("No replies");
 				}
 
 				activity.runOnUiThread(new Runnable() {
@@ -1255,7 +1260,11 @@ public class Plain extends SherlockFragmentActivity {
 											AdapterView<?> arg0, View arg1,
 											int arg2, long arg3) {
 										// TODO Auto-generated method stub
-										rootViewReplies
+										emojiconEditTextReplies
+												.setVisibility(View.VISIBLE);
+										emojiconButtonReplies
+												.setVisibility(View.VISIBLE);
+										submitButtonReplies
 												.setVisibility(View.VISIBLE);
 										emojiconEditTextReplies.setText("@"
 												+ replies.get(arg2 - 1)
@@ -1648,8 +1657,10 @@ public class Plain extends SherlockFragmentActivity {
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
-		if (rootViewReplies.getVisibility() == View.VISIBLE) {
-			rootViewReplies.setVisibility(View.INVISIBLE);
+		if (emojiconEditTextReplies.getVisibility() == View.VISIBLE) {
+			emojiconEditTextReplies.setVisibility(View.INVISIBLE);
+			emojiconButtonReplies.setVisibility(View.INVISIBLE);
+			submitButtonReplies.setVisibility(View.INVISIBLE);
 		} else {
 			ecDialog = new ExitCustomDialog(activity);
 			ecDialog.getWindow().setBackgroundDrawable(

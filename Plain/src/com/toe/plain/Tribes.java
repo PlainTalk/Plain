@@ -213,21 +213,27 @@ public class Tribes extends SherlockFragmentActivity {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (storyIsClean) {
-					if (story.length() > 1) {
-						if (story.length() < 1000) {
-							publishStory(story);
-							emojiconEditText.setText(hashtag + " ");
+				if (story.contains(hashtag)) {
+					if (storyIsClean) {
+						if (story.length() > 1) {
+							if (story.length() < 1000) {
+								publishStory(story);
+								emojiconEditText.setText(hashtag + " ");
+							} else {
+								emojiconEditText
+										.setError("Try shortening that a bit...");
+							}
 						} else {
 							emojiconEditText
-									.setError("Try shortening that a bit...");
+									.setError("Please say something...");
 						}
 					} else {
-						emojiconEditText.setError("Please say something...");
+						emojiconEditText
+								.setError(getString(R.string.et_not_clean_error));
 					}
 				} else {
-					emojiconEditText
-							.setError(getString(R.string.et_not_clean_error));
+					emojiconEditText.setError("Please make sure " + hashtag
+							+ " is included");
 				}
 			}
 		});
@@ -242,7 +248,11 @@ public class Tribes extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 		hashtag = sp.getString("tribeHashtag", null);
-		emojiconEditText.setText(hashtag + " ");
+		if (hashtag == null) {
+			emojiconEditText.setText(defaultTribe + " ");
+		} else {
+			emojiconEditText.setText(hashtag + " ");
+		}
 
 		if (hashtag == null) {
 			getSupportActionBar().setTitle(defaultTribe);
@@ -864,8 +874,8 @@ public class Tribes extends SherlockFragmentActivity {
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					"Join my tribe on 'Plain " + tribeHashtag);
-			startActivity(Intent
-					.createChooser(i, "Invite tribe members via..."));
+			startActivity(Intent.createChooser(i, "Invite " + tribeHashtag
+					+ " members via..."));
 			break;
 		case 4:
 			i = new Intent(getApplicationContext(), AboutTribes.class);
