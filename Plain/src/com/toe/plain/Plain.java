@@ -33,6 +33,7 @@ import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -117,6 +118,7 @@ public class Plain extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.view_pager);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
 
@@ -447,7 +449,6 @@ public class Plain extends SherlockFragmentActivity {
 					if (story.length() > 1) {
 						if (story.length() < 1000) {
 							publishStory(story);
-							emojiconEditText.setText("");
 						} else {
 							emojiconEditText
 									.setError("Try shortening that a bit...");
@@ -1031,6 +1032,7 @@ public class Plain extends SherlockFragmentActivity {
 							public void run() {
 								// TODO Auto-generated method stub
 								setSupportProgressBarIndeterminateVisibility(false);
+								emojiconEditText.setText("");
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
@@ -1510,8 +1512,8 @@ public class Plain extends SherlockFragmentActivity {
 		subMenu.add(0, 0, 0, "Menu:");
 		subMenu.add(1, 1, 1, "Tribes");
 		subMenu.add(2, 2, 2, "Rules");
-		subMenu.add(4, 4, 4, "Invite");
-		subMenu.add(5, 5, 5, "About");
+		subMenu.add(3, 3, 3, "Invite");
+		subMenu.add(4, 4, 4, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
