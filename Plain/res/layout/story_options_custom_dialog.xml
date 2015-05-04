@@ -7,20 +7,42 @@
     android:layout_gravity="center"
     android:background="#00000000"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
-    <com.toe.plain.FlipImageView
-        android:id="@+id/ivReply"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:padding="5dp"
-        android:scaleType="center"
-        app:flipDrawable="@drawable/reply_button_selector"
-        app:flipDuration="1000"
-        app:flipInterpolator="@android:anim/overshoot_interpolator"
-        app:flipRotations="y"
-        app:reverseRotation="true" />
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2" >
+
+        <com.toe.plain.FlipImageView
+            android:id="@+id/ivReplain"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:scaleType="center"
+            app:flipDrawable="@drawable/replain_button_selector"
+            app:flipDuration="1000"
+            app:flipInterpolator="@android:anim/overshoot_interpolator"
+            app:flipRotations="y"
+            app:reverseRotation="true" />
+
+        <com.toe.plain.FlipImageView
+            android:id="@+id/ivReply"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:scaleType="center"
+            app:flipDrawable="@drawable/reply_button_selector"
+            app:flipDuration="1000"
+            app:flipInterpolator="@android:anim/overshoot_interpolator"
+            app:flipRotations="y"
+            app:reverseRotation="true" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="400dp"

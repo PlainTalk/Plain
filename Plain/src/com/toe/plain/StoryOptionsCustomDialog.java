@@ -8,7 +8,7 @@ import com.actionbarsherlock.view.Window;
 
 public class StoryOptionsCustomDialog extends Dialog {
 
-	public FlipImageView reply, share, favourite;
+	public FlipImageView reply, replain, share, favourite;
 
 	public StoryOptionsCustomDialog(SherlockFragmentActivity activity) {
 		super(activity);
@@ -24,6 +24,9 @@ public class StoryOptionsCustomDialog extends Dialog {
 
 		reply = (FlipImageView) findViewById(R.id.ivReply);
 		reply.setFlipped(true);
+		
+		replain = (FlipImageView) findViewById(R.id.ivReplain);
+		replain.setFlipped(true);
 
 		share = (FlipImageView) findViewById(R.id.ivShare);
 		share.setFlipped(true);

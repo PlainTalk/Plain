@@ -1181,7 +1181,7 @@ public final class R {
 		public static final int orca_emoji_more_front_pressed = 0x7f020516;
 		public static final int orca_emoji_tab_background = 0x7f020517;
 		public static final int orca_emoji_tab_dark_background = 0x7f020518;
-		public static final int sym_keyboard_delete_holo_dark = 0x7f020526;
+		public static final int sym_keyboard_delete_holo_dark = 0x7f020529;
 	}
 	public static final class id {
 		public static final int Emoji_GridView = 0x7f080048;

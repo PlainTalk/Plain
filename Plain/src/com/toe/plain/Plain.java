@@ -10,6 +10,8 @@ import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,9 +29,12 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -106,24 +111,28 @@ public class Plain extends SherlockFragmentActivity {
 	AppRate rate;
 	boolean storyIsClean = true;
 	int animationDuration = 140000;
-	int offset = 100;
+	int offset = 100, j;
 	EmojiconEditText emojiconEditText, emojiconEditTextReplies;
 	View rootView, rootViewReplies;
 	ImageView emojiButton, emojiconButtonReplies;
 	ImageView submitButton, submitButtonReplies;
 	EmojiconsPopup popup, popupReplies;
+	int mInterval = 20000;
+	Handler mHandler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.view_pager);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
 
 		setAdapter();
 		setUp();
+		setNotificationAlarm();
 		rateApp();
 	}
 
@@ -131,13 +140,12 @@ public class Plain extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		activity = this;
 		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+		mHandler = new Handler();
 
 		App42API.initialize(getApplicationContext(),
 				getString(R.string.api_key), getString(R.string.secret_key));
 		App42CacheManager.setPolicy(Policy.NETWORK_FIRST);
 		storageService = App42API.buildStorageService();
-
-		setNotificationAlarm();
 	}
 
 	private void setNotificationAlarm() {
@@ -149,7 +157,7 @@ public class Plain extends SherlockFragmentActivity {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				getApplicationContext(), 0, intent, 0);
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-				System.currentTimeMillis(), 1800000, pendingIntent);
+				System.currentTimeMillis(), 10800000, pendingIntent);
 	}
 
 	@SuppressLint({ "InlinedApi", "CutPasteId" })
@@ -182,6 +190,8 @@ public class Plain extends SherlockFragmentActivity {
 					fetchMoreStories();
 				}
 			});
+
+			startRefresher();
 			break;
 		case 1:
 			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
@@ -284,7 +294,7 @@ public class Plain extends SherlockFragmentActivity {
 															+ "\"\n\n- 'Plain");
 											startActivity(Intent.createChooser(
 													i,
-													"Share the story using..."));
+													"Share the plain using..."));
 										}
 									});
 							fsocDialog.delete
@@ -344,6 +354,23 @@ public class Plain extends SherlockFragmentActivity {
 					});
 			break;
 		}
+	}
+
+	Runnable mRefresher = new Runnable() {
+		@Override
+		public void run() {
+			refresh();
+			mHandler.postDelayed(mRefresher, mInterval);
+		}
+	};
+
+	void startRefresher() {
+		mRefresher.run();
+	}
+
+	protected void refresh() {
+		// TODO Auto-generated method stub
+		getStories();
 	}
 
 	private void setUpEmojiKeyboard() {
@@ -448,6 +475,26 @@ public class Plain extends SherlockFragmentActivity {
 				if (storyIsClean) {
 					if (story.length() > 1) {
 						if (story.length() < 1000) {
+							submitButton.setEnabled(false);
+							Timer timer = new Timer();
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									runOnUiThread(new Runnable() {
+										public void run() {
+											try {
+												submitButton.setEnabled(true);
+											} catch (Exception e) {
+												// TODO: handle exception
+												Log.e("Button delay error",
+														e.toString());
+											}
+										}
+									});
+								}
+							}, 5000);
 							publishStory(story);
 						} else {
 							emojiconEditText
@@ -576,6 +623,27 @@ public class Plain extends SherlockFragmentActivity {
 				if (storyIsClean) {
 					if (story.length() > 1) {
 						if (story.length() < 1000) {
+							submitButtonReplies.setEnabled(false);
+							Timer timer = new Timer();
+							timer.schedule(new TimerTask() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									runOnUiThread(new Runnable() {
+										public void run() {
+											try {
+												submitButtonReplies
+														.setEnabled(true);
+											} catch (Exception e) {
+												// TODO: handle exception
+												Log.e("Button delay error",
+														e.toString());
+											}
+										}
+									});
+								}
+							}, 5000);
 							publishStory(story);
 							emojiconEditTextReplies
 									.setVisibility(View.INVISIBLE);
@@ -666,7 +734,7 @@ public class Plain extends SherlockFragmentActivity {
 													+ " stories!",
 											Toast.LENGTH_SHORT).show();
 								} else {
-									Toast.makeText(activity, "Found a story!",
+									Toast.makeText(activity, "Found a plain!",
 											Toast.LENGTH_SHORT).show();
 								}
 							}
@@ -763,179 +831,230 @@ public class Plain extends SherlockFragmentActivity {
 	private void populateList(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
-		stories.clear();
 
-		for (int i = 0; i < jsonDocArray.size(); i++) {
-			try {
-				JSONObject json = new JSONObject(jsonDocArray.get(i));
-				stories.add(new ListItem(json.getString("story"), json
-						.getInt("likes"), json.getString("tag"), json
-						.getBoolean("admin")));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			stories.clear();
+
+			for (int i = 0; i < jsonDocArray.size(); i++) {
+				try {
+					JSONObject json = new JSONObject(jsonDocArray.get(i));
+					stories.add(new ListItem(json.getString("story"), json
+							.getInt("likes"), json.getString("tag"), json
+							.getBoolean("admin")));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {
+						new PopulateList().execute();
+					} catch (Exception e) {
+						// TODO: handle exception
+						Log.e("Populate list error", e.toString());
+					}
+
+					listView.stopRefresh();
+					listView.stopLoadMore();
+					listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							// TODO Auto-generated method stub
+							try {
+								addLike(jsonIdArray.get(arg2 - 1),
+										new JSONObject(jsonDocArray
+												.get(arg2 - 1)).getInt("likes"),
+										new JSONObject(jsonDocArray
+												.get(arg2 - 1))
+												.getString("story"),
+										new JSONObject(jsonDocArray
+												.get(arg2 - 1))
+												.getString("tag"),
+										new JSONObject(jsonDocArray
+												.get(arg2 - 1))
+												.getBoolean("admin"));
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							try {
+								if (new JSONObject(jsonDocArray.get(arg2 - 1))
+										.getBoolean("admin") == true
+										&& new JSONObject(jsonDocArray
+												.get(arg2 - 1)).getString(
+												"story").contains(
+												"update on the PlayStore")) {
+									String url = getString(R.string.playstore_link);
+									Intent i = new Intent(Intent.ACTION_VIEW);
+									i.setData(Uri.parse(url));
+									startActivity(i);
+								}
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+
+					listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+						@Override
+						public boolean onItemLongClick(AdapterView<?> arg0,
+								View arg1, final int arg2, long arg3) {
+							// TODO Auto-generated method stub
+							socDialog = new StoryOptionsCustomDialog(activity);
+							socDialog.getWindow().setBackgroundDrawable(
+									new ColorDrawable(Color.TRANSPARENT));
+							socDialog.show();
+							socDialog.reply
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											String tag = null;
+
+											if (stories.get(arg2 - 1).isAdmin()) {
+												tag = "dev";
+											} else {
+												tag = stories.get(arg2 - 1)
+														.getTag().toLowerCase();
+											}
+
+											emojiconEditText.setText("@" + tag
+													+ " ");
+											socDialog.dismiss();
+										}
+									});
+							socDialog.replain
+									.setOnClickListener(new View.OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											replainStory(stories.get(arg2 - 1)
+													.getStory(),
+													stories.get(arg2 - 1)
+															.getLikes(),
+													stories.get(arg2 - 1)
+															.getTag(), stories
+															.get(arg2 - 1)
+															.isAdmin());
+											socDialog.dismiss();
+										}
+									});
+							socDialog.share
+									.setOnClickListener(new View.OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											i = new Intent(
+													android.content.Intent.ACTION_SEND);
+											i.setType("text/plain");
+											try {
+												i.putExtra(
+														android.content.Intent.EXTRA_TEXT,
+														"\""
+																+ new JSONObject(
+																		jsonDocArray
+																				.get(arg2 - 1))
+																		.getString("story")
+																+ "\"\n\n- from 'Plain");
+											} catch (JSONException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											}
+											startActivity(Intent.createChooser(
+													i,
+													"Share the plain using..."));
+										}
+									});
+							socDialog.favourite
+									.setOnClickListener(new View.OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											try {
+												String story = new JSONObject(
+														jsonDocArray
+																.get(arg2 - 1))
+														.getString("story");
+												int likes = new JSONObject(
+														jsonDocArray
+																.get(arg2 - 1))
+														.getInt("likes");
+												String tag = new JSONObject(
+														jsonDocArray
+																.get(arg2 - 1))
+														.getString("tag");
+												boolean admin = new JSONObject(
+														jsonDocArray
+																.get(arg2 - 1))
+														.getBoolean("admin");
+
+												favouriteStory(story, likes,
+														tag, admin);
+												socDialog.dismiss();
+											} catch (JSONException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											}
+										}
+									});
+							return false;
+						}
+					});
+				}
+			});
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			Log.e("ERROR POPULATING LIST", e.toString());
+		}
+	}
+
+	private class PopulateList extends AsyncTask<String, String, String> {
+
+		SwingBottomInAnimationAdapter swing;
+
+		@Override
+		protected String doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			// Do nothing
+			return null;
 		}
 
-		activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				tvNoListItem.setVisibility(View.INVISIBLE);
-				setSupportProgressBarIndeterminateVisibility(false);
-
-				activity.runOnUiThread(new Runnable() {
-					public void run() {
-						if (adapter == null) {
-							adapter = new ListItemAdapter(
-									getApplicationContext(),
-									R.layout.list_item, stories);
-							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
-									adapter);
-							swing.setAbsListView(listView);
-							listView.setAdapter(swing);
-						} else {
-							adapter.notifyDataSetChanged();
-							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
-									adapter);
-							swing.setAbsListView(listView);
-						}
-					}
-				});
-
-				listView.stopRefresh();
-				listView.stopLoadMore();
-				listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						try {
-							addLike(jsonIdArray.get(arg2 - 1),
-									new JSONObject(jsonDocArray.get(arg2 - 1))
-											.getInt("likes"), new JSONObject(
-											jsonDocArray.get(arg2 - 1))
-											.getString("story"),
-									new JSONObject(jsonDocArray.get(arg2 - 1))
-											.getString("tag"), new JSONObject(
-											jsonDocArray.get(arg2 - 1))
-											.getBoolean("admin"));
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						try {
-							if (new JSONObject(jsonDocArray.get(arg2 - 1))
-									.getBoolean("admin") == true
-									&& new JSONObject(jsonDocArray
-											.get(arg2 - 1))
-											.getString("story")
-											.contains("update on the PlayStore")) {
-								String url = getString(R.string.playstore_link);
-								Intent i = new Intent(Intent.ACTION_VIEW);
-								i.setData(Uri.parse(url));
-								startActivity(i);
-							}
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				});
-
-				listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-					@Override
-					public boolean onItemLongClick(AdapterView<?> arg0,
-							View arg1, final int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						socDialog = new StoryOptionsCustomDialog(activity);
-						socDialog.getWindow().setBackgroundDrawable(
-								new ColorDrawable(Color.TRANSPARENT));
-						socDialog.show();
-						socDialog.reply
-								.setOnClickListener(new OnClickListener() {
-
-									@Override
-									public void onClick(View v) {
-										// TODO Auto-generated method stub
-										String tag = null;
-
-										if (stories.get(arg2 - 1).isAdmin()) {
-											tag = "dev";
-										} else {
-											tag = stories.get(arg2 - 1)
-													.getTag().toLowerCase();
-										}
-
-										emojiconEditText.setText("@" + tag
-												+ " ");
-										socDialog.dismiss();
-									}
-								});
-						socDialog.share
-								.setOnClickListener(new View.OnClickListener() {
-
-									@Override
-									public void onClick(View v) {
-										// TODO Auto-generated method stub
-										i = new Intent(
-												android.content.Intent.ACTION_SEND);
-										i.setType("text/plain");
-										try {
-											i.putExtra(
-													android.content.Intent.EXTRA_TEXT,
-													"\""
-															+ new JSONObject(
-																	jsonDocArray
-																			.get(arg2 - 1))
-																	.getString("story")
-															+ "\"\n\n- story from 'Plain");
-										} catch (JSONException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-										startActivity(Intent.createChooser(i,
-												"Share the story using..."));
-									}
-								});
-						socDialog.favourite
-								.setOnClickListener(new View.OnClickListener() {
-
-									@Override
-									public void onClick(View v) {
-										// TODO Auto-generated method stub
-										try {
-											String story = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getString("story");
-											int likes = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getInt("likes");
-											String tag = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getString("tag");
-											boolean admin = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getBoolean("admin");
-
-											favouriteStory(story, likes, tag,
-													admin);
-											socDialog.dismiss();
-										} catch (JSONException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-									}
-								});
-						return false;
-					}
-				});
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if (adapter == null) {
+				adapter = new ListItemAdapter(getApplicationContext(),
+						R.layout.list_item, stories);
+				swing = new SwingBottomInAnimationAdapter(adapter);
+				swing.setAbsListView(listView);
+				listView.setAdapter(swing);
+			} else {
+				adapter.notifyDataSetChanged();
+				swing = new SwingBottomInAnimationAdapter(adapter);
+				swing.setAbsListView(listView);
 			}
-		});
+			tvNoListItem.setVisibility(View.INVISIBLE);
+			setSupportProgressBarIndeterminateVisibility(false);
+		}
+
 	}
 
 	private void fetchMoreStories() {
@@ -1014,6 +1133,67 @@ public class Plain extends SherlockFragmentActivity {
 			jsonStory.put("story", story);
 			jsonStory.put("likes", 0);
 			jsonStory.put("tag", tag.toLowerCase());
+			jsonStory.put("admin", false);
+
+			storeTag(tag);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		storageService.insertJSONDocument(getString(R.string.database_name),
+				getString(R.string.collection_name), jsonStory,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+								emojiconEditText.setText("");
+								Toast.makeText(getApplicationContext(),
+										"Plain published!", Toast.LENGTH_SHORT)
+										.show();
+								getStories();
+							}
+						});
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+							}
+						});
+						errorHandler(ex);
+					}
+				});
+	}
+
+	private void replainStory(String story, int likes, String tag, boolean admin) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+		Toast.makeText(getApplicationContext(), "Just a moment",
+				Toast.LENGTH_SHORT).show();
+
+		String finalTag = null;
+		if (tag.contains("rp@")) {
+			finalTag = tag;
+		} else {
+			finalTag = "rp@" + tag;
+		}
+
+		JSONObject jsonStory = new JSONObject();
+		try {
+			jsonStory.put("story", story);
+			jsonStory.put("likes", 0);
+			jsonStory.put("tag", finalTag);
 			jsonStory.put("admin", false);
 
 			storeTag(tag);
@@ -1308,11 +1488,11 @@ public class Plain extends SherlockFragmentActivity {
 																		+ replies
 																				.get(arg2 - 1)
 																				.getStory()
-																		+ "\"\n\n- story from 'Plain");
+																		+ "\"\n\n- from 'Plain");
 														startActivity(Intent
 																.createChooser(
 																		i,
-																		"Share the story using..."));
+																		"Share the plain using..."));
 													}
 												});
 										rocDialog.favourite
@@ -1429,6 +1609,8 @@ public class Plain extends SherlockFragmentActivity {
 			});
 		} else if (ex.getMessage().contains("No document")) {
 			error = "No stories found :-(";
+		} else if (ex.getMessage().contains("UnAuthorized Access")) {
+			error = "Hi, how are you? Please try again in a few minutes :-)";
 		} else {
 			error = ex.getMessage();
 		}
@@ -1607,7 +1789,7 @@ public class Plain extends SherlockFragmentActivity {
 													+ " stories!",
 											Toast.LENGTH_SHORT).show();
 								} else {
-									Toast.makeText(activity, "Found a story!",
+									Toast.makeText(activity, "Found a plain!",
 											Toast.LENGTH_SHORT).show();
 								}
 
