@@ -29,7 +29,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -119,6 +118,7 @@ public class Plain extends SherlockFragmentActivity {
 	EmojiconsPopup popup, popupReplies;
 	int mInterval = 20000;
 	Handler mHandler;
+	SwingBottomInAnimationAdapter swing;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -191,7 +191,7 @@ public class Plain extends SherlockFragmentActivity {
 				}
 			});
 
-			startRefresher();
+			// startRefresher();
 			break;
 		case 1:
 			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
@@ -831,10 +831,8 @@ public class Plain extends SherlockFragmentActivity {
 	private void populateList(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
-
+		stories.clear();
 		try {
-			stories.clear();
-
 			for (int i = 0; i < jsonDocArray.size(); i++) {
 				try {
 					JSONObject json = new JSONObject(jsonDocArray.get(i));
@@ -852,13 +850,20 @@ public class Plain extends SherlockFragmentActivity {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					try {
-						new PopulateList().execute();
-					} catch (Exception e) {
-						// TODO: handle exception
-						Log.e("Populate list error", e.toString());
+					if (adapter == null) {
+						adapter = new ListItemAdapter(getApplicationContext(),
+								R.layout.list_item, stories);
+						swing = new SwingBottomInAnimationAdapter(adapter);
+						swing.setAbsListView(listView);
+						listView.setAdapter(swing);
+					} else {
+						adapter.notifyDataSetChanged();
+						swing = new SwingBottomInAnimationAdapter(adapter);
+						swing.setAbsListView(listView);
 					}
 
+					tvNoListItem.setVisibility(View.INVISIBLE);
+					setSupportProgressBarIndeterminateVisibility(false);
 					listView.stopRefresh();
 					listView.stopLoadMore();
 					listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -867,39 +872,51 @@ public class Plain extends SherlockFragmentActivity {
 						public void onItemClick(AdapterView<?> arg0, View arg1,
 								int arg2, long arg3) {
 							// TODO Auto-generated method stub
-							try {
-								addLike(jsonIdArray.get(arg2 - 1),
-										new JSONObject(jsonDocArray
-												.get(arg2 - 1)).getInt("likes"),
-										new JSONObject(jsonDocArray
-												.get(arg2 - 1))
-												.getString("story"),
-										new JSONObject(jsonDocArray
-												.get(arg2 - 1))
-												.getString("tag"),
-										new JSONObject(jsonDocArray
-												.get(arg2 - 1))
-												.getBoolean("admin"));
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							try {
-								if (new JSONObject(jsonDocArray.get(arg2 - 1))
-										.getBoolean("admin") == true
-										&& new JSONObject(jsonDocArray
-												.get(arg2 - 1)).getString(
-												"story").contains(
-												"update on the PlayStore")) {
-									String url = getString(R.string.playstore_link);
-									Intent i = new Intent(Intent.ACTION_VIEW);
-									i.setData(Uri.parse(url));
-									startActivity(i);
+							if (arg2 < 100) {
+								try {
+									addLike(jsonIdArray.get(arg2 - 1),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getInt("likes"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("story"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("tag"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getBoolean("admin"));
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+
+								try {
+									if (new JSONObject(jsonDocArray
+											.get(arg2 - 1)).getBoolean("admin") == true
+											&& new JSONObject(jsonDocArray
+													.get(arg2 - 1)).getString(
+													"story").contains(
+													"update on the PlayStore")) {
+										String url = getString(R.string.playstore_link);
+										Intent i = new Intent(
+												Intent.ACTION_VIEW);
+										i.setData(Uri.parse(url));
+										startActivity(i);
+									}
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							} else {
+								runOnUiThread(new Runnable() {
+									public void run() {
+										Toast.makeText(getApplicationContext(),
+												"Replain it to like it :-)",
+												Toast.LENGTH_SHORT).show();
+									}
+								});
 							}
 						}
 					});
@@ -910,6 +927,11 @@ public class Plain extends SherlockFragmentActivity {
 						public boolean onItemLongClick(AdapterView<?> arg0,
 								View arg1, final int arg2, long arg3) {
 							// TODO Auto-generated method stub
+							final ArrayList<ListItem> fullList = new ArrayList<ListItem>();
+							for (int i = 0; i < adapter.getCount(); i++) {
+								fullList.add(adapter.getItem(i));
+							}
+
 							socDialog = new StoryOptionsCustomDialog(activity);
 							socDialog.getWindow().setBackgroundDrawable(
 									new ColorDrawable(Color.TRANSPARENT));
@@ -922,10 +944,11 @@ public class Plain extends SherlockFragmentActivity {
 											// TODO Auto-generated method stub
 											String tag = null;
 
-											if (stories.get(arg2 - 1).isAdmin()) {
+											if (fullList.get(arg2 - 1)
+													.isAdmin()) {
 												tag = "dev";
 											} else {
-												tag = stories.get(arg2 - 1)
+												tag = fullList.get(arg2 - 1)
 														.getTag().toLowerCase();
 											}
 
@@ -940,12 +963,12 @@ public class Plain extends SherlockFragmentActivity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											replainStory(stories.get(arg2 - 1)
+											replainStory(fullList.get(arg2 - 1)
 													.getStory(),
-													stories.get(arg2 - 1)
+													fullList.get(arg2 - 1)
 															.getLikes(),
-													stories.get(arg2 - 1)
-															.getTag(), stories
+													fullList.get(arg2 - 1)
+															.getTag(), fullList
 															.get(arg2 - 1)
 															.isAdmin());
 											socDialog.dismiss();
@@ -960,20 +983,14 @@ public class Plain extends SherlockFragmentActivity {
 											i = new Intent(
 													android.content.Intent.ACTION_SEND);
 											i.setType("text/plain");
-											try {
-												i.putExtra(
-														android.content.Intent.EXTRA_TEXT,
-														"\""
-																+ new JSONObject(
-																		jsonDocArray
-																				.get(arg2 - 1))
-																		.getString("story")
-																+ "\"\n\n- from 'Plain");
-											} catch (JSONException e) {
-												// TODO Auto-generated catch
-												// block
-												e.printStackTrace();
-											}
+											i.putExtra(
+													android.content.Intent.EXTRA_TEXT,
+													"\""
+															+ fullList.get(
+																	arg2 - 1)
+																	.getStory()
+															+ "\"\n\n- from 'Plain");
+
 											startActivity(Intent.createChooser(
 													i,
 													"Share the plain using..."));
@@ -985,32 +1002,18 @@ public class Plain extends SherlockFragmentActivity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											try {
-												String story = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1))
-														.getString("story");
-												int likes = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1))
-														.getInt("likes");
-												String tag = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1))
-														.getString("tag");
-												boolean admin = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1))
-														.getBoolean("admin");
+											String story = fullList.get(
+													arg2 - 1).getStory();
+											int likes = fullList.get(arg2 - 1)
+													.getLikes();
+											String tag = fullList.get(arg2 - 1)
+													.getTag();
+											boolean admin = fullList.get(
+													arg2 - 1).isAdmin();
 
-												favouriteStory(story, likes,
-														tag, admin);
-												socDialog.dismiss();
-											} catch (JSONException e) {
-												// TODO Auto-generated catch
-												// block
-												e.printStackTrace();
-											}
+											favouriteStory(story, likes, tag,
+													admin);
+											socDialog.dismiss();
 										}
 									});
 							return false;
@@ -1023,38 +1026,6 @@ public class Plain extends SherlockFragmentActivity {
 			// TODO: handle exception
 			Log.e("ERROR POPULATING LIST", e.toString());
 		}
-	}
-
-	private class PopulateList extends AsyncTask<String, String, String> {
-
-		SwingBottomInAnimationAdapter swing;
-
-		@Override
-		protected String doInBackground(String... params) {
-			// TODO Auto-generated method stub
-			// Do nothing
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
-			if (adapter == null) {
-				adapter = new ListItemAdapter(getApplicationContext(),
-						R.layout.list_item, stories);
-				swing = new SwingBottomInAnimationAdapter(adapter);
-				swing.setAbsListView(listView);
-				listView.setAdapter(swing);
-			} else {
-				adapter.notifyDataSetChanged();
-				swing = new SwingBottomInAnimationAdapter(adapter);
-				swing.setAbsListView(listView);
-			}
-			tvNoListItem.setVisibility(View.INVISIBLE);
-			setSupportProgressBarIndeterminateVisibility(false);
-		}
-
 	}
 
 	private void fetchMoreStories() {
@@ -1182,19 +1153,20 @@ public class Plain extends SherlockFragmentActivity {
 		Toast.makeText(getApplicationContext(), "Just a moment",
 				Toast.LENGTH_SHORT).show();
 
-		String finalTag = null;
-		if (tag.contains("rp@")) {
-			finalTag = tag;
-		} else {
-			finalTag = "rp@" + tag;
+		if (admin) {
+			tag = "rp@dev";
+		}
+
+		if (!tag.contains("rp@")) {
+			tag = "rp@" + tag;
 		}
 
 		JSONObject jsonStory = new JSONObject();
 		try {
 			jsonStory.put("story", story);
-			jsonStory.put("likes", 0);
-			jsonStory.put("tag", finalTag);
-			jsonStory.put("admin", false);
+			jsonStory.put("likes", likes);
+			jsonStory.put("tag", tag);
+			jsonStory.put("admin", admin);
 
 			storeTag(tag);
 		} catch (JSONException e) {
