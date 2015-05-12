@@ -370,7 +370,13 @@ public class Plain extends SherlockFragmentActivity {
 
 	protected void refresh() {
 		// TODO Auto-generated method stub
-		getStories();
+		final ArrayList<ListItem> fullList = new ArrayList<ListItem>();
+		for (int i = 0; i < adapter.getCount(); i++) {
+			fullList.add(adapter.getItem(i));
+		}
+		if (fullList.size() <= 100) {
+			getStories();
+		}
 	}
 
 	private void setUpEmojiKeyboard() {
@@ -831,8 +837,9 @@ public class Plain extends SherlockFragmentActivity {
 	private void populateList(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> jsonIdArray) {
 		// TODO Auto-generated method stub
-		stories.clear();
 		try {
+			stories.clear();
+
 			for (int i = 0; i < jsonDocArray.size(); i++) {
 				try {
 					JSONObject json = new JSONObject(jsonDocArray.get(i));
@@ -1092,59 +1099,75 @@ public class Plain extends SherlockFragmentActivity {
 		});
 	}
 
-	private void publishStory(String story) {
+	private void publishStory(final String story) {
 		// TODO Auto-generated method stub
 		setSupportProgressBarIndeterminateVisibility(true);
 		Toast.makeText(getApplicationContext(), "Just a moment",
 				Toast.LENGTH_SHORT).show();
 
-		JSONObject jsonStory = new JSONObject();
-		try {
-			String tag = RandomStringUtils.random(3, true, true);
-			jsonStory.put("story", story);
-			jsonStory.put("likes", 0);
-			jsonStory.put("tag", tag.toLowerCase());
-			jsonStory.put("admin", false);
+		if (story.equals(sp.getString("storedStory", "x"))) {
+			Toast.makeText(getApplicationContext(),
+					"Oops! You've just posted that", Toast.LENGTH_SHORT).show();
+		} else {
 
-			storeTag(tag);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JSONObject jsonStory = new JSONObject();
+			try {
+				String tag = RandomStringUtils.random(3, true, true);
+				jsonStory.put("story", story);
+				jsonStory.put("likes", 0);
+				jsonStory.put("tag", tag.toLowerCase());
+				jsonStory.put("admin", false);
+
+				storeTag(tag);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			storageService.insertJSONDocument(
+					getString(R.string.database_name),
+					getString(R.string.collection_name), jsonStory,
+					new App42CallBack() {
+						public void onSuccess(Object response) {
+							activity.runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									sp.edit().putString("storedStory", story)
+											.commit();
+									setSupportProgressBarIndeterminateVisibility(false);
+									emojiconEditText.setText("");
+									Toast.makeText(getApplicationContext(),
+											"Plain published!",
+											Toast.LENGTH_SHORT).show();
+									final ArrayList<ListItem> fullList = new ArrayList<ListItem>();
+									for (int i = 0; i < adapter.getCount(); i++) {
+										fullList.add(adapter.getItem(i));
+									}
+
+									if (fullList.size() <= 100) {
+										getStories();
+									}
+								}
+							});
+						}
+
+						public void onException(Exception ex) {
+							System.out.println("Exception Message"
+									+ ex.getMessage());
+							activity.runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									setSupportProgressBarIndeterminateVisibility(false);
+								}
+							});
+							errorHandler(ex);
+						}
+					});
 		}
-
-		storageService.insertJSONDocument(getString(R.string.database_name),
-				getString(R.string.collection_name), jsonStory,
-				new App42CallBack() {
-					public void onSuccess(Object response) {
-						activity.runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								setSupportProgressBarIndeterminateVisibility(false);
-								emojiconEditText.setText("");
-								Toast.makeText(getApplicationContext(),
-										"Plain published!", Toast.LENGTH_SHORT)
-										.show();
-								getStories();
-							}
-						});
-					}
-
-					public void onException(Exception ex) {
-						System.out.println("Exception Message"
-								+ ex.getMessage());
-						activity.runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								setSupportProgressBarIndeterminateVisibility(false);
-							}
-						});
-						errorHandler(ex);
-					}
-				});
 	}
 
 	private void replainStory(String story, int likes, String tag, boolean admin) {
