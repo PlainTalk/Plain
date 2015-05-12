@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.skyfishjy.library.RippleBackground;
 
 public class About extends SherlockActivity {
 

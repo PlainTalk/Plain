@@ -5,12 +5,15 @@ public class ListItem {
 	private int likes;
 	private String tag;
 	private boolean admin;
+	private String timestamp;
 
-	public ListItem(String story, int likes, String tag, boolean admin) {
+	public ListItem(String story, int likes, String tag, boolean admin,
+			String timestamp) {
 		this.setStory(story);
 		this.setLikes(likes);
 		this.setTag(tag);
 		this.setAdmin(admin);
+		this.setTimestamp(timestamp);
 	}
 
 	public String getStory() {
@@ -43,6 +46,14 @@ public class ListItem {
 
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
+	}
+
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

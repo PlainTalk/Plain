@@ -59,4 +59,18 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="#aaa" />
+
+    <TextView
+        android:id="@+id/tvTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="about a minute ago"
+        android:textColor="#888" />
+
 </LinearLayout>

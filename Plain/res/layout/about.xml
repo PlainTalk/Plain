@@ -14,7 +14,7 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-        <com.skyfishjy.library.RippleBackground
+        <com.toe.plain.RippleBackground
             android:id="@+id/content"
             android:layout_width="270dp"
             android:layout_height="270dp"
@@ -30,7 +30,7 @@
                 android:layout_height="150dp"
                 android:layout_centerInParent="true"
                 android:src="@drawable/plain_icon_300" />
-        </com.skyfishjy.library.RippleBackground>
+        </com.toe.plain.RippleBackground>
 
         <TextView
             android:id="@+id/tvTitle"

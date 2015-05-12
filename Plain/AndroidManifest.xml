@@ -32,20 +32,21 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="com.toe.plain.SignUp"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Username"
+            android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
+        </activity>
+        <activity
             android:name="com.toe.plain.Plain"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="&apos;Plain"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name="com.toe.plain.About"
+            android:name="com.toe.plain.Conversations"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="About" >
-        </activity>
-        <activity
-            android:name="com.toe.plain.ExploreSearchResults"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="Results" >
+            android:label="Chats" >
         </activity>
         <activity
             android:name="com.toe.plain.Tribes"
@@ -61,6 +62,11 @@
             android:name="com.toe.plain.Rules"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Rules" >
+        </activity>
+        <activity
+            android:name="com.toe.plain.About"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="About" >
         </activity>
         <activity
             android:name="com.toe.plain.EasterEgg"

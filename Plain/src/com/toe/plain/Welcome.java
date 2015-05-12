@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.skyfishjy.library.RippleBackground;
 
 public class Welcome extends SherlockActivity {
 
@@ -25,6 +24,10 @@ public class Welcome extends SherlockActivity {
 		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
 		setUp();
+		if (sp.getString("username", null) == null) {
+			i = new Intent(getApplicationContext(), SignUp.class);
+			startActivity(i);
+		}
 	}
 
 	private void setUp() {
