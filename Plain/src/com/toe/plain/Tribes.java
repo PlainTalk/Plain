@@ -58,7 +58,7 @@ public class Tribes extends SherlockFragmentActivity {
 	XListView listView;
 	StorageService storageService;
 	String hashtag, error;
-	ArrayList<String> jsonDocArray, jsonIdArray;
+	ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray;
 	ShimmerTextView tvNoListItem;
 	StoryOptionsCustomDialog socDialog;
 	SherlockFragmentActivity activity;
@@ -66,6 +66,7 @@ public class Tribes extends SherlockFragmentActivity {
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
 	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
+	ArrayList<String> favouriteTimestamps = new ArrayList<String>();
 	SharedPreferences sp;
 	EditDataCustomDialog edcDialog;
 	TribeListCustomDialog tlcDialog;
@@ -283,12 +284,15 @@ public class Tribes extends SherlockFragmentActivity {
 
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
-						populateList(jsonDocArray, jsonIdArray);
+						populateList(jsonDocArray, jsonIdArray, jsonTimesArray);
 					}
 
 					public void onException(Exception ex) {
@@ -300,7 +304,8 @@ public class Tribes extends SherlockFragmentActivity {
 	}
 
 	protected void populateList(final ArrayList<String> jsonDocArray,
-			final ArrayList<String> jsonIdArray) {
+			final ArrayList<String> jsonIdArray,
+			final ArrayList<String> jsonTimesArray) {
 		// TODO Auto-generated method stub
 		stories.clear();
 
@@ -309,7 +314,7 @@ public class Tribes extends SherlockFragmentActivity {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
 				stories.add(new ListItem(json.getString("story"), json
 						.getInt("likes"), json.getString("tag"), json
-						.getBoolean("admin")));
+						.getBoolean("admin"), jsonTimesArray.get(i)));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -457,9 +462,11 @@ public class Tribes extends SherlockFragmentActivity {
 											boolean admin = new JSONObject(
 													jsonDocArray.get(arg2 - 1))
 													.getBoolean("admin");
+											String timestamp = jsonTimesArray
+													.get(arg2 - 1);
 
 											favouriteStory(story, likes, tag,
-													admin);
+													admin, timestamp);
 
 										} catch (JSONException e) {
 											// TODO Auto-generated catch block
@@ -499,7 +506,7 @@ public class Tribes extends SherlockFragmentActivity {
 	}
 
 	private void favouriteStory(String story, int likes, String tag,
-			boolean admin) {
+			boolean admin, String timestamp) {
 		// TODO Auto-generated method stub
 		getFavourites();
 
@@ -509,6 +516,7 @@ public class Tribes extends SherlockFragmentActivity {
 				favouriteLikes.add(0, likes);
 				favouriteTags.add(0, tag);
 				favouriteAdmins.add(0, admin);
+				favouriteTimestamps.add(0, timestamp);
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e.toString());
@@ -530,6 +538,10 @@ public class Tribes extends SherlockFragmentActivity {
 			sp.edit()
 					.putString("favouriteAdmins",
 							ObjectSerializer.serialize(favouriteAdmins))
+					.commit();
+			sp.edit()
+					.putString("favouriteTimestamps",
+							ObjectSerializer.serialize(favouriteTimestamps))
 					.commit();
 		} catch (IOException e) {
 			e.printStackTrace();

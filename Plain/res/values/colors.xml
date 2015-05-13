@@ -3,5 +3,6 @@
 
     <color name="background_color">#108ba6</color>
     <color name="background_color_dark">#0f5b6b</color>
+    <color name="rippelColor">#0099CC</color>
 
 </resources>

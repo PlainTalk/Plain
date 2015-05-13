@@ -91,6 +91,7 @@ public class Plain extends SherlockFragmentActivity {
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
 	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
+	ArrayList<String> favouriteTimestamps = new ArrayList<String>();
 	ArrayList<String> storedTags = new ArrayList<String>();
 	ArrayList<String> fetchedTagStories = new ArrayList<String>();
 	ArrayList<ListItem> replies = new ArrayList<ListItem>();
@@ -99,8 +100,8 @@ public class Plain extends SherlockFragmentActivity {
 	ArrayList<Integer> queryResultLikes = new ArrayList<Integer>();
 	ArrayList<String> queryResultTags = new ArrayList<String>();
 	ArrayList<Boolean> queryResultAdmins = new ArrayList<Boolean>();
-	ArrayList<String> jsonDocArray, jsonIdArray, appendJsonDocArray,
-			appendJsonIdArray;
+	ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray,
+			appendJsonDocArray, appendJsonIdArray, appendJsonTimesArray;
 	StoryOptionsCustomDialog socDialog;
 	ReplyOptionsCustomDialog rocDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
@@ -698,10 +699,13 @@ public class Plain extends SherlockFragmentActivity {
 
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
 
 						queryResultStories.clear();
@@ -728,7 +732,7 @@ public class Plain extends SherlockFragmentActivity {
 							queryResults.add(new ListItem(queryResultStories
 									.get(i), queryResultLikes.get(i),
 									queryResultTags.get(i), queryResultAdmins
-											.get(i)));
+											.get(i), jsonTimesArray.get(i)));
 						}
 
 						runOnUiThread(new Runnable() {
@@ -785,13 +789,16 @@ public class Plain extends SherlockFragmentActivity {
 								.getJsonDocList();
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
 
-						populateList(jsonDocArray, jsonIdArray);
+						populateList(jsonDocArray, jsonIdArray, jsonTimesArray);
 					}
 
 					public void onException(Exception ex) {
@@ -817,13 +824,17 @@ public class Plain extends SherlockFragmentActivity {
 								.getJsonDocList();
 						jsonDocArray = new ArrayList<String>();
 						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
 
-						extractReplies(jsonDocArray, storedTags, jsonIdArray);
+						extractReplies(jsonDocArray, storedTags, jsonIdArray,
+								jsonTimesArray);
 					}
 
 					public void onException(Exception ex) {
@@ -835,7 +846,8 @@ public class Plain extends SherlockFragmentActivity {
 	}
 
 	private void populateList(final ArrayList<String> jsonDocArray,
-			final ArrayList<String> jsonIdArray) {
+			final ArrayList<String> jsonIdArray,
+			ArrayList<String> jsonTimesArray) {
 		// TODO Auto-generated method stub
 		try {
 			stories.clear();
@@ -845,7 +857,7 @@ public class Plain extends SherlockFragmentActivity {
 					JSONObject json = new JSONObject(jsonDocArray.get(i));
 					stories.add(new ListItem(json.getString("story"), json
 							.getInt("likes"), json.getString("tag"), json
-							.getBoolean("admin")));
+							.getBoolean("admin"), jsonTimesArray.get(i)));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1017,10 +1029,27 @@ public class Plain extends SherlockFragmentActivity {
 													.getTag();
 											boolean admin = fullList.get(
 													arg2 - 1).isAdmin();
+											String timestamp = fullList.get(
+													arg2 - 1).getTimestamp();
 
 											favouriteStory(story, likes, tag,
-													admin);
+													admin, timestamp);
 											socDialog.dismiss();
+										}
+									});
+							socDialog.chat
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											String username = sp.getString(
+													"ID1", null);
+											String password = sp.getString(
+													"ID2", null);
+											String screenName = sp.getString(
+													"username", null);
+
 										}
 									});
 							return false;
@@ -1055,15 +1084,19 @@ public class Plain extends SherlockFragmentActivity {
 
 						appendJsonDocArray = new ArrayList<String>();
 						appendJsonIdArray = new ArrayList<String>();
+						appendJsonTimesArray = new ArrayList<String>();
 
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							appendJsonDocArray.add(jsonDocList.get(i)
 									.getJsonDoc());
 							appendJsonIdArray
 									.add(jsonDocList.get(i).getDocId());
+							appendJsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
 
-						appendDataToList(appendJsonDocArray, appendJsonIdArray);
+						appendDataToList(appendJsonDocArray, appendJsonIdArray,
+								appendJsonTimesArray);
 
 						runOnUiThread(new Runnable() {
 
@@ -1084,7 +1117,8 @@ public class Plain extends SherlockFragmentActivity {
 	}
 
 	protected void appendDataToList(final ArrayList<String> appendJsonDocArray,
-			final ArrayList<String> appendJsonIdArray) {
+			final ArrayList<String> appendJsonIdArray,
+			final ArrayList<String> appendJsonTimesArray) {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
 
@@ -1093,7 +1127,8 @@ public class Plain extends SherlockFragmentActivity {
 				// TODO Auto-generated method stub
 				jsonDocArray.addAll(appendJsonDocArray);
 				jsonIdArray.addAll(appendJsonIdArray);
-				populateList(jsonDocArray, jsonIdArray);
+				jsonTimesArray.addAll(appendJsonTimesArray);
+				populateList(jsonDocArray, jsonIdArray, jsonTimesArray);
 				setSupportProgressBarIndeterminateVisibility(false);
 			}
 		});
@@ -1117,6 +1152,9 @@ public class Plain extends SherlockFragmentActivity {
 				jsonStory.put("likes", 0);
 				jsonStory.put("tag", tag.toLowerCase());
 				jsonStory.put("admin", false);
+				jsonStory.put("id1", sp.getString("ID1", null));
+				jsonStory.put("id2", sp.getString("ID2", null));
+				jsonStory.put("username", sp.getString("username", null));
 
 				storeTag(tag);
 			} catch (JSONException e) {
@@ -1260,14 +1298,22 @@ public class Plain extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		favourites = new ArrayList<ListItem>();
 
-		if (favouriteStories.size() > 0 && favouriteStories != null) {
-			for (int i = 0; i < favouriteStories.size(); i++) {
-				favourites.add(new ListItem(favouriteStories.get(i),
-						favouriteLikes.get(i), favouriteTags.get(i),
-						favouriteAdmins.get(i)));
+		try {
+			if (favouriteStories.size() > 0 && favouriteStories != null) {
+				for (int i = 0; i < favouriteStories.size(); i++) {
+					favourites
+							.add(new ListItem(favouriteStories.get(i),
+									favouriteLikes.get(i),
+									favouriteTags.get(i), favouriteAdmins
+											.get(i), favouriteTimestamps.get(i)));
+				}
+				tvNoFavouriteListItem.setVisibility(View.INVISIBLE);
 			}
-			tvNoFavouriteListItem.setVisibility(View.INVISIBLE);
+		} catch (Exception e) {
+			// TODO: handle exception
+			Log.d("Favourites Error", e.toString());
 		}
+
 		favouritesAdapter = new ListItemAdapter(getApplicationContext(),
 				R.layout.list_item, favourites);
 		SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
@@ -1277,7 +1323,7 @@ public class Plain extends SherlockFragmentActivity {
 	}
 
 	private void favouriteStory(String story, int likes, String tag,
-			boolean admin) {
+			boolean admin, String timestamp) {
 		// TODO Auto-generated method stub
 		getFavourites();
 
@@ -1287,6 +1333,7 @@ public class Plain extends SherlockFragmentActivity {
 				favouriteLikes.add(0, likes);
 				favouriteTags.add(0, tag);
 				favouriteAdmins.add(0, admin);
+				favouriteTimestamps.add(0, timestamp);
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e.toString());
@@ -1308,6 +1355,10 @@ public class Plain extends SherlockFragmentActivity {
 			sp.edit()
 					.putString("favouriteAdmins",
 							ObjectSerializer.serialize(favouriteAdmins))
+					.commit();
+			sp.edit()
+					.putString("favouriteTimestamps",
+							ObjectSerializer.serialize(favouriteTimestamps))
 					.commit();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1367,7 +1418,8 @@ public class Plain extends SherlockFragmentActivity {
 
 	private void extractReplies(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> storedTags,
-			final ArrayList<String> jsonIdArray) {
+			final ArrayList<String> jsonIdArray,
+			ArrayList<String> jsonTimesArray) {
 		// TODO Auto-generated method stub
 		fetchedTagStories.clear();
 		replies.clear();
@@ -1390,7 +1442,7 @@ public class Plain extends SherlockFragmentActivity {
 						JSONObject json = new JSONObject(jsonDocArray.get(j));
 						replies.add(new ListItem(json.getString("story"), json
 								.getInt("likes"), json.getString("tag"), json
-								.getBoolean("admin")));
+								.getBoolean("admin"), jsonTimesArray.get(j)));
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1510,10 +1562,14 @@ public class Plain extends SherlockFragmentActivity {
 														boolean admin = replies
 																.get(arg2 - 1)
 																.isAdmin();
+														String timesatamp = replies
+																.get(arg2 - 1)
+																.getTimestamp();
 
 														favouriteStory(story,
 																likes, tag,
-																admin);
+																admin,
+																timesatamp);
 														rocDialog.dismiss();
 													}
 												});
@@ -1687,10 +1743,11 @@ public class Plain extends SherlockFragmentActivity {
 
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
-		subMenu.add(1, 1, 1, "Tribes");
-		subMenu.add(2, 2, 2, "Rules");
-		subMenu.add(3, 3, 3, "Invite");
-		subMenu.add(4, 4, 4, "About");
+		subMenu.add(1, 1, 1, "Conversations");
+		subMenu.add(2, 2, 2, "Tribes");
+		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(4, 4, 4, "Invite");
+		subMenu.add(5, 5, 5, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
@@ -1763,13 +1820,18 @@ public class Plain extends SherlockFragmentActivity {
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
-						jsonDocArray = new ArrayList<String>();
-						jsonIdArray = new ArrayList<String>();
 						ArrayList<Storage.JSONDocument> jsonDocList = storage
 								.getJsonDocList();
+
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
+
 						for (int i = 0; i < jsonDocList.size(); i++) {
 							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
 							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
 						}
 
 						activity.runOnUiThread(new Runnable() {
@@ -1788,7 +1850,8 @@ public class Plain extends SherlockFragmentActivity {
 											Toast.LENGTH_SHORT).show();
 								}
 
-								populateList(jsonDocArray, jsonIdArray);
+								populateList(jsonDocArray, jsonIdArray,
+										jsonTimesArray);
 							}
 						});
 
@@ -1811,21 +1874,25 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 1:
-			i = new Intent(getApplicationContext(), Tribes.class);
+			i = new Intent(getApplicationContext(), Conversations.class);
 			startActivity(i);
 			break;
 		case 2:
-			i = new Intent(getApplicationContext(), Rules.class);
+			i = new Intent(getApplicationContext(), Tribes.class);
 			startActivity(i);
 			break;
 		case 3:
+			i = new Intent(getApplicationContext(), Rules.class);
+			startActivity(i);
+			break;
+		case 4:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
-		case 4:
+		case 5:
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;
