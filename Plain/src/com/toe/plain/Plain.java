@@ -2063,9 +2063,13 @@ public class Plain extends SherlockFragmentActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					Intent startMain = new Intent(Intent.ACTION_MAIN);
+					startMain.addCategory(Intent.CATEGORY_HOME);
+					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(startMain);
 					android.os.Process.killProcess(android.os.Process.myPid());
-					finish();
 					System.exit(0);
+					finish();
 				}
 			});
 		}

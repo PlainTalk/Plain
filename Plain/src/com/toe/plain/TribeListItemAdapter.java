@@ -46,6 +46,8 @@ public class TribeListItemAdapter extends
 					.findViewById(R.id.tvDescription);
 			tvDescription.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.tvLikes);
+			TextView tvLikesTitle = (TextView) v
+					.findViewById(R.id.tvLikesTitle);
 			TextView tvTimestamp = (TextView) v.findViewById(R.id.tvTimestamp);
 
 			if (tvName != null) {
@@ -57,6 +59,12 @@ public class TribeListItemAdapter extends
 			if (tvLikes != null) {
 				tvLikes.setText(i.getLikes() + "");
 			}
+			if (i.getLikes() == 1) {
+				if (tvLikesTitle != null) {
+					tvLikesTitle.setText("like");
+				}
+			}
+
 			if (tvTimestamp != null) {
 				Date date = formatTime(i.getTimestamp());
 				long time = date.getTime();
