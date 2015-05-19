@@ -58,8 +58,8 @@ public class PlainTutorial extends SherlockFragmentActivity {
 									getPackageName(), MODE_PRIVATE);
 							sp.edit().putBoolean("hasSeenTutorial", true)
 									.commit();
-							Intent i = new Intent(getApplicationContext(),
-									Welcome.class);
+							i = new Intent(getApplicationContext(),
+									SignUp.class);
 							startActivity(i);
 						}
 					}, 2000);

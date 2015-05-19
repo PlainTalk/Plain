@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -198,6 +199,14 @@ public class Plain extends SherlockFragmentActivity {
 			tvNoReplyListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoReplyListItem);
 			tvNoReplyListItem.setTypeface(font);
+			tvNoReplyListItem.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					getStoriesForReplies(getTags());
+				}
+			});
 
 			setUpEmojiKeyboardReplies();
 			emojiconEditTextReplies.setVisibility(View.INVISIBLE);
@@ -241,6 +250,18 @@ public class Plain extends SherlockFragmentActivity {
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
 			tvNoFavouriteListItem.setText("No favourites");
+			tvNoFavouriteListItem.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					getFavourites();
+					setFavourites();
+					favouritesListView.invalidateViews();
+					favouritesAdapter.notifyDataSetChanged();
+					favouritesListView.stopRefresh();
+				}
+			});
 
 			favouritesListView = (XListView) findViewById(R.id.lvListItems);
 			favouritesListView.setPullLoadEnable(false);
@@ -350,7 +371,7 @@ public class Plain extends SherlockFragmentActivity {
 											fsocDialog.dismiss();
 										}
 									});
-							return false;
+							return true;
 						}
 					});
 			break;
@@ -905,7 +926,13 @@ public class Plain extends SherlockFragmentActivity {
 													.getString("tag"),
 											new JSONObject(jsonDocArray
 													.get(arg2 - 1))
-													.getBoolean("admin"));
+													.getBoolean("admin"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("username"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("screenName"));
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1037,6 +1064,90 @@ public class Plain extends SherlockFragmentActivity {
 											socDialog.dismiss();
 										}
 									});
+							socDialog.favourite
+									.setOnLongClickListener(new OnLongClickListener() {
+
+										@Override
+										public boolean onLongClick(View v) {
+											// TODO Auto-generated method stub
+											if ((arg2 - 1) < 100) {
+												boolean belongsToUser = false;
+												String tag = fullList.get(
+														arg2 - 1).getTag();
+												ArrayList<String> tags = getTags();
+												for (int i = 0; i < tags.size(); i++) {
+													if (tags.get(i).equals(
+															tag.toLowerCase())) {
+														belongsToUser = true;
+													}
+												}
+
+												if (belongsToUser) {
+													runOnUiThread(new Runnable() {
+														public void run() {
+															Toast.makeText(
+																	getApplicationContext(),
+																	"Deleting...",
+																	Toast.LENGTH_SHORT)
+																	.show();
+														}
+													});
+													storageService
+															.deleteDocumentById(
+																	getString(R.string.database_name),
+																	getString(R.string.collection_name),
+																	jsonIdArray
+																			.get(arg2 - 1),
+																	new App42CallBack() {
+																		public void onSuccess(
+																				Object response) {
+																			runOnUiThread(new Runnable() {
+																				public void run() {
+																					socDialog
+																							.dismiss();
+																					Toast.makeText(
+																							getApplicationContext(),
+																							"Plain deleted!",
+																							Toast.LENGTH_SHORT)
+																							.show();
+																					getStories();
+																				}
+																			});
+																		}
+
+																		public void onException(
+																				Exception ex) {
+																			System.out
+																					.println("Exception Message"
+																							+ ex.getMessage());
+																			errorHandler(ex);
+																		}
+																	});
+												} else {
+													runOnUiThread(new Runnable() {
+														public void run() {
+															Toast.makeText(
+																	getApplicationContext(),
+																	"You can only delete your own plains",
+																	Toast.LENGTH_SHORT)
+																	.show();
+														}
+													});
+												}
+											} else {
+												runOnUiThread(new Runnable() {
+													public void run() {
+														Toast.makeText(
+																getApplicationContext(),
+																"Sorry too late to do that :-(",
+																Toast.LENGTH_SHORT)
+																.show();
+													}
+												});
+											}
+											return true;
+										}
+									});
 							socDialog.chat
 									.setOnClickListener(new OnClickListener() {
 
@@ -1044,15 +1155,20 @@ public class Plain extends SherlockFragmentActivity {
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
 											String username = sp.getString(
-													"ID1", null);
-											String password = sp.getString(
-													"ID2", null);
-											String screenName = sp.getString(
 													"username", null);
+											String password = sp.getString(
+													"password", null);
+											String screenName = sp.getString(
+													"screenName", null);
 
+											Toast.makeText(
+													getApplicationContext(),
+													"Coming soon! Have some cocoa in the mean time...",
+													Toast.LENGTH_SHORT).show();
+											socDialog.dismiss();
 										}
 									});
-							return false;
+							return true;
 						}
 					});
 				}
@@ -1152,11 +1268,10 @@ public class Plain extends SherlockFragmentActivity {
 				jsonStory.put("likes", 0);
 				jsonStory.put("tag", tag.toLowerCase());
 				jsonStory.put("admin", false);
-				jsonStory.put("id1", sp.getString("ID1", null));
-				jsonStory.put("id2", sp.getString("ID2", null));
 				jsonStory.put("username", sp.getString("username", null));
+				jsonStory.put("screenName", sp.getString("screenName", null));
 
-				storeTag(tag);
+				storeTag(tag.toLowerCase());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1229,7 +1344,7 @@ public class Plain extends SherlockFragmentActivity {
 			jsonStory.put("tag", tag);
 			jsonStory.put("admin", admin);
 
-			storeTag(tag);
+			storeTag(tag.toLowerCase());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1289,6 +1404,10 @@ public class Plain extends SherlockFragmentActivity {
 					.deserialize(sp.getString("favouriteAdmins",
 							ObjectSerializer
 									.serialize(new ArrayList<Boolean>())));
+			favouriteTimestamps = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp
+							.getString("favouriteTimestamps", ObjectSerializer
+									.serialize(new ArrayList<String>())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1373,7 +1492,7 @@ public class Plain extends SherlockFragmentActivity {
 	}
 
 	private void addLike(String jsonDocId, int currentLikes, String story,
-			String tag, boolean admin) {
+			String tag, boolean admin, String username, String screenName) {
 		// TODO Auto-generated method stub
 		Toast.makeText(getApplicationContext(), "Liking...", Toast.LENGTH_SHORT)
 				.show();
@@ -1385,6 +1504,8 @@ public class Plain extends SherlockFragmentActivity {
 			likedStory.put("likes", currentLikes + 1);
 			likedStory.put("tag", tag);
 			likedStory.put("admin", admin);
+			likedStory.put("username", username);
+			likedStory.put("screenName", screenName);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1413,7 +1534,6 @@ public class Plain extends SherlockFragmentActivity {
 						errorHandler(ex);
 					}
 				});
-
 	}
 
 	private void extractReplies(final ArrayList<String> jsonDocArray,
@@ -1573,7 +1693,7 @@ public class Plain extends SherlockFragmentActivity {
 														rocDialog.dismiss();
 													}
 												});
-										return false;
+										return true;
 									}
 								});
 					}
@@ -1647,15 +1767,6 @@ public class Plain extends SherlockFragmentActivity {
 					repliesListView.stopRefresh();
 					tvNoReplyListItem.setVisibility(View.VISIBLE);
 					tvNoReplyListItem.setText("Refresh");
-					tvNoReplyListItem
-							.setOnClickListener(new View.OnClickListener() {
-
-								@Override
-								public void onClick(View v) {
-									// TODO Auto-generated method stub
-									getStoriesForReplies(getTags());
-								}
-							});
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {
@@ -1874,8 +1985,11 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 1:
-			i = new Intent(getApplicationContext(), Conversations.class);
-			startActivity(i);
+			Toast.makeText(getApplicationContext(),
+					"Coming soon! Give someone a hug while you wait...",
+					Toast.LENGTH_SHORT).show();
+			// i = new Intent(getApplicationContext(), Conversations.class);
+			// startActivity(i);
 			break;
 		case 2:
 			i = new Intent(getApplicationContext(), Tribes.class);
@@ -1926,6 +2040,8 @@ public class Plain extends SherlockFragmentActivity {
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 					android.os.Process.killProcess(android.os.Process.myPid());
+					finish();
+					System.exit(0);
 				}
 			});
 		}

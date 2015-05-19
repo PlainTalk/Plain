@@ -27,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -62,6 +63,7 @@ public class Tribes extends SherlockFragmentActivity {
 	ShimmerTextView tvNoListItem;
 	StoryOptionsCustomDialog socDialog;
 	SherlockFragmentActivity activity;
+	ArrayList<String> storedTags;
 	ArrayList<String> favouriteStories = new ArrayList<String>();
 	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
 	ArrayList<String> favouriteTags = new ArrayList<String>();
@@ -70,7 +72,6 @@ public class Tribes extends SherlockFragmentActivity {
 	SharedPreferences sp;
 	EditDataCustomDialog edcDialog;
 	TribeListCustomDialog tlcDialog;
-	String defaultTribe = "#tribes";
 	boolean storyIsClean = true;
 	ArrayList<String> savedHashtags;
 	EmojiconEditText emojiconEditText;
@@ -248,20 +249,11 @@ public class Tribes extends SherlockFragmentActivity {
 	private void getKeyword() {
 		// TODO Auto-generated method stub
 		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-		hashtag = sp.getString("tribeHashtag", null);
-		if (hashtag == null) {
-			emojiconEditText.setText(defaultTribe + " ");
-		} else {
-			emojiconEditText.setText(hashtag + " ");
-		}
+		hashtag = sp.getString("tribeHashtag", "#tribes");
+		emojiconEditText.setText(hashtag + " ");
 
-		if (hashtag == null) {
-			getSupportActionBar().setTitle(defaultTribe);
-			fetchResults(defaultTribe);
-		} else {
-			getSupportActionBar().setTitle(hashtag);
-			fetchResults(hashtag);
-		}
+		getSupportActionBar().setTitle(hashtag);
+		fetchResults(hashtag);
 	}
 
 	private void fetchResults(String keyword) {
@@ -378,7 +370,11 @@ public class Tribes extends SherlockFragmentActivity {
 									new JSONObject(jsonDocArray.get(arg2 - 1))
 											.getString("tag"), new JSONObject(
 											jsonDocArray.get(arg2 - 1))
-											.getBoolean("admin"));
+											.getBoolean("admin"),
+									new JSONObject(jsonDocArray.get(arg2 - 1))
+											.getString("username"),
+									new JSONObject(jsonDocArray.get(arg2 - 1))
+											.getString("screenName"));
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -417,6 +413,21 @@ public class Tribes extends SherlockFragmentActivity {
 										socDialog.dismiss();
 									}
 								});
+						socDialog.replain
+								.setOnClickListener(new View.OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+										replainStory(stories.get(arg2 - 1)
+												.getStory(),
+												stories.get(arg2 - 1)
+														.getLikes(),
+												stories.get(arg2 - 1).getTag(),
+												stories.get(arg2 - 1).isAdmin());
+										socDialog.dismiss();
+									}
+								});
 						socDialog.share
 								.setOnClickListener(new View.OnClickListener() {
 
@@ -449,36 +460,193 @@ public class Tribes extends SherlockFragmentActivity {
 									@Override
 									public void onClick(View v) {
 										// TODO Auto-generated method stub
-										try {
-											String story = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getString("story");
-											int likes = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getInt("likes");
-											String tag = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getString("tag");
-											boolean admin = new JSONObject(
-													jsonDocArray.get(arg2 - 1))
-													.getBoolean("admin");
-											String timestamp = jsonTimesArray
-													.get(arg2 - 1);
+										String story = stories.get(arg2 - 1)
+												.getStory();
+										int likes = stories.get(arg2 - 1)
+												.getLikes();
+										String tag = stories.get(arg2 - 1)
+												.getTag();
+										boolean admin = stories.get(arg2 - 1)
+												.isAdmin();
+										String timestamp = stories
+												.get(arg2 - 1).getTimestamp();
 
-											favouriteStory(story, likes, tag,
-													admin, timestamp);
-
-										} catch (JSONException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
+										favouriteStory(story, likes, tag,
+												admin, timestamp);
 									}
 								});
-						return false;
+						socDialog.favourite
+								.setOnLongClickListener(new OnLongClickListener() {
+
+									@Override
+									public boolean onLongClick(View v) {
+										// TODO Auto-generated method stub
+										if ((arg2 - 1) < 100) {
+											boolean belongsToUser = false;
+											String tag = stories.get(arg2 - 1)
+													.getTag();
+
+											ArrayList<String> tags = getTags();
+											for (int i = 0; i < tags.size(); i++) {
+												if (tags.get(i).equals(
+														tag.toLowerCase())) {
+													belongsToUser = true;
+												}
+											}
+
+											if (belongsToUser) {
+												runOnUiThread(new Runnable() {
+													public void run() {
+														Toast.makeText(
+																getApplicationContext(),
+																"Deleting...",
+																Toast.LENGTH_SHORT)
+																.show();
+													}
+												});
+												storageService
+														.deleteDocumentById(
+																getString(R.string.database_name),
+																getString(R.string.forums_collection),
+																jsonIdArray
+																		.get(arg2 - 1),
+																new App42CallBack() {
+																	public void onSuccess(
+																			Object response) {
+																		runOnUiThread(new Runnable() {
+																			public void run() {
+																				socDialog
+																						.dismiss();
+																				Toast.makeText(
+																						getApplicationContext(),
+																						"Plain deleted!",
+																						Toast.LENGTH_SHORT)
+																						.show();
+																				getKeyword();
+																			}
+																		});
+																	}
+
+																	public void onException(
+																			Exception ex) {
+																		System.out
+																				.println("Exception Message"
+																						+ ex.getMessage());
+																		errorHandler(ex);
+																	}
+																});
+											} else {
+												runOnUiThread(new Runnable() {
+													public void run() {
+														Toast.makeText(
+																getApplicationContext(),
+																"You can only delete your own plains",
+																Toast.LENGTH_SHORT)
+																.show();
+													}
+												});
+											}
+										} else {
+											runOnUiThread(new Runnable() {
+												public void run() {
+													Toast.makeText(
+															getApplicationContext(),
+															"Sorry too late to do that :-(",
+															Toast.LENGTH_SHORT)
+															.show();
+												}
+											});
+										}
+										return true;
+									}
+								});
+						socDialog.chat
+								.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+										String username = sp.getString(
+												"username", null);
+										String password = sp.getString(
+												"password", null);
+										String screenName = sp.getString(
+												"screenName", null);
+
+										Toast.makeText(
+												getApplicationContext(),
+												"Coming soon! Listen to some Lorde before that happens...",
+												Toast.LENGTH_SHORT).show();
+										socDialog.dismiss();
+									}
+								});
+						return true;
 					}
 				});
 			}
 		});
+	}
+
+	private void replainStory(String story, int likes, String tag, boolean admin) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+		Toast.makeText(getApplicationContext(), "Just a moment",
+				Toast.LENGTH_SHORT).show();
+
+		if (admin) {
+			tag = "rp@dev";
+		}
+
+		if (!tag.contains("rp@")) {
+			tag = "rp@" + tag;
+		}
+
+		JSONObject jsonStory = new JSONObject();
+		try {
+			jsonStory.put("story", story);
+			jsonStory.put("likes", likes);
+			jsonStory.put("tag", tag);
+			jsonStory.put("admin", admin);
+			jsonStory.put("username", sp.getString("username", null));
+			jsonStory.put("screenName", sp.getString("screenName", null));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		storageService.insertJSONDocument(getString(R.string.database_name),
+				getString(R.string.forums_collection), jsonStory,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+								emojiconEditText.setText("");
+								Toast.makeText(getApplicationContext(),
+										"Plain published!", Toast.LENGTH_SHORT)
+										.show();
+								getKeyword();
+							}
+						});
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+							}
+						});
+						errorHandler(ex);
+					}
+				});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -500,6 +668,10 @@ public class Tribes extends SherlockFragmentActivity {
 					.deserialize(sp.getString("favouriteAdmins",
 							ObjectSerializer
 									.serialize(new ArrayList<Boolean>())));
+			favouriteTimestamps = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp
+							.getString("favouriteTimestamps", ObjectSerializer
+									.serialize(new ArrayList<String>())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -553,7 +725,7 @@ public class Tribes extends SherlockFragmentActivity {
 	}
 
 	private void addLike(String jsonDocId, int currentLikes, String story,
-			String tag, boolean admin) {
+			String tag, boolean admin, String username, String screenName) {
 		// TODO Auto-generated method stub
 		Toast.makeText(getApplicationContext(), "Liking...", Toast.LENGTH_SHORT)
 				.show();
@@ -565,6 +737,8 @@ public class Tribes extends SherlockFragmentActivity {
 			likedStory.put("likes", currentLikes + 1);
 			likedStory.put("tag", tag);
 			likedStory.put("admin", admin);
+			likedStory.put("username", username);
+			likedStory.put("screenName", screenName);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -685,6 +859,10 @@ public class Tribes extends SherlockFragmentActivity {
 			jsonStory.put("likes", 0);
 			jsonStory.put("tag", tag);
 			jsonStory.put("admin", false);
+			jsonStory.put("username", sp.getString("username", null));
+			jsonStory.put("screenName", sp.getString("screenName", null));
+
+			storeTag(tag.toLowerCase());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -722,6 +900,41 @@ public class Tribes extends SherlockFragmentActivity {
 						errorHandler(ex);
 					}
 				});
+	}
+
+	private void storeTag(String tag) {
+		// TODO Auto-generated method stub
+		storedTags = getTags();
+
+		try {
+			storedTags.add(0, tag);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.toString());
+		}
+
+		try {
+			sp.edit()
+					.putString("storedTribeTags",
+							ObjectSerializer.serialize(storedTags)).commit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<String> getTags() {
+		// TODO Auto-generated method stub
+		try {
+			storedTags = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp
+							.getString("storedTribeTags", ObjectSerializer
+									.serialize(new ArrayList<String>())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return storedTags;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -878,10 +1091,7 @@ public class Tribes extends SherlockFragmentActivity {
 					});
 			break;
 		case 3:
-			String tribeHashtag = sp.getString("tribeHashtag", null);
-			if (tribeHashtag == null) {
-				tribeHashtag = defaultTribe;
-			}
+			String tribeHashtag = sp.getString("tribeHashtag", "#tribes");
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,

@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ public class SignUp extends SherlockActivity {
 		// TODO Auto-generated method stub
 		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 		etUsername = (EditText) findViewById(R.id.etUsername);
+		etUsername.setHintTextColor(Color.WHITE);
 	}
 
 	public String getRandomString() {
@@ -60,9 +62,9 @@ public class SignUp extends SherlockActivity {
 		case R.id.mDone:
 			String username = etUsername.getText().toString().trim();
 			if (username.length() > 2) {
-				sp.edit().putString("ID1", getRandomString()).commit();
-				sp.edit().putString("ID2", getRandomString()).commit();
-				sp.edit().putString("username", username).commit();
+				sp.edit().putString("username", getRandomString()).commit();
+				sp.edit().putString("password", getRandomString()).commit();
+				sp.edit().putString("screenName", username).commit();
 				Toast.makeText(getApplicationContext(), "Done",
 						Toast.LENGTH_SHORT).show();
 				i = new Intent(getApplicationContext(), Welcome.class);

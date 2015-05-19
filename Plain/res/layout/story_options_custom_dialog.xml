@@ -86,7 +86,7 @@
             android:layout_weight="1"
             android:padding="5dp"
             android:scaleType="center"
-            app:flipDrawable="@drawable/favourite_button_selector"
+            app:flipDrawable="@drawable/favourite_delete_button_selector"
             app:flipDuration="1000"
             app:flipInterpolator="@android:anim/overshoot_interpolator"
             app:flipRotations="y"
