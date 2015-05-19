@@ -1,6 +1,8 @@
 package com.toe.plain;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -38,14 +40,87 @@ public class TribeListItemAdapter extends
 
 		TribeListItem i = objects.get(position);
 		if (i != null) {
-			TextView tvTribe = (TextView) v.findViewById(R.id.tvTribe);
-			tvTribe.setTypeface(font);
+			TextView tvName = (TextView) v.findViewById(R.id.tvName);
+			tvName.setTypeface(font);
+			TextView tvDescription = (TextView) v
+					.findViewById(R.id.tvDescription);
+			tvDescription.setTypeface(font);
+			TextView tvLikes = (TextView) v.findViewById(R.id.tvLikes);
+			TextView tvTimestamp = (TextView) v.findViewById(R.id.tvTimestamp);
 
-			if (tvTribe != null) {
-				tvTribe.setText(i.getTribe());
+			if (tvName != null) {
+				tvName.setText(i.getName());
 			}
+			if (tvDescription != null) {
+				tvDescription.setText(i.getDescription());
+			}
+			if (tvLikes != null) {
+				tvLikes.setText(i.getLikes() + "");
+			}
+			if (tvTimestamp != null) {
+				Date date = formatTime(i.getTimestamp());
+				long time = date.getTime();
 
+				Date curDate = currentDate();
+				long now = curDate.getTime();
+				if (time > now || time <= 0) {
+					return null;
+				}
+
+				int timeDistance = getTimeDistanceInMilliseconds(time);
+				tvTimestamp.setText("made "
+						+ TimeUtils.millisToLongDHMS(timeDistance));
+			}
 		}
 		return v;
+	}
+
+	@SuppressWarnings("deprecation")
+	private Date formatTime(String rawTime) {
+		// TODO Auto-generated method stub
+		String spitDate[] = rawTime.split("T");
+		String sDate = spitDate[0];
+		String dateSplit[] = sDate.split("-");
+		String sYear = dateSplit[0];
+		String sMonth = dateSplit[1];
+		String sDay = dateSplit[2];
+
+		int month = Integer.parseInt(sMonth);
+		int day = Integer.parseInt(sDay);
+
+		String splitTime[] = rawTime.split(":");
+		String rawHour = splitTime[0];
+		String hour = rawHour.substring(rawHour.length() - 2, rawHour.length());
+		String minute = splitTime[1];
+
+		int hourInt = Integer.parseInt(hour);
+		if (hourInt == 21) {
+			hourInt = 0;
+		} else if (hourInt == 22) {
+			hourInt = 1;
+		} else if (hourInt == 23) {
+			hourInt = 2;
+		} else {
+			hourInt = hourInt + 3;
+		}
+
+		String hourString = hourInt + "";
+		if (hourString.length() == 1) {
+			hourString = 0 + hourString;
+		}
+
+		Date dateObj = new Date(Integer.parseInt(sYear.substring(2)) + 100,
+				month - 1, day, hourInt, Integer.parseInt(minute));
+		return dateObj;
+	}
+
+	public static Date currentDate() {
+		Calendar calendar = Calendar.getInstance();
+		return calendar.getTime();
+	}
+
+	private static int getTimeDistanceInMilliseconds(long time) {
+		long timeDistance = currentDate().getTime() - time;
+		return Math.round(Math.abs(timeDistance));
 	}
 }

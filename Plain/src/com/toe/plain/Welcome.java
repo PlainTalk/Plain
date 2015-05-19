@@ -32,8 +32,9 @@ public class Welcome extends SherlockActivity {
 		if (sp.getBoolean("hasSeenTutorial", false) == false) {
 			i = new Intent(getApplicationContext(), PlainTutorial.class);
 			startActivity(i);
-		} else if (sp.getBoolean("firstTime", true) == true) {
-			// Do nothing
+		} else if (sp.getBoolean("registered", false) == false) {
+			i = new Intent(getApplicationContext(), SignUp.class);
+			startActivity(i);
 		} else {
 			i = new Intent(getApplicationContext(), Plain.class);
 			startActivity(i);

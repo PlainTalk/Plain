@@ -3,22 +3,102 @@
     android:id="@+id/listUi"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-    android:background="@drawable/tribe_list_selector"
+    android:layout_margin="10dp"
+    android:background="#fff"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="8dp" >
 
-    <TextView
-        android:id="@+id/tvTribe"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="#FooBar"
-        android:textColor="#444"
-        android:textSize="30.0dip"
-        android:textStyle="bold" >
-    </TextView>
+        android:orientation="horizontal" >
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp" >
+
+            <ImageView
+                android:id="@+id/ivLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/like_icon_tribe" />
+
+            <TextView
+                android:id="@+id/tvLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="10"
+                android:textColor="#fff"
+                android:textSize="25.0dip"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="center|bottom"
+                android:text="likes"
+                android:textColor="#aaa"
+                android:textSize="15.0dip"
+                android:textStyle="bold" >
+            </TextView>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="left"
+                android:text="#FooBar"
+                android:textColor="#444"
+                android:textSize="30.0dip"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Lorem ipsum dolor sit amet"
+                android:textColor="#aaa"
+                android:textSize="20.0dip"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:background="#aaa"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tvTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="about a minute ago"
+                android:textColor="#888" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

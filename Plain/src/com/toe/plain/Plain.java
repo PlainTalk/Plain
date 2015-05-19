@@ -914,6 +914,35 @@ public class Plain extends SherlockFragmentActivity {
 							// TODO Auto-generated method stub
 							if (arg2 < 100) {
 								try {
+									String username, screenName, country;
+
+									if (new JSONObject(jsonDocArray
+											.get(arg2 - 1)).has("username")) {
+										username = new JSONObject(jsonDocArray
+												.get(arg2 - 1))
+												.getString("username");
+									} else {
+										username = "noUsername";
+									}
+
+									if (new JSONObject(jsonDocArray
+											.get(arg2 - 1)).has("screenName")) {
+										screenName = new JSONObject(
+												jsonDocArray.get(arg2 - 1))
+												.getString("screenName");
+									} else {
+										screenName = "noScreenName";
+									}
+
+									if (new JSONObject(jsonDocArray
+											.get(arg2 - 1)).has("country")) {
+										country = new JSONObject(jsonDocArray
+												.get(arg2 - 1))
+												.getString("country");
+									} else {
+										country = "KENYA";
+									}
+
 									addLike(jsonIdArray.get(arg2 - 1),
 											new JSONObject(jsonDocArray
 													.get(arg2 - 1))
@@ -927,12 +956,7 @@ public class Plain extends SherlockFragmentActivity {
 											new JSONObject(jsonDocArray
 													.get(arg2 - 1))
 													.getBoolean("admin"),
-											new JSONObject(jsonDocArray
-													.get(arg2 - 1))
-													.getString("username"),
-											new JSONObject(jsonDocArray
-													.get(arg2 - 1))
-													.getString("screenName"));
+											username, screenName, country);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -1270,6 +1294,7 @@ public class Plain extends SherlockFragmentActivity {
 				jsonStory.put("admin", false);
 				jsonStory.put("username", sp.getString("username", null));
 				jsonStory.put("screenName", sp.getString("screenName", null));
+				jsonStory.put("country", sp.getString("country", null));
 
 				storeTag(tag.toLowerCase());
 			} catch (JSONException e) {
@@ -1492,7 +1517,8 @@ public class Plain extends SherlockFragmentActivity {
 	}
 
 	private void addLike(String jsonDocId, int currentLikes, String story,
-			String tag, boolean admin, String username, String screenName) {
+			String tag, boolean admin, String username, String screenName,
+			String country) {
 		// TODO Auto-generated method stub
 		Toast.makeText(getApplicationContext(), "Liking...", Toast.LENGTH_SHORT)
 				.show();
@@ -1506,6 +1532,7 @@ public class Plain extends SherlockFragmentActivity {
 			likedStory.put("admin", admin);
 			likedStory.put("username", username);
 			likedStory.put("screenName", screenName);
+			likedStory.put("country", country);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1854,9 +1881,9 @@ public class Plain extends SherlockFragmentActivity {
 
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
-		subMenu.add(1, 1, 1, "Conversations");
-		subMenu.add(2, 2, 2, "Tribes");
-		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(1, 1, 1, "Tribes");
+		subMenu.add(2, 2, 2, "Rules");
+		subMenu.add(3, 3, 3, "Preferences");
 		subMenu.add(4, 4, 4, "Invite");
 		subMenu.add(5, 5, 5, "About");
 
@@ -1985,18 +2012,15 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 1:
-			Toast.makeText(getApplicationContext(),
-					"Coming soon! Give someone a hug while you wait...",
-					Toast.LENGTH_SHORT).show();
-			// i = new Intent(getApplicationContext(), Conversations.class);
-			// startActivity(i);
+			i = new Intent(getApplicationContext(), TribesDirectory.class);
+			startActivity(i);
 			break;
 		case 2:
-			i = new Intent(getApplicationContext(), Tribes.class);
+			i = new Intent(getApplicationContext(), Rules.class);
 			startActivity(i);
 			break;
 		case 3:
-			i = new Intent(getApplicationContext(), Rules.class);
+			i = new Intent(getApplicationContext(), SignUp.class);
 			startActivity(i);
 			break;
 		case 4:

@@ -1,18 +1,49 @@
 package com.toe.plain;
 
 public class TribeListItem {
-	private String tribe;
+	private String name;
+	private String description;
+	private int likes;
+	private String timestamp;
 
-	public TribeListItem(String tribe) {
-		this.setTribe(tribe);
+	public TribeListItem(String name, String description, int likes,
+			String timestamp) {
+		this.setName(name);
+		this.setDescription(description);
+		this.setLikes(likes);
+		this.setTimestamp(timestamp);
 	}
 
-	public String getTribe() {
-		return tribe;
+	public String getName() {
+		return name;
 	}
 
-	public void setTribe(String tribe) {
-		this.tribe = tribe;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

@@ -94,7 +94,7 @@ public class Tribes extends SherlockFragmentActivity {
 
 		initialize();
 		setUp();
-		getKeyword();
+		getTribe();
 	}
 
 	private void initialize() {
@@ -107,6 +107,7 @@ public class Tribes extends SherlockFragmentActivity {
 	private void setUp() {
 		// TODO Auto-generated method stub
 		activity = this;
+		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
 		setUpEmojiKeyboard();
 		Typeface font = Typeface.createFromAsset(getAssets(),
 				getString(R.string.font));
@@ -246,10 +247,10 @@ public class Tribes extends SherlockFragmentActivity {
 		iconToBeChanged.setImageResource(drawableResourceId);
 	}
 
-	private void getKeyword() {
+	private void getTribe() {
 		// TODO Auto-generated method stub
-		sp = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
-		hashtag = sp.getString("tribeHashtag", "#tribes");
+		Bundle b = getIntent().getExtras();
+		hashtag = b.getString("tribe");
 		emojiconEditText.setText(hashtag + " ");
 
 		getSupportActionBar().setTitle(hashtag);
@@ -346,7 +347,7 @@ public class Tribes extends SherlockFragmentActivity {
 					@Override
 					public void onRefresh() {
 						// TODO Auto-generated method stub
-						getKeyword();
+						getTribe();
 					}
 
 					@Override
@@ -522,7 +523,7 @@ public class Tribes extends SherlockFragmentActivity {
 																						"Plain deleted!",
 																						Toast.LENGTH_SHORT)
 																						.show();
-																				getKeyword();
+																				getTribe();
 																			}
 																		});
 																	}
@@ -628,7 +629,7 @@ public class Tribes extends SherlockFragmentActivity {
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
-								getKeyword();
+								getTribe();
 							}
 						});
 					}
@@ -756,7 +757,7 @@ public class Tribes extends SherlockFragmentActivity {
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Liked!", Toast.LENGTH_SHORT).show();
-								getKeyword();
+								getTribe();
 							}
 						});
 					}
@@ -792,7 +793,7 @@ public class Tribes extends SherlockFragmentActivity {
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							getKeyword();
+							getTribe();
 						}
 					});
 				}
@@ -812,7 +813,7 @@ public class Tribes extends SherlockFragmentActivity {
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							getKeyword();
+							getTribe();
 						}
 					});
 				}
@@ -881,7 +882,7 @@ public class Tribes extends SherlockFragmentActivity {
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
-								getKeyword();
+								getTribe();
 							}
 						});
 					}
@@ -982,7 +983,6 @@ public class Tribes extends SherlockFragmentActivity {
 		subMenu.add(1, 1, 1, "Switch tribes");
 		subMenu.add(2, 2, 2, "Your tribes");
 		subMenu.add(3, 3, 3, "Invite members");
-		subMenu.add(4, 4, 4, "Tribes??");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
@@ -1021,7 +1021,7 @@ public class Tribes extends SherlockFragmentActivity {
 								sp.edit().putString("tribeHashtag", hashtag)
 										.commit();
 								edcDialog.dismiss();
-								getKeyword();
+								getTribe();
 								saveHashtag(hashtag);
 							} else {
 								edcDialog.etDataField
@@ -1054,12 +1054,10 @@ public class Tribes extends SherlockFragmentActivity {
 								int arg2, long arg3) {
 							// TODO Auto-generated method stub
 							String hashtag = tlcDialog.tribes.get(arg2)
-									.getTribe();
+									.getName();
 							sp.edit().putString("tribeHashtag", hashtag)
 									.commit();
-							storyIsClean = true;
-							storyIsClean = filterWords(hashtag);
-							getKeyword();
+							getTribe();
 							tlcDialog.dismiss();
 						}
 					});
@@ -1098,10 +1096,6 @@ public class Tribes extends SherlockFragmentActivity {
 					"Join my tribe on 'Plain " + tribeHashtag);
 			startActivity(Intent.createChooser(i, "Invite " + tribeHashtag
 					+ " members via..."));
-			break;
-		case 4:
-			i = new Intent(getApplicationContext(), AboutTribes.class);
-			startActivity(i);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

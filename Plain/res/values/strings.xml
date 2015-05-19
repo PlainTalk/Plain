@@ -10,6 +10,7 @@
     <string name="database_name">PLAINDB</string>
     <string name="collection_name">STORIES</string>
     <string name="forums_collection">FORUMS</string>
+    <string name="tribes_collection">TRIBES</string>
     <string name="by">by Theory of Everything</string>
     <string name="about">We don\'t collect any of your data and all your posts are anonymous so feel free to just be yourself and say it all</string>
     <string name="rules">-No trolling.\n-No bullying.\n-No mentioning specific names, locations, phone numbers or any other unique identifiers.\n-No overly adult content.\n-No advertisements or links.\n-No spoilers. Seriously.\n-Oh and if you want to announce a bombing, genocide, murder, suicide or anything along those lines, please use Twitter instead.</string>

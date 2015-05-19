@@ -34,7 +34,7 @@
         <activity
             android:name="com.toe.plain.SignUp"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="Username"
+            android:label="Details"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
@@ -47,6 +47,11 @@
             android:name="com.toe.plain.Conversations"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Chats" >
+        </activity>
+        <activity
+            android:name="com.toe.plain.TribesDirectory"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Tribes" >
         </activity>
         <activity
             android:name="com.toe.plain.Tribes"

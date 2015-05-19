@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
     android:id="@+id/listUi"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -41,11 +42,17 @@
             android:textSize="15.0dip"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/imageView1"
+        <com.toe.plain.FlipImageView
+            android:id="@+id/ivLike"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/like_icon" />
+            android:scaleType="center"
+            android:src="@drawable/like_icon"
+            app:flipDrawable="@drawable/like_icon"
+            app:flipDuration="1500"
+            app:flipInterpolator="@android:anim/overshoot_interpolator"
+            app:flipRotations="y"
+            app:reverseRotation="true" />
 
         <TextView
             android:id="@+id/likes"
