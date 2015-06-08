@@ -10,8 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -26,7 +26,7 @@ public class SignUp extends SherlockActivity {
 	SherlockActivity activity;
 	Intent i;
 	private SecureRandom random = new SecureRandom();
-	AutoCompleteTextView actCountry;
+	Spinner spCountry;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +55,20 @@ public class SignUp extends SherlockActivity {
 			countryCodes.add("+" + countryCode + "-");
 		}
 
-		actCountry = (AutoCompleteTextView) findViewById(R.id.actCountry);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				R.layout.spinner_dropdown_item, countries);
-		actCountry.setAdapter(adapter);
-		actCountry.setHintTextColor(Color.WHITE);
+		countries.add(0, "Select your country");
+
+		spCountry = (Spinner) findViewById(R.id.spCountry);
+		ArrayAdapter<String> nationalityAdapter = new ArrayAdapter<String>(
+				getApplicationContext(), R.layout.simple_spinner_item,
+				countries);
+		nationalityAdapter
+				.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+		spCountry.setAdapter(nationalityAdapter);
 
 		etUsername = (EditText) findViewById(R.id.etUsername);
 		etUsername.setHintTextColor(Color.WHITE);
 
-		actCountry.setText(sp.getString("country", ""));
+		spCountry.setSelection(sp.getInt("countryPosition", 0));
 		etUsername.setText(sp.getString("screenName", ""));
 	}
 
@@ -88,14 +92,20 @@ public class SignUp extends SherlockActivity {
 			break;
 		case R.id.mDone:
 			String username = etUsername.getText().toString().trim();
-			String country = actCountry.getText().toString().trim()
-					.replaceAll("([^a-zA-Z]|\\s)+", " ").toUpperCase();
-			if (country.length() > 2) {
+			String country = spCountry.getSelectedItem().toString().trim()
+					.replaceAll("([^a-zA-Z]|\\s)+", " ").replaceAll(" ", "")
+					.toUpperCase();
+
+			if (!country.contains("SELECT")) {
 				if (username.length() > 2) {
 					sp.edit().putString("username", getRandomString()).commit();
 					sp.edit().putString("password", getRandomString()).commit();
 					sp.edit().putString("screenName", username).commit();
 					sp.edit().putString("country", country).commit();
+					sp.edit()
+							.putInt("countryPosition",
+									spCountry.getSelectedItemPosition())
+							.commit();
 					sp.edit().putBoolean("registered", true).commit();
 					Toast.makeText(getApplicationContext(), "Done",
 							Toast.LENGTH_SHORT).show();
@@ -106,8 +116,9 @@ public class SignUp extends SherlockActivity {
 							.setError("Please enter a username with at least 3 characters");
 				}
 			} else {
-				actCountry.setError("Please enter your country");
-
+				Toast.makeText(getApplicationContext(),
+						"Please select your country", Toast.LENGTH_SHORT)
+						.show();
 			}
 			break;
 		}

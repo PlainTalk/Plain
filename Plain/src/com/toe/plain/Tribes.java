@@ -1,8 +1,8 @@
 package com.toe.plain;
 
 import github.ankushsachdeva.emojicon.EmojiconEditText;
-import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.EmojiconGridView.OnEmojiconClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.EmojiconsPopup.OnEmojiconBackspaceClickedListener;
 import github.ankushsachdeva.emojicon.EmojiconsPopup.OnSoftKeyboardOpenCloseListener;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
@@ -25,14 +25,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
@@ -221,7 +221,6 @@ public class Tribes extends SherlockFragmentActivity {
 						if (story.length() > 1) {
 							if (story.length() < 1000) {
 								publishStory(story);
-								emojiconEditText.setText(hashtag + " ");
 							} else {
 								emojiconEditText
 										.setError("Try shortening that a bit...");
@@ -251,14 +250,16 @@ public class Tribes extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		Bundle b = getIntent().getExtras();
 		hashtag = b.getString("tribe");
-		emojiconEditText.setText(hashtag + " ");
 
-		getSupportActionBar().setTitle(hashtag);
 		fetchResults(hashtag);
 	}
 
 	private void fetchResults(String keyword) {
 		// TODO Auto-generated method stub
+		keyword = keyword.toLowerCase().replaceAll("\\s+", "");
+
+		emojiconEditText.setText(keyword + " ");
+		getSupportActionBar().setTitle(keyword);
 		setSupportProgressBarIndeterminateVisibility(true);
 
 		String key = "story";
@@ -327,7 +328,7 @@ public class Tribes extends SherlockFragmentActivity {
 					public void run() {
 						if (adapter == null) {
 							adapter = new ListItemAdapter(
-									getApplicationContext(),
+									getApplicationContext(), activity,
 									R.layout.list_item, stories);
 							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
 									adapter);
@@ -882,6 +883,7 @@ public class Tribes extends SherlockFragmentActivity {
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
+								emojiconEditText.setText(hashtag + " ");
 								getTribe();
 							}
 						});
@@ -1021,8 +1023,8 @@ public class Tribes extends SherlockFragmentActivity {
 								sp.edit().putString("tribeHashtag", hashtag)
 										.commit();
 								edcDialog.dismiss();
-								getTribe();
 								saveHashtag(hashtag);
+								fetchResults(hashtag);
 							} else {
 								edcDialog.etDataField
 										.setError("Lol. At least 3 characters");
@@ -1057,7 +1059,7 @@ public class Tribes extends SherlockFragmentActivity {
 									.getName();
 							sp.edit().putString("tribeHashtag", hashtag)
 									.commit();
-							getTribe();
+							fetchResults(hashtag);
 							tlcDialog.dismiss();
 						}
 					});

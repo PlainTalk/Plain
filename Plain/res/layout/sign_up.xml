@@ -13,14 +13,11 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-        <AutoCompleteTextView
-            android:id="@+id/actCountry"
-            android:layout_width="fill_parent"
+        <Spinner
+            android:id="@+id/spCountry"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:hint="Enter your country"
-            android:textColor="#fff" />
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:id="@+id/etUsername"

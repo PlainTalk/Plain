@@ -892,7 +892,7 @@ public class Plain extends SherlockFragmentActivity {
 					// TODO Auto-generated method stub
 					if (adapter == null) {
 						adapter = new ListItemAdapter(getApplicationContext(),
-								R.layout.list_item, stories);
+								activity, R.layout.list_item, stories);
 						swing = new SwingBottomInAnimationAdapter(adapter);
 						swing.setAbsListView(listView);
 						listView.setAdapter(swing);
@@ -1024,6 +1024,7 @@ public class Plain extends SherlockFragmentActivity {
 
 											emojiconEditText.setText("@" + tag
 													+ " ");
+
 											socDialog.dismiss();
 										}
 									});
@@ -1354,12 +1355,12 @@ public class Plain extends SherlockFragmentActivity {
 		Toast.makeText(getApplicationContext(), "Just a moment",
 				Toast.LENGTH_SHORT).show();
 
-		if (admin) {
-			tag = "rp@dev";
-		}
-
 		if (!tag.contains("rp@")) {
 			tag = "rp@" + tag;
+		}
+
+		if (admin) {
+			tag = "rp@dev";
 		}
 
 		JSONObject jsonStory = new JSONObject();
@@ -1459,7 +1460,7 @@ public class Plain extends SherlockFragmentActivity {
 		}
 
 		favouritesAdapter = new ListItemAdapter(getApplicationContext(),
-				R.layout.list_item, favourites);
+				activity, R.layout.list_item, favourites);
 		SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
 				favouritesAdapter);
 		swing.setAbsListView(listView);
@@ -1620,8 +1621,8 @@ public class Plain extends SherlockFragmentActivity {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						repliesAdapter = new ListItemAdapter(
-								getApplicationContext(), R.layout.list_item,
-								replies);
+								getApplicationContext(), activity,
+								R.layout.list_item, replies);
 						SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
 								repliesAdapter);
 						swing.setAbsListView(repliesListView);
@@ -1797,7 +1798,7 @@ public class Plain extends SherlockFragmentActivity {
 				}
 			});
 		} else if (ex.getMessage().contains("No document")) {
-			error = "No stories found :-(";
+			error = "No plains found :-(";
 		} else if (ex.getMessage().contains("UnAuthorized Access")) {
 			error = "Hi, how are you? Please try again in a few minutes :-)";
 		} else {

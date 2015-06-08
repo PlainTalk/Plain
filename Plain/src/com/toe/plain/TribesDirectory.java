@@ -360,7 +360,7 @@ public class TribesDirectory extends SherlockFragmentActivity {
 
 		JSONObject jsonStory = new JSONObject();
 		try {
-			jsonStory.put("name", name.toLowerCase());
+			jsonStory.put("name", name.toLowerCase().replaceAll("\\s+", ""));
 			jsonStory.put("description", description);
 			jsonStory.put("likes", 0);
 		} catch (JSONException e) {
@@ -472,6 +472,9 @@ public class TribesDirectory extends SherlockFragmentActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
+					ntcDialog.etName.setError(null);
+					ntcDialog.etDescription.setError(null);
+					
 					name = ntcDialog.etName.getText().toString().trim();
 					description = ntcDialog.etDescription.getText().toString()
 							.trim();
@@ -482,8 +485,18 @@ public class TribesDirectory extends SherlockFragmentActivity {
 
 					if (nameIsClean && descriptionIsClean) {
 						if (description.length() < 100) {
-							publishTribe(name, description);
-							ntcDialog.dismiss();
+							if (name.length() > 2) {
+								if (description.length() > 5) {
+									publishTribe(name, description);
+									ntcDialog.dismiss();
+								} else {
+									ntcDialog.etDescription
+											.setError("Woops! Need at least 6 characters here! Don't drink and plain. Okay drink and plain.");
+								}
+							} else {
+								ntcDialog.etName
+										.setError("Lol. Try at least 3 characters");
+							}
 						} else {
 							ntcDialog.etDescription
 									.setError("Please enter a description with less than 100 characters");

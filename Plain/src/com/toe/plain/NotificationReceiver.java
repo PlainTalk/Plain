@@ -277,7 +277,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 		Notification notification = new NotificationCompat.Builder(context)
 				.setContentTitle("'Plain").setContentText(notificationMessage)
-				.setSmallIcon(R.drawable.plain_icon_60)
+				.setSmallIcon(R.drawable.ic_launcher)
 				.setWhen(System.currentTimeMillis()).setAutoCancel(true)
 				.build();
 

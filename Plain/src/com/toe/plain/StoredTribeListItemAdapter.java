@@ -1,8 +1,6 @@
 package com.toe.plain;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

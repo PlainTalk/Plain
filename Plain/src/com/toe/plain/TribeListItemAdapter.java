@@ -18,6 +18,7 @@ public class TribeListItemAdapter extends
 	private ArrayList<TribeListItem> objects;
 	private Context context;
 	private Typeface font;
+	private int timeOffset = 10800000;
 
 	public TribeListItemAdapter(Context context, int textViewResourceId,
 			ArrayList<TribeListItem> objects) {
@@ -59,9 +60,11 @@ public class TribeListItemAdapter extends
 			if (tvLikes != null) {
 				tvLikes.setText(i.getLikes() + "");
 			}
-			if (i.getLikes() == 1) {
-				if (tvLikesTitle != null) {
+			if (tvLikesTitle != null) {
+				if (i.getLikes() == 1) {
 					tvLikesTitle.setText("like");
+				} else {
+					tvLikesTitle.setText("likes");
 				}
 			}
 
@@ -75,9 +78,10 @@ public class TribeListItemAdapter extends
 					return null;
 				}
 
-				int timeDistance = getTimeDistanceInMilliseconds(time);
+				int timeDistance = getTimeDistanceInMilliseconds(time
+						+ timeOffset);
 				tvTimestamp.setText("made "
-						+ TimeUtils.millisToLongDHMS(timeDistance));
+						+ TimeUtils.millisToLongDHMS(timeDistance) + " ago");
 			}
 		}
 		return v;
@@ -102,15 +106,6 @@ public class TribeListItemAdapter extends
 		String minute = splitTime[1];
 
 		int hourInt = Integer.parseInt(hour);
-		if (hourInt == 21) {
-			hourInt = 0;
-		} else if (hourInt == 22) {
-			hourInt = 1;
-		} else if (hourInt == 23) {
-			hourInt = 2;
-		} else {
-			hourInt = hourInt + 3;
-		}
 
 		String hourString = hourInt + "";
 		if (hourString.length() == 1) {

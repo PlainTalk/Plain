@@ -24,10 +24,22 @@
 
             <ImageView
                 android:id="@+id/ivLikes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_gravity="center"
                 android:src="@drawable/like_icon_tribe" />
+
+            <TextView
+                android:id="@+id/tvLikesTitle"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="likes"
+                android:layout_marginTop="40dp"
+                android:textColor="#aaa"
+                android:textSize="15.0dip"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvLikes"
@@ -39,18 +51,6 @@
                 android:textColor="#fff"
                 android:textSize="25.0dip"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvLikesTitle"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center"
-                android:gravity="center|bottom"
-                android:text="likes"
-                android:textColor="#aaa"
-                android:textSize="15.0dip"
-                android:textStyle="bold" >
-            </TextView>
         </FrameLayout>
 
         <LinearLayout

@@ -8,23 +8,32 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ListItemAdapter extends
 		com.nhaarman.listviewanimations.ArrayAdapter<ListItem> {
 
 	private ArrayList<ListItem> objects;
 	private Context context;
+	private SherlockFragmentActivity activity;
 	private Typeface font;
+	private int timeOffset = 10800000;
 
-	public ListItemAdapter(Context context, int textViewResourceId,
-			ArrayList<ListItem> objects) {
+	public ListItemAdapter(Context context, SherlockFragmentActivity activity,
+			int textViewResourceId, ArrayList<ListItem> objects) {
 		super(objects);
 		this.objects = objects;
 		this.context = context;
+		this.activity = activity;
 	}
 
 	@SuppressLint("InflateParams")
@@ -50,7 +59,13 @@ public class ListItemAdapter extends
 			ivLike.setFlipped(true);
 
 			if (tvStory != null) {
-				tvStory.setText("\"" + i.getStory() + "\"");
+				tvStory.setMovementMethod(TextViewFixTouchConsume.LocalLinkMovementMethod
+						.getInstance());
+				tvStory.setText(addClickablePart("\"" + i.getStory() + "\""),
+						TextView.BufferType.SPANNABLE);
+				tvStory.setFocusable(false);
+				tvStory.setClickable(false);
+				tvStory.setLongClickable(false);
 
 				if (i.isAdmin()) {
 					tvStory.setTextColor(Color.rgb(255, 0, 0));
@@ -80,11 +95,62 @@ public class ListItemAdapter extends
 					return null;
 				}
 
-				int timeDistance = getTimeDistanceInMilliseconds(time);
-				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
+				int timeDistance = getTimeDistanceInMilliseconds(time
+						+ timeOffset);
+				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance)
+						+ " ago");
 			}
 		}
 		return v;
+	}
+
+	private SpannableStringBuilder addClickablePart(String str) {
+		SpannableStringBuilder ssb = new SpannableStringBuilder(str);
+
+		if (!str.contains("rp@")) {
+			int idx1 = str.indexOf("@");
+			int idx2 = 0;
+			while (idx1 != -1) {
+				idx2 = idx1 + 4;
+				final String clickString = str.substring(idx1, idx2);
+				ssb.setSpan(new TextClickableSpan(clickString), idx1, idx2, 0);
+				idx1 = str.indexOf("@", idx2);
+			}
+		} else {
+			int idx1 = str.indexOf("@", str.indexOf("@") + 1);
+			int idx2 = 0;
+			while (idx1 != -1) {
+				idx2 = idx1 + 4;
+				final String clickString = str.substring(idx1, idx2);
+				ssb.setSpan(new TextClickableSpan(clickString), idx1, idx2, 0);
+				idx1 = str.indexOf("@", idx2);
+			}
+		}
+
+		return ssb;
+	}
+
+	class TextClickableSpan extends ClickableSpan {
+		String clicked;
+
+		public TextClickableSpan(String string) {
+			// TODO Auto-generated constructor stub
+			super();
+			clicked = string;
+		}
+
+		public void onClick(View tv) {
+			TagTextCustomDialog ttcDialog = new TagTextCustomDialog(activity);
+			ttcDialog.getWindow().setBackgroundDrawable(
+					new ColorDrawable(Color.TRANSPARENT));
+			ttcDialog.tag = clicked.replaceAll("@", "");
+			ttcDialog.show();
+		}
+
+		public void updateDrawState(TextPaint ds) {
+			ds.setUnderlineText(false);
+			ds.setColor(Color.rgb(12, 98, 120));
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -106,15 +172,6 @@ public class ListItemAdapter extends
 		String minute = splitTime[1];
 
 		int hourInt = Integer.parseInt(hour);
-		if (hourInt == 21) {
-			hourInt = 0;
-		} else if (hourInt == 22) {
-			hourInt = 1;
-		} else if (hourInt == 23) {
-			hourInt = 2;
-		} else {
-			hourInt = hourInt + 3;
-		}
 
 		String hourString = hourInt + "";
 		if (hourString.length() == 1) {
