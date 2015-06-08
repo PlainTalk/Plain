@@ -143,6 +143,8 @@ public class ListItemAdapter extends
 			TagTextCustomDialog ttcDialog = new TagTextCustomDialog(activity);
 			ttcDialog.getWindow().setBackgroundDrawable(
 					new ColorDrawable(Color.TRANSPARENT));
+			ttcDialog.collection = context.getResources().getString(
+					R.string.collection_name);
 			ttcDialog.tag = clicked.replaceAll("@", "");
 			ttcDialog.show();
 		}

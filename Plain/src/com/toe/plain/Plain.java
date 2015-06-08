@@ -9,7 +9,9 @@ import github.ankushsachdeva.emojicon.emoji.Emojicon;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,6 +44,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -79,13 +82,16 @@ public class Plain extends SherlockFragmentActivity {
 	Intent i;
 	PageIndicator mIndicator;
 	ListItemAdapter adapter, repliesAdapter, favouritesAdapter;
-	XListView listView, repliesListView, favouritesListView;
+	ArrayList<TribeDirectoryListItem> tribes = new ArrayList<TribeDirectoryListItem>();
+	TribeDirectoryListItemAdapter tribesAdapter;
+	XListView listView, repliesListView, tribesListView, favouritesListView;
 	StorageService storageService;
-	String error;
+	String lastTribe, error;
 	EditText etStory, etSearchForTag;
 	Button bSearchForTag;
 	SherlockFragmentActivity activity;
-	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoFavouriteListItem;
+	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoTribeListItem,
+			tvNoFavouriteListItem;
 	SharedPreferences sp;
 	Button bShare, bFavourite;
 	ArrayList<String> favouriteStories = new ArrayList<String>();
@@ -102,7 +108,8 @@ public class Plain extends SherlockFragmentActivity {
 	ArrayList<String> queryResultTags = new ArrayList<String>();
 	ArrayList<Boolean> queryResultAdmins = new ArrayList<Boolean>();
 	ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray,
-			appendJsonDocArray, appendJsonIdArray, appendJsonTimesArray;
+			appendJsonDocArray, appendJsonIdArray, appendJsonTimesArray,
+			savedHashtags;
 	StoryOptionsCustomDialog socDialog;
 	ReplyOptionsCustomDialog rocDialog;
 	FavouriteOptionsCustomDialog fsocDialog;
@@ -246,6 +253,14 @@ public class Plain extends SherlockFragmentActivity {
 			getStoriesForReplies(getTags());
 			break;
 		case 2:
+			tvNoTribeListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			new Shimmer().start(tvNoTribeListItem);
+			tvNoTribeListItem.setTypeface(font);
+
+			lastTribe = sp.getString("tribeHashtag", "#tribes");
+			getTribes();
+			break;
+		case 3:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
@@ -375,6 +390,229 @@ public class Plain extends SherlockFragmentActivity {
 						}
 					});
 			break;
+		}
+	}
+
+	private void getTribes() {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findAllDocuments(getString(R.string.database_name),
+				getString(R.string.tribes_collection), new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
+						}
+
+						populateTribeList(jsonDocArray, jsonIdArray,
+								jsonTimesArray);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
+	}
+
+	protected void populateTribeList(final ArrayList<String> jsonDocArray,
+			final ArrayList<String> jsonIdArray,
+			final ArrayList<String> jsonTimesArray) {
+		// TODO Auto-generated method stub
+		tribes.clear();
+
+		for (int i = 0; i < jsonDocArray.size(); i++) {
+			try {
+				JSONObject json = new JSONObject(jsonDocArray.get(i));
+				tribes.add(new TribeDirectoryListItem(json.getString("name"), json
+						.getString("description"), json.getInt("likes"),
+						jsonTimesArray.get(i)));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				tvNoTribeListItem.setVisibility(View.INVISIBLE);
+
+				tribesListView = (XListView) findViewById(R.id.lvTribesListItems);
+				tribesListView.setPullLoadEnable(false);
+				runOnUiThread(new Runnable() {
+					public void run() {
+						if (tribesAdapter == null) {
+							tribesAdapter = new TribeDirectoryListItemAdapter(
+									getApplicationContext(),
+									R.layout.tribe_list_item, tribes);
+							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
+									tribesAdapter);
+							swing.setAbsListView(tribesListView);
+							tribesListView.setAdapter(swing);
+						} else {
+							tribesAdapter.notifyDataSetChanged();
+							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
+									tribesAdapter);
+							swing.setAbsListView(tribesListView);
+						}
+					}
+				});
+				setSupportProgressBarIndeterminateVisibility(false);
+				tribesListView.setXListViewListener(new IXListViewListener() {
+
+					@Override
+					public void onRefresh() {
+						// TODO Auto-generated method stub
+						getTribes();
+					}
+
+					@Override
+					public void onLoadMore() {
+						// TODO Auto-generated method stub
+
+					}
+				});
+				tribesListView.stopRefresh();
+				tribesListView
+						.setOnItemClickListener(new OnItemClickListener() {
+
+							@Override
+							public void onItemClick(AdapterView<?> arg0,
+									View arg1, int arg2, long arg3) {
+								saveHashtag(tribes.get(arg2 - 1).getName());
+								i = new Intent(getApplicationContext(),
+										Tribes.class);
+								Bundle b = new Bundle();
+								b.putString("tribe", tribes.get(arg2 - 1)
+										.getName());
+								i.putExtras(b);
+								startActivity(i);
+							}
+						});
+				tribesListView
+						.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+							@Override
+							public boolean onItemLongClick(AdapterView<?> arg0,
+									View arg1, int arg2, long arg3) {
+								// TODO Auto-generated method stub
+								try {
+									addTribeLike(
+											jsonIdArray.get(arg2 - 1),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("name"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getString("description"),
+											new JSONObject(jsonDocArray
+													.get(arg2 - 1))
+													.getInt("likes"));
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								return true;
+							}
+						});
+			}
+		});
+	}
+
+	private void addTribeLike(String jsonDocId, String name,
+			String description, int currentLikes) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(false);
+		Toast.makeText(getApplicationContext(), "Liking...", Toast.LENGTH_SHORT)
+				.show();
+
+		JSONObject likedStory = new JSONObject();
+		try {
+			likedStory.put("name", name);
+			likedStory.put("description", description);
+			likedStory.put("likes", currentLikes + 1);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		storageService.updateDocumentByDocId(getString(R.string.database_name),
+				getString(R.string.tribes_collection), jsonDocId, likedStory,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+								Toast.makeText(getApplicationContext(),
+										"Liked!", Toast.LENGTH_SHORT).show();
+								getTribes();
+							}
+						});
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void getSavedHashtags() {
+		// TODO Auto-generated method stub
+		try {
+			savedHashtags = (ArrayList<String>) ObjectSerializer
+					.deserialize(sp.getString("savedHashtags",
+							ObjectSerializer.serialize(new ArrayList<String>())));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		@SuppressWarnings("rawtypes")
+		HashSet hashSet = new HashSet();
+		hashSet.addAll(savedHashtags);
+		savedHashtags.clear();
+		savedHashtags.addAll(hashSet);
+
+		Collections.sort(savedHashtags);
+	}
+
+	protected void saveHashtag(String hashtag) {
+		// TODO Auto-generated method stub
+		getSavedHashtags();
+
+		savedHashtags.add(hashtag);
+
+		try {
+			sp.edit()
+					.putString("savedHashtags",
+							ObjectSerializer.serialize(savedHashtags)).commit();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -1285,7 +1523,6 @@ public class Plain extends SherlockFragmentActivity {
 			Toast.makeText(getApplicationContext(),
 					"Oops! You've just posted that", Toast.LENGTH_SHORT).show();
 		} else {
-
 			JSONObject jsonStory = new JSONObject();
 			try {
 				String tag = RandomStringUtils.random(3, true, true);
@@ -1882,11 +2119,10 @@ public class Plain extends SherlockFragmentActivity {
 
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
-		subMenu.add(1, 1, 1, "Tribes");
+		subMenu.add(1, 1, 1, "Preferences");
 		subMenu.add(2, 2, 2, "Rules");
-		subMenu.add(3, 3, 3, "Preferences");
-		subMenu.add(4, 4, 4, "Invite");
-		subMenu.add(5, 5, 5, "About");
+		subMenu.add(3, 3, 3, "Invite friends");
+		subMenu.add(4, 4, 4, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
@@ -2013,7 +2249,7 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 1:
-			i = new Intent(getApplicationContext(), TribesDirectory.class);
+			i = new Intent(getApplicationContext(), SignUp.class);
 			startActivity(i);
 			break;
 		case 2:
@@ -2021,17 +2257,13 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 3:
-			i = new Intent(getApplicationContext(), SignUp.class);
-			startActivity(i);
-			break;
-		case 4:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
-		case 5:
+		case 4:
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;

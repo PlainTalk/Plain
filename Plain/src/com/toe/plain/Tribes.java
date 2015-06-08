@@ -55,7 +55,7 @@ public class Tribes extends SherlockFragmentActivity {
 
 	ArrayList<ListItem> stories = new ArrayList<ListItem>();
 	Intent i;
-	ListItemAdapter adapter;
+	TribesListItemAdapter adapter;
 	XListView listView;
 	StorageService storageService;
 	String hashtag, error;
@@ -327,7 +327,7 @@ public class Tribes extends SherlockFragmentActivity {
 				activity.runOnUiThread(new Runnable() {
 					public void run() {
 						if (adapter == null) {
-							adapter = new ListItemAdapter(
+							adapter = new TribesListItemAdapter(
 									getApplicationContext(), activity,
 									R.layout.list_item, stories);
 							SwingBottomInAnimationAdapter swing = new SwingBottomInAnimationAdapter(
@@ -859,7 +859,7 @@ public class Tribes extends SherlockFragmentActivity {
 			String tag = RandomStringUtils.random(3, true, true);
 			jsonStory.put("story", story);
 			jsonStory.put("likes", 0);
-			jsonStory.put("tag", tag);
+			jsonStory.put("tag", tag.toLowerCase());
 			jsonStory.put("admin", false);
 			jsonStory.put("username", sp.getString("username", null));
 			jsonStory.put("screenName", sp.getString("screenName", null));
@@ -1091,12 +1091,11 @@ public class Tribes extends SherlockFragmentActivity {
 					});
 			break;
 		case 3:
-			String tribeHashtag = sp.getString("tribeHashtag", "#tribes");
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
-					"Join my tribe on 'Plain " + tribeHashtag);
-			startActivity(Intent.createChooser(i, "Invite " + tribeHashtag
+					"Join my tribe on 'Plain " + hashtag);
+			startActivity(Intent.createChooser(i, "Invite " + hashtag
 					+ " members via..."));
 			break;
 		}

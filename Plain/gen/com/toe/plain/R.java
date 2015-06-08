@@ -2677,7 +2677,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f080026;
         public static final int abs__title=0x7f08002e;
         public static final int abs__up=0x7f080010;
-        public static final int bContinue=0x7f08007d;
+        public static final int bContinue=0x7f08007e;
         public static final int bDone=0x7f080047;
         public static final int bExitNo=0x7f080053;
         public static final int bExitYes=0x7f080054;
@@ -2707,7 +2707,7 @@ containing a value of this type.
         public static final int etUsername=0x7f080070;
         public static final int fillRipple=0x7f080015;
         public static final int homeAsUp=0x7f08000b;
-        public static final int indicator=0x7f08007c;
+        public static final int indicator=0x7f08007d;
         public static final int ivChat=0x7f080074;
         public static final int ivDelete=0x7f080056;
         public static final int ivDone=0x7f080062;
@@ -2724,12 +2724,13 @@ containing a value of this type.
         public static final int listMode=0x7f080007;
         public static final int listUi=0x7f080057;
         public static final int lvListItems=0x7f08005d;
-        public static final int mDone=0x7f080087;
-        public static final int mNewTribe=0x7f080088;
-        public static final int mSearch=0x7f080086;
+        public static final int lvTribesListItems=0x7f08007b;
+        public static final int mDone=0x7f080088;
+        public static final int mNewTribe=0x7f080089;
+        public static final int mSearch=0x7f080087;
         public static final int none=0x7f080000;
         public static final int normal=0x7f080006;
-        public static final int pager=0x7f08007b;
+        public static final int pager=0x7f08007c;
         public static final int root_view=0x7f080063;
         public static final int root_view_replies=0x7f080067;
         public static final int showCustom=0x7f08000d;
@@ -2764,14 +2765,14 @@ containing a value of this type.
         public static final int useLogo=0x7f080009;
         public static final int wrap_content=0x7f080005;
         public static final int x=0x7f080017;
-        public static final int xlistview_footer_content=0x7f08007e;
-        public static final int xlistview_footer_hint_textview=0x7f080080;
-        public static final int xlistview_footer_progressbar=0x7f08007f;
-        public static final int xlistview_header_arrow=0x7f080084;
-        public static final int xlistview_header_content=0x7f080081;
-        public static final int xlistview_header_hint_textview=0x7f080083;
-        public static final int xlistview_header_progressbar=0x7f080085;
-        public static final int xlistview_header_text=0x7f080082;
+        public static final int xlistview_footer_content=0x7f08007f;
+        public static final int xlistview_footer_hint_textview=0x7f080081;
+        public static final int xlistview_footer_progressbar=0x7f080080;
+        public static final int xlistview_header_arrow=0x7f080085;
+        public static final int xlistview_header_content=0x7f080082;
+        public static final int xlistview_header_hint_textview=0x7f080084;
+        public static final int xlistview_header_progressbar=0x7f080086;
+        public static final int xlistview_header_text=0x7f080083;
         public static final int y=0x7f080018;
         public static final int z=0x7f080019;
     }
@@ -2839,11 +2840,12 @@ containing a value of this type.
         public static final int tag_text_custom_dialog=0x7f030030;
         public static final int tribe_list_custom_dialog=0x7f030031;
         public static final int tribe_list_item=0x7f030032;
-        public static final int tutorial_view_pager=0x7f030033;
-        public static final int view_pager=0x7f030034;
-        public static final int welcome=0x7f030035;
-        public static final int xlistview_footer=0x7f030036;
-        public static final int xlistview_header=0x7f030037;
+        public static final int tribes_list_view=0x7f030033;
+        public static final int tutorial_view_pager=0x7f030034;
+        public static final int view_pager=0x7f030035;
+        public static final int welcome=0x7f030036;
+        public static final int xlistview_footer=0x7f030037;
+        public static final int xlistview_header=0x7f030038;
     }
     public static final class menu {
         public static final int plain_menu=0x7f0d0000;

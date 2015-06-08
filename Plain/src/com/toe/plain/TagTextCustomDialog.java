@@ -34,7 +34,7 @@ public class TagTextCustomDialog extends Dialog {
 	public SherlockFragmentActivity activity;
 	public TextView tvTag;
 	public EmojiconTextView tvTagText;
-	public String tag, tagText, error;
+	public String collection, tag, tagText, error;
 	private Context context;
 	private StorageService storageService;
 	private ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray;
@@ -81,8 +81,7 @@ public class TagTextCustomDialog extends Dialog {
 		metaHeaders.put("orderByDescending", "_$createdAt");
 		storageService.setOtherMetaHeaders(metaHeaders);
 		storageService.findDocumentsByQuery(
-				context.getString(R.string.database_name),
-				context.getString(R.string.collection_name), query,
+				context.getString(R.string.database_name), collection, query,
 				new App42CallBack() {
 					public void onSuccess(Object response) {
 						Storage storage = (Storage) response;
