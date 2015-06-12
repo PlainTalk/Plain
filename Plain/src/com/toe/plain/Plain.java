@@ -86,7 +86,7 @@ public class Plain extends SherlockFragmentActivity {
 	TribeDirectoryListItemAdapter tribesAdapter;
 	XListView listView, repliesListView, tribesListView, favouritesListView;
 	StorageService storageService;
-	String lastTribe, error;
+	String lastTribe, tribeName, tribeDescription, error;
 	EditText etStory, etSearchForTag;
 	Button bSearchForTag;
 	SherlockFragmentActivity activity;
@@ -117,7 +117,7 @@ public class Plain extends SherlockFragmentActivity {
 	ExitCustomDialog ecDialog;
 	AlertDialog.Builder builder;
 	AppRate rate;
-	boolean storyIsClean = true;
+	boolean storyIsClean = true, nameIsClean, descriptionIsClean;
 	int animationDuration = 140000;
 	int offset = 100, j;
 	EmojiconEditText emojiconEditText, emojiconEditTextReplies;
@@ -128,6 +128,7 @@ public class Plain extends SherlockFragmentActivity {
 	int mInterval = 20000;
 	Handler mHandler;
 	SwingBottomInAnimationAdapter swing;
+	NewTribeCustomDialog ntcDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -438,8 +439,8 @@ public class Plain extends SherlockFragmentActivity {
 		for (int i = 0; i < jsonDocArray.size(); i++) {
 			try {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
-				tribes.add(new TribeDirectoryListItem(json.getString("name"), json
-						.getString("description"), json.getInt("likes"),
+				tribes.add(new TribeDirectoryListItem(json.getString("name"),
+						json.getString("description"), json.getInt("likes"),
 						jsonTimesArray.get(i)));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -2001,6 +2002,60 @@ public class Plain extends SherlockFragmentActivity {
 		return storedTags;
 	}
 
+	private void publishTribe(String name, String description) {
+		// TODO Auto-generated method stub
+		setSupportProgressBarIndeterminateVisibility(true);
+		Toast.makeText(getApplicationContext(), "Just a moment",
+				Toast.LENGTH_SHORT).show();
+
+		if (!name.startsWith("#")) {
+			name = "#" + name;
+		}
+
+		JSONObject jsonStory = new JSONObject();
+		try {
+			jsonStory.put("name", name.toLowerCase().replaceAll("\\s+", ""));
+			jsonStory.put("description", description);
+			jsonStory.put("likes", 0);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		storageService.insertJSONDocument(getString(R.string.database_name),
+				getString(R.string.tribes_collection), jsonStory,
+				new App42CallBack() {
+					public void onSuccess(Object response) {
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+								Toast.makeText(getApplicationContext(),
+										"Tribe published!", Toast.LENGTH_SHORT)
+										.show();
+								getTribes();
+							}
+						});
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						activity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								setSupportProgressBarIndeterminateVisibility(false);
+							}
+						});
+						errorHandler(ex);
+					}
+				});
+	}
+
 	private void errorHandler(Exception ex) {
 		// TODO Auto-generated method stub
 		if (ex.getMessage().contains("refused")
@@ -2119,10 +2174,11 @@ public class Plain extends SherlockFragmentActivity {
 
 		SubMenu subMenu = menu.addSubMenu("Options");
 		subMenu.add(0, 0, 0, "Menu:");
-		subMenu.add(1, 1, 1, "Preferences");
-		subMenu.add(2, 2, 2, "Rules");
-		subMenu.add(3, 3, 3, "Invite friends");
-		subMenu.add(4, 4, 4, "About");
+		subMenu.add(1, 1, 1, "Create a tribe");
+		subMenu.add(2, 2, 2, "Preferences");
+		subMenu.add(3, 3, 3, "Rules");
+		subMenu.add(4, 4, 4, "Invite friends");
+		subMenu.add(5, 5, 5, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
 		subMenuItem.setIcon(R.drawable.more_menu_icon);
@@ -2249,21 +2305,64 @@ public class Plain extends SherlockFragmentActivity {
 			startActivity(i);
 			break;
 		case 1:
+			ntcDialog = new NewTribeCustomDialog(activity);
+			ntcDialog.getWindow().setBackgroundDrawable(
+					new ColorDrawable(Color.TRANSPARENT));
+			ntcDialog.show();
+			ntcDialog.bDone.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					ntcDialog.etName.setError(null);
+					ntcDialog.etDescription.setError(null);
+
+					tribeName = ntcDialog.etName.getText().toString().trim();
+					tribeDescription = ntcDialog.etDescription.getText()
+							.toString().trim();
+					nameIsClean = true;
+					nameIsClean = filterWords(tribeName);
+					descriptionIsClean = true;
+					descriptionIsClean = filterWords(tribeDescription);
+
+					if (nameIsClean && descriptionIsClean) {
+						if (tribeDescription.length() < 100) {
+							if (tribeName.length() > 2) {
+								if (tribeDescription.length() > 5) {
+									publishTribe(tribeName, tribeDescription);
+									ntcDialog.dismiss();
+								} else {
+									ntcDialog.etDescription
+											.setError("Woops! Need at least 6 characters here! Don't drink and plain. Okay drink and plain.");
+								}
+							} else {
+								ntcDialog.etName
+										.setError("Lol. Try at least 3 characters");
+							}
+						} else {
+							ntcDialog.etDescription
+									.setError("Please enter a description with less than 100 characters");
+						}
+					}
+				}
+			});
+			break;
+		case 2:
 			i = new Intent(getApplicationContext(), SignUp.class);
 			startActivity(i);
 			break;
-		case 2:
+		case 3:
 			i = new Intent(getApplicationContext(), Rules.class);
 			startActivity(i);
 			break;
-		case 3:
+		case 4:
 			i = new Intent(android.content.Intent.ACTION_SEND);
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
 			startActivity(Intent.createChooser(i, "Invite friends using..."));
 			break;
-		case 4:
+		case 5:
 			i = new Intent(getApplicationContext(), About.class);
 			startActivity(i);
 			break;

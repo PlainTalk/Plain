@@ -3,6 +3,8 @@ package com.toe.plain;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import android.content.Context;
 import android.content.Intent;
@@ -55,6 +57,7 @@ public class SignUp extends SherlockActivity {
 			countryCodes.add("+" + countryCode + "-");
 		}
 
+		Collections.sort(countries);
 		countries.add(0, "Select your country");
 
 		spCountry = (Spinner) findViewById(R.id.spCountry);
