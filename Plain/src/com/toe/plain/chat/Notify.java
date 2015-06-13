@@ -44,6 +44,7 @@ public class Notify {
 
 		notification.contentIntent = intent;
 		notification.defaults |= Notification.FLAG_NO_CLEAR;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
 		notificationManager.notify(0, notification);
 	}
 }

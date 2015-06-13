@@ -1476,19 +1476,10 @@ public class Plain extends SherlockFragmentActivity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											senderUsername = sp.getString(
-													"username", null);
-											senderPassword = sp.getString(
-													"password", null);
-											senderScreenName = sp.getString(
-													"screenName", null);
-
 											try {
 												JSONObject json = new JSONObject(
 														jsonDocArray
 																.get(arg2 - 1));
-												receiverUsername = json
-														.getString("username");
 												receiverScreenName = json
 														.getString("screenName");
 											} catch (JSONException e) {
@@ -1501,17 +1492,6 @@ public class Plain extends SherlockFragmentActivity {
 													Plain.this,
 													Conversations.class);
 											Bundle bundle = new Bundle();
-											bundle.putString("senderUsername",
-													senderUsername);
-											bundle.putString("senderPassword",
-													senderPassword);
-											bundle.putString(
-													"senderScreenName",
-													senderScreenName);
-
-											bundle.putString(
-													"receiverUsername",
-													receiverUsername);
 											bundle.putString(
 													"receiverScreenName",
 													receiverScreenName);
@@ -2484,13 +2464,11 @@ public class Plain extends SherlockFragmentActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					Intent startMain = new Intent(Intent.ACTION_MAIN);
-					startMain.addCategory(Intent.CATEGORY_HOME);
-					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(startMain);
-					android.os.Process.killProcess(android.os.Process.myPid());
-					System.exit(0);
-					finish();
+					Intent goHome = new Intent(Intent.ACTION_MAIN);
+					goHome.addCategory(Intent.CATEGORY_HOME);
+					goHome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(goHome);
+					ecDialog.dismiss();
 				}
 			});
 		}

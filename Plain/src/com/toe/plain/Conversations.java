@@ -10,7 +10,6 @@ import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import java.util.ArrayList;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,9 +22,11 @@ import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.toe.plain.chat.XmppConnection;
 
-public class Conversations extends Activity {
+public class Conversations extends SherlockActivity {
 	String senderUsername, senderPassword, senderScreenName, receiverUserName,
 			receiverScreenName;
 
@@ -51,6 +52,8 @@ public class Conversations extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.conversations);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		setUp();
 		setUpEmojiKeyboard();
@@ -61,11 +64,8 @@ public class Conversations extends Activity {
 	private void setUp() {
 		// TODO Auto-generated method stub
 		Bundle b = getIntent().getExtras();
-		// receiverUserName = b.getString("receiverUsername");
 		receiverScreenName = b.getString("receiverScreenName");
-
-		Toast.makeText(this, receiverScreenName + ".." + receiverScreenName,
-				Toast.LENGTH_LONG).show();
+		getSupportActionBar().setTitle(receiverScreenName);
 
 		list = (XListView) findViewById(R.id.lvListItems);
 		list.setPullRefreshEnable(false);
@@ -209,4 +209,16 @@ public class Conversations extends Activity {
 		// the_messages.clear();
 		finish();
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 }
