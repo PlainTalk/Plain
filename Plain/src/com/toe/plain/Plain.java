@@ -70,6 +70,7 @@ import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.tjeannin.apprate.AppRate;
 import com.toe.plain.XListView.IXListViewListener;
+import com.toe.plain.chat.XmppConnection;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -84,14 +85,15 @@ public class Plain extends SherlockFragmentActivity {
 	ListItemAdapter adapter, repliesAdapter, favouritesAdapter;
 	ArrayList<TribeDirectoryListItem> tribes = new ArrayList<TribeDirectoryListItem>();
 	TribeDirectoryListItemAdapter tribesAdapter;
-	XListView listView, repliesListView, tribesListView, favouritesListView;
+	XListView listView, repliesListView, conversationsListView, tribesListView,
+			favouritesListView;
 	StorageService storageService;
 	String lastTribe, tribeName, tribeDescription, error;
 	EditText etStory, etSearchForTag;
 	Button bSearchForTag;
 	SherlockFragmentActivity activity;
-	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoTribeListItem,
-			tvNoFavouriteListItem;
+	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoConversationListItem,
+			tvNoTribeListItem, tvNoFavouriteListItem;
 	SharedPreferences sp;
 	Button bShare, bFavourite;
 	ArrayList<String> favouriteStories = new ArrayList<String>();
@@ -129,6 +131,11 @@ public class Plain extends SherlockFragmentActivity {
 	Handler mHandler;
 	SwingBottomInAnimationAdapter swing;
 	NewTribeCustomDialog ntcDialog;
+	String senderUsername, senderPassword, senderScreenName, receiverUsername,
+			receiverScreenName;
+	ArrayList<ConversationsListItem> conversationNames = new ArrayList<ConversationsListItem>();
+	public static Handler handleChange;
+	ConversationsListItemAdapter conversationsAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -254,6 +261,57 @@ public class Plain extends SherlockFragmentActivity {
 			getStoriesForReplies(getTags());
 			break;
 		case 2:
+			tvNoConversationListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			new Shimmer().start(tvNoConversationListItem);
+			tvNoConversationListItem.setTypeface(font);
+
+			conversationsListView = (XListView) findViewById(R.id.lvListItems);
+			conversationsListView.setPullRefreshEnable(false);
+			conversationsListView.setPullLoadEnable(false);
+
+			conversationsAdapter = new ConversationsListItemAdapter(
+					getApplicationContext(), R.layout.conversations_list_item,
+					conversationNames);
+
+			if (conversationNames.isEmpty()) {
+				for (String conversation : XmppConnection.track_conversations) {
+					conversationNames.add(new ConversationsListItem(
+							conversation));
+				}
+			}
+
+			if (conversationNames == null || conversationNames.size() == 0) {
+				tvNoConversationListItem.setText("No convos yet :-(");
+			}
+
+			conversationsListView.setAdapter(conversationsAdapter);
+			conversationsListView
+					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+						@Override
+						public void onItemClick(AdapterView<?> parent,
+								View view, int position, long id) {
+							// TODO Auto-generated method stub
+
+							Bundle bundle = new Bundle();
+
+							bundle.putString("receiverScreenName",
+									XmppConnection.track_conversations
+											.get(position - 1));
+
+							Intent intent = new Intent(Plain.this,
+									Conversations.class);
+							intent.putExtras(bundle);
+							startActivity(intent);
+						}
+					});
+
+			XmppConnection.initConversations(getApplicationContext(),
+					handleChange, conversationsAdapter, conversationNames,
+					sp.getString("screenName", null),
+					sp.getString("password", null));
+			break;
+		case 3:
 			tvNoTribeListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoTribeListItem);
 			tvNoTribeListItem.setTypeface(font);
@@ -261,7 +319,7 @@ public class Plain extends SherlockFragmentActivity {
 			lastTribe = sp.getString("tribeHashtag", "#tribes");
 			getTribes();
 			break;
-		case 3:
+		case 4:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
@@ -1418,17 +1476,48 @@ public class Plain extends SherlockFragmentActivity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											String username = sp.getString(
+											senderUsername = sp.getString(
 													"username", null);
-											String password = sp.getString(
+											senderPassword = sp.getString(
 													"password", null);
-											String screenName = sp.getString(
+											senderScreenName = sp.getString(
 													"screenName", null);
 
-											Toast.makeText(
-													getApplicationContext(),
-													"Coming soon! Have some cocoa in the mean time...",
-													Toast.LENGTH_SHORT).show();
+											try {
+												JSONObject json = new JSONObject(
+														jsonDocArray
+																.get(arg2 - 1));
+												receiverUsername = json
+														.getString("username");
+												receiverScreenName = json
+														.getString("screenName");
+											} catch (JSONException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											}
+
+											Intent intent = new Intent(
+													Plain.this,
+													Conversations.class);
+											Bundle bundle = new Bundle();
+											bundle.putString("senderUsername",
+													senderUsername);
+											bundle.putString("senderPassword",
+													senderPassword);
+											bundle.putString(
+													"senderScreenName",
+													senderScreenName);
+
+											bundle.putString(
+													"receiverUsername",
+													receiverUsername);
+											bundle.putString(
+													"receiverScreenName",
+													receiverScreenName);
+
+											intent.putExtras(bundle);
+											startActivity(intent);
 											socDialog.dismiss();
 										}
 									});
@@ -2163,7 +2252,7 @@ public class Plain extends SherlockFragmentActivity {
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(adapter);
 		mPager.setCurrentItem(0);
-		mPager.setOffscreenPageLimit(3);
+		mPager.setOffscreenPageLimit(4);
 
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);

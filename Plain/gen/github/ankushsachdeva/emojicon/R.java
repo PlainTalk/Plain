@@ -1181,25 +1181,25 @@ public final class R {
 		public static final int orca_emoji_more_front_pressed = 0x7f02051f;
 		public static final int orca_emoji_tab_background = 0x7f020520;
 		public static final int orca_emoji_tab_dark_background = 0x7f020521;
-		public static final int sym_keyboard_delete_holo_dark = 0x7f020534;
+		public static final int sym_keyboard_delete_holo_dark = 0x7f020533;
 	}
 	public static final class id {
-		public static final int Emoji_GridView = 0x7f080048;
-		public static final int emojicon_icon = 0x7f080049;
-		public static final int emojis_backspace = 0x7f080051;
-		public static final int emojis_pager = 0x7f080052;
-		public static final int emojis_tab = 0x7f08004a;
-		public static final int emojis_tab_0_recents = 0x7f08004b;
-		public static final int emojis_tab_1_people = 0x7f08004c;
-		public static final int emojis_tab_2_nature = 0x7f08004d;
-		public static final int emojis_tab_3_objects = 0x7f08004e;
-		public static final int emojis_tab_4_cars = 0x7f08004f;
-		public static final int emojis_tab_5_punctuation = 0x7f080050;
+		public static final int Emoji_GridView = 0x7f08004f;
+		public static final int emojicon_icon = 0x7f080050;
+		public static final int emojis_backspace = 0x7f080058;
+		public static final int emojis_pager = 0x7f080059;
+		public static final int emojis_tab = 0x7f080051;
+		public static final int emojis_tab_0_recents = 0x7f080052;
+		public static final int emojis_tab_1_people = 0x7f080053;
+		public static final int emojis_tab_2_nature = 0x7f080054;
+		public static final int emojis_tab_3_objects = 0x7f080055;
+		public static final int emojis_tab_4_cars = 0x7f080056;
+		public static final int emojis_tab_5_punctuation = 0x7f080057;
 	}
 	public static final class layout {
-		public static final int emojicon_grid = 0x7f03001a;
-		public static final int emojicon_item = 0x7f03001b;
-		public static final int emojicons = 0x7f03001c;
+		public static final int emojicon_grid = 0x7f03001b;
+		public static final int emojicon_item = 0x7f03001c;
+		public static final int emojicons = 0x7f03001d;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f070000;

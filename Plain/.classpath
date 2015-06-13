@@ -9,5 +9,18 @@
 	<classpathentry exported="true" kind="lib" path="libs/App42_ANDROID_SDK_2.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/library-listviewanimations.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nineoldandroids-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/apache-mime4j-0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gson-2.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jxmpp-core-0.4.2-beta1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jxmpp-util-cache-0.4.2-beta1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/minidns-0.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org-apache-commons-lang.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-android-extensions-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-tcp-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-sasl-provided-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-core-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-experimental-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-resolver-minidns-4.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/smack-extensions-4.1.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
