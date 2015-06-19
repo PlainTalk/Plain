@@ -147,6 +147,15 @@ public class Plain extends SherlockFragmentActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
 
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex) {
+				// TODO Auto-generated method stub
+				ex.printStackTrace();
+			}
+		});
+
 		setAdapter();
 		setUp();
 		setNotificationAlarm();
