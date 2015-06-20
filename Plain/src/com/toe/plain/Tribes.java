@@ -18,7 +18,6 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -36,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
@@ -48,37 +46,9 @@ import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
-import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.toe.plain.XListView.IXListViewListener;
 
-public class Tribes extends SherlockFragmentActivity {
-
-	ArrayList<ListItem> stories = new ArrayList<ListItem>();
-	Intent i;
-	TribesListItemAdapter adapter;
-	XListView listView;
-	StorageService storageService;
-	String hashtag, error;
-	ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray;
-	ShimmerTextView tvNoListItem;
-	StoryOptionsCustomDialog socDialog;
-	SherlockFragmentActivity activity;
-	ArrayList<String> storedTags;
-	ArrayList<String> favouriteStories = new ArrayList<String>();
-	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
-	ArrayList<String> favouriteTags = new ArrayList<String>();
-	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
-	ArrayList<String> favouriteTimestamps = new ArrayList<String>();
-	SharedPreferences sp;
-	EditDataCustomDialog edcDialog;
-	TribeListCustomDialog tlcDialog;
-	boolean storyIsClean = true;
-	ArrayList<String> savedHashtags;
-	EmojiconEditText emojiconEditText;
-	View rootView;
-	ImageView emojiButton;
-	ImageView submitButton;
-	EmojiconsPopup popup;
+public class Tribes extends TribesBase {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

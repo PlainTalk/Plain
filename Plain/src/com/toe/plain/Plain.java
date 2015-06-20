@@ -26,7 +26,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -51,7 +50,6 @@ import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
@@ -67,75 +65,12 @@ import com.shephertz.app42.paas.sdk.android.storage.Query;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder;
 import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
-import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.tjeannin.apprate.AppRate;
 import com.toe.plain.XListView.IXListViewListener;
 import com.toe.plain.chat.XmppConnection;
-import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class Plain extends SherlockFragmentActivity {
-
-	ArrayList<ListItem> stories = new ArrayList<ListItem>();
-	ArrayList<ListItem> favourites;
-	PlainFragmentAdapter mAdapter;
-	ViewPager mPager;
-	Intent i;
-	PageIndicator mIndicator;
-	ListItemAdapter adapter, repliesAdapter, favouritesAdapter;
-	ArrayList<TribeDirectoryListItem> tribes = new ArrayList<TribeDirectoryListItem>();
-	TribeDirectoryListItemAdapter tribesAdapter;
-	XListView listView, repliesListView, conversationsListView, tribesListView,
-			favouritesListView;
-	StorageService storageService;
-	String lastTribe, tribeName, tribeDescription, error;
-	EditText etStory, etSearchForTag;
-	Button bSearchForTag;
-	SherlockFragmentActivity activity;
-	ShimmerTextView tvNoListItem, tvNoReplyListItem, tvNoConversationListItem,
-			tvNoTribeListItem, tvNoFavouriteListItem;
-	SharedPreferences sp;
-	Button bShare, bFavourite;
-	ArrayList<String> favouriteStories = new ArrayList<String>();
-	ArrayList<Integer> favouriteLikes = new ArrayList<Integer>();
-	ArrayList<String> favouriteTags = new ArrayList<String>();
-	ArrayList<Boolean> favouriteAdmins = new ArrayList<Boolean>();
-	ArrayList<String> favouriteTimestamps = new ArrayList<String>();
-	ArrayList<String> storedTags = new ArrayList<String>();
-	ArrayList<String> fetchedTagStories = new ArrayList<String>();
-	ArrayList<ListItem> replies = new ArrayList<ListItem>();
-	ArrayList<ListItem> queryResults = new ArrayList<ListItem>();
-	ArrayList<String> queryResultStories = new ArrayList<String>();
-	ArrayList<Integer> queryResultLikes = new ArrayList<Integer>();
-	ArrayList<String> queryResultTags = new ArrayList<String>();
-	ArrayList<Boolean> queryResultAdmins = new ArrayList<Boolean>();
-	ArrayList<String> jsonDocArray, jsonIdArray, jsonTimesArray,
-			appendJsonDocArray, appendJsonIdArray, appendJsonTimesArray,
-			savedHashtags;
-	StoryOptionsCustomDialog socDialog;
-	ReplyOptionsCustomDialog rocDialog;
-	FavouriteOptionsCustomDialog fsocDialog;
-	EditDataCustomDialog edcDialog;
-	ExitCustomDialog ecDialog;
-	AlertDialog.Builder builder;
-	AppRate rate;
-	boolean storyIsClean = true, nameIsClean, descriptionIsClean;
-	int animationDuration = 140000;
-	int offset = 100, j;
-	EmojiconEditText emojiconEditText, emojiconEditTextReplies;
-	View rootView, rootViewReplies;
-	ImageView emojiButton, emojiconButtonReplies;
-	ImageView submitButton, submitButtonReplies;
-	EmojiconsPopup popup, popupReplies;
-	int mInterval = 20000;
-	Handler mHandler;
-	SwingBottomInAnimationAdapter swing;
-	NewTribeCustomDialog ntcDialog;
-	String senderUsername, senderPassword, senderScreenName, receiverUsername,
-			receiverScreenName;
-	ArrayList<ConversationsListItem> conversationNames = new ArrayList<ConversationsListItem>();
-	public static Handler handleChange;
-	ConversationsListItemAdapter conversationsAdapter;
+public class Plain extends PlainBase {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -147,19 +82,22 @@ public class Plain extends SherlockFragmentActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		setSupportProgressBarIndeterminateVisibility(false);
 
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+		globalExceptionHandler();
+		setAdapter();
+		setUp();
+		setNotificationAlarm();
+		rateApp();
+	}
 
+	private void globalExceptionHandler() {
+		// TODO Auto-generated method stub
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread thread, Throwable ex) {
 				// TODO Auto-generated method stub
 				ex.printStackTrace();
 			}
 		});
-
-		setAdapter();
-		setUp();
-		setNotificationAlarm();
-		rateApp();
 	}
 
 	private void setUp() {
