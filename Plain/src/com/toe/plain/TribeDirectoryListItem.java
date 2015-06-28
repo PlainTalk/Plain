@@ -5,13 +5,15 @@ public class TribeDirectoryListItem {
 	private String description;
 	private int likes;
 	private String timestamp;
+	private boolean newTribePlains;
 
 	public TribeDirectoryListItem(String name, String description, int likes,
-			String timestamp) {
+			String timestamp, boolean newTribePlains) {
 		this.setName(name);
 		this.setDescription(description);
 		this.setLikes(likes);
 		this.setTimestamp(timestamp);
+		this.setNewTribePlains(newTribePlains);
 	}
 
 	public String getName() {
@@ -44,6 +46,14 @@ public class TribeDirectoryListItem {
 
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public boolean hasNewTribePlains() {
+		return newTribePlains;
+	}
+
+	public void setNewTribePlains(boolean newTribePlains) {
+		this.newTribePlains = newTribePlains;
 	}
 
 }

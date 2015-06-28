@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class TribeDirectoryListItemAdapter extends
@@ -20,8 +21,8 @@ public class TribeDirectoryListItemAdapter extends
 	private Typeface font;
 	private int timeOffset = 10800000;
 
-	public TribeDirectoryListItemAdapter(Context context, int textViewResourceId,
-			ArrayList<TribeDirectoryListItem> objects) {
+	public TribeDirectoryListItemAdapter(Context context,
+			int textViewResourceId, ArrayList<TribeDirectoryListItem> objects) {
 		super(objects);
 		this.objects = objects;
 		this.context = context;
@@ -50,6 +51,8 @@ public class TribeDirectoryListItemAdapter extends
 			TextView tvLikesTitle = (TextView) v
 					.findViewById(R.id.tvLikesTitle);
 			TextView tvTimestamp = (TextView) v.findViewById(R.id.tvTimestamp);
+			ImageView ivNotification = (ImageView) v
+					.findViewById(R.id.ivNotification);
 
 			if (tvName != null) {
 				tvName.setText(i.getName());
@@ -80,8 +83,17 @@ public class TribeDirectoryListItemAdapter extends
 
 				int timeDistance = getTimeDistanceInMilliseconds(time
 						+ timeOffset);
-				tvTimestamp.setText("made "
-						+ TimeUtils.millisToLongDHMS(timeDistance) + " ago");
+				tvTimestamp.setText(("made " + TimeUtils
+						.millisToLongDHMS(timeDistance)).toLowerCase());
+			}
+
+			if (ivNotification != null) {
+				boolean hasNotification = i.hasNewTribePlains();
+				if (hasNotification) {
+					ivNotification.setVisibility(View.VISIBLE);
+				} else {
+					ivNotification.setVisibility(View.INVISIBLE);
+				}
 			}
 		}
 		return v;

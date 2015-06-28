@@ -66,7 +66,6 @@ public class PlainBase extends SherlockFragmentActivity {
 	AlertDialog.Builder builder;
 	AppRate rate;
 	boolean storyIsClean = true, nameIsClean, descriptionIsClean;
-	int animationDuration = 140000;
 	int offset = 100, j;
 	EmojiconEditText emojiconEditText, emojiconEditTextReplies;
 	View rootView, rootViewReplies;
@@ -82,4 +81,6 @@ public class PlainBase extends SherlockFragmentActivity {
 	ArrayList<ConversationsListItem> conversationNames = new ArrayList<ConversationsListItem>();
 	public static Handler handleChange;
 	ConversationsListItemAdapter conversationsAdapter;
+	ArrayList<Boolean> newTribePlains = new ArrayList<Boolean>();
+	int tribesThreshold = 20;
 }

@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -99,8 +98,7 @@ public class TribesListItemAdapter extends
 
 				int timeDistance = getTimeDistanceInMilliseconds(time
 						+ timeOffset);
-				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance)
-						+ " ago");
+				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
 			}
 		}
 		return v;

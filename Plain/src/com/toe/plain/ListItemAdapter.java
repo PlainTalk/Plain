@@ -3,6 +3,7 @@ package com.toe.plain;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -26,7 +27,6 @@ public class ListItemAdapter extends
 	private Context context;
 	private SherlockFragmentActivity activity;
 	private Typeface font;
-	private int timeOffset = 10800000;
 
 	public ListItemAdapter(Context context, SherlockFragmentActivity activity,
 			int textViewResourceId, ArrayList<ListItem> objects) {
@@ -95,10 +95,12 @@ public class ListItemAdapter extends
 					return null;
 				}
 
+				Calendar calender = Calendar.getInstance();
+				TimeZone timezone = calender.getTimeZone();
+
 				int timeDistance = getTimeDistanceInMilliseconds(time
-						+ timeOffset);
-				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance)
-						+ " ago");
+						+ timezone.getRawOffset());
+				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
 			}
 		}
 		return v;

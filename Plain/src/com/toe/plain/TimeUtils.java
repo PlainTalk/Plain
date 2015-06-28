@@ -22,6 +22,7 @@ public class TimeUtils {
 	 */
 	public static String millisToLongDHMS(long duration) {
 		StringBuffer res = new StringBuffer();
+		long time = duration;
 		long temp = 0;
 		if (duration >= ONE_SECOND) {
 			temp = duration / ONE_DAY;
@@ -41,20 +42,18 @@ public class TimeUtils {
 			temp = duration / ONE_MINUTE;
 			if (temp > 0) {
 				duration -= temp * ONE_MINUTE;
-				res.append(temp).append(" minute").append(temp > 1 ? "s" : "");
-			}
-
-			if (!res.toString().equals("") && duration >= ONE_SECOND) {
-				res.append(" and ");
+				res.append(temp).append(" minute").append(temp > 1 ? "s" : "")
+						.append(" ago");
 			}
 
 			temp = duration / ONE_SECOND;
-			if (temp > 0) {
-				res.append(temp).append(" second").append(temp > 1 ? "s" : "");
+			if (time < ONE_MINUTE) {
+				res.append(temp).append(" second").append(temp > 1 ? "s" : "")
+						.append(" ago");
 			}
 			return res.toString();
 		} else {
-			return "0 second";
+			return "0 seconds";
 		}
 	}
 

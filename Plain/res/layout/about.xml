@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical" >
-        <com.toe.plain.RippleBackground
+
+        <com.toe.plain.RippleBackground
             android:id="@+id/content"
             android:layout_width="270dp"
             android:layout_height="270dp"

@@ -67,7 +67,6 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.tjeannin.apprate.AppRate;
 import com.toe.plain.XListView.IXListViewListener;
-import com.toe.plain.chat.XmppConnection;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class Plain extends PlainBase {
@@ -95,7 +94,10 @@ public class Plain extends PlainBase {
 			@Override
 			public void uncaughtException(Thread thread, Throwable ex) {
 				// TODO Auto-generated method stub
-				ex.printStackTrace();
+				Log.e("PLAIN CRASH", ex.toString());
+				i = getIntent();
+				finish();
+				startActivity(i);
 			}
 		});
 	}
@@ -207,66 +209,76 @@ public class Plain extends PlainBase {
 
 			getStoriesForReplies(getTags());
 			break;
+		// case 2:
+		// tvNoConversationListItem = (ShimmerTextView)
+		// findViewById(R.id.tvNoListItem);
+		// new Shimmer().start(tvNoConversationListItem);
+		// tvNoConversationListItem.setTypeface(font);
+		//
+		// conversationsListView = (XListView) findViewById(R.id.lvListItems);
+		// conversationsListView.setPullRefreshEnable(false);
+		// conversationsListView.setPullLoadEnable(false);
+		//
+		// conversationsAdapter = new ConversationsListItemAdapter(
+		// getApplicationContext(), R.layout.conversations_list_item,
+		// conversationNames);
+		//
+		// if (conversationNames.isEmpty()) {
+		// for (String conversation : XmppConnection.track_conversations) {
+		// conversationNames.add(new ConversationsListItem(
+		// conversation));
+		// }
+		// }
+		//
+		// if (conversationNames == null || conversationNames.size() == 0) {
+		// tvNoConversationListItem.setText("No convos yet :-(");
+		// }
+		//
+		// conversationsListView.setAdapter(conversationsAdapter);
+		// conversationsListView
+		// .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		//
+		// @Override
+		// public void onItemClick(AdapterView<?> parent,
+		// View view, int position, long id) {
+		// // TODO Auto-generated method stub
+		//
+		// Bundle bundle = new Bundle();
+		//
+		// bundle.putString("receiverScreenName",
+		// XmppConnection.track_conversations
+		// .get(position - 1));
+		//
+		// Intent intent = new Intent(Plain.this,
+		// Conversations.class);
+		// intent.putExtras(bundle);
+		// startActivity(intent);
+		// }
+		// });
+		//
+		// XmppConnection.initConversations(getApplicationContext(),
+		// handleChange, conversationsAdapter, conversationNames,
+		// sp.getString("screenName", null),
+		// sp.getString("password", null));
+		// break;
 		case 2:
-			tvNoConversationListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
-			new Shimmer().start(tvNoConversationListItem);
-			tvNoConversationListItem.setTypeface(font);
-
-			conversationsListView = (XListView) findViewById(R.id.lvListItems);
-			conversationsListView.setPullRefreshEnable(false);
-			conversationsListView.setPullLoadEnable(false);
-
-			conversationsAdapter = new ConversationsListItemAdapter(
-					getApplicationContext(), R.layout.conversations_list_item,
-					conversationNames);
-
-			if (conversationNames.isEmpty()) {
-				for (String conversation : XmppConnection.track_conversations) {
-					conversationNames.add(new ConversationsListItem(
-							conversation));
-				}
-			}
-
-			if (conversationNames == null || conversationNames.size() == 0) {
-				tvNoConversationListItem.setText("No convos yet :-(");
-			}
-
-			conversationsListView.setAdapter(conversationsAdapter);
-			conversationsListView
-					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-						@Override
-						public void onItemClick(AdapterView<?> parent,
-								View view, int position, long id) {
-							// TODO Auto-generated method stub
-
-							Bundle bundle = new Bundle();
-
-							bundle.putString("receiverScreenName",
-									XmppConnection.track_conversations
-											.get(position - 1));
-
-							Intent intent = new Intent(Plain.this,
-									Conversations.class);
-							intent.putExtras(bundle);
-							startActivity(intent);
-						}
-					});
-
-			XmppConnection.initConversations(getApplicationContext(),
-					handleChange, conversationsAdapter, conversationNames,
-					sp.getString("screenName", null),
-					sp.getString("password", null));
-			break;
-		case 3:
 			tvNoTribeListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoTribeListItem);
 			tvNoTribeListItem.setTypeface(font);
+			tvNoTribeListItem.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					lastTribe = sp.getString("tribeHashtag", "#tribes");
+					getTribes();
+				}
+			});
 
 			lastTribe = sp.getString("tribeHashtag", "#tribes");
 			getTribes();
 			break;
-		case 4:
+		case 3:
 			tvNoFavouriteListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
 			new Shimmer().start(tvNoFavouriteListItem);
 			tvNoFavouriteListItem.setTypeface(font);
@@ -423,7 +435,7 @@ public class Plain extends PlainBase {
 									.getCreatedAt());
 						}
 
-						populateTribeList(jsonDocArray, jsonIdArray,
+						getTribePlains(jsonDocArray, jsonIdArray,
 								jsonTimesArray);
 					}
 
@@ -437,7 +449,8 @@ public class Plain extends PlainBase {
 
 	protected void populateTribeList(final ArrayList<String> jsonDocArray,
 			final ArrayList<String> jsonIdArray,
-			final ArrayList<String> jsonTimesArray) {
+			final ArrayList<String> jsonTimesArray,
+			ArrayList<Boolean> newTribePlains) {
 		// TODO Auto-generated method stub
 		tribes.clear();
 
@@ -446,7 +459,7 @@ public class Plain extends PlainBase {
 				JSONObject json = new JSONObject(jsonDocArray.get(i));
 				tribes.add(new TribeDirectoryListItem(json.getString("name"),
 						json.getString("description"), json.getInt("likes"),
-						jsonTimesArray.get(i)));
+						jsonTimesArray.get(i), newTribePlains.get(i)));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -540,6 +553,92 @@ public class Plain extends PlainBase {
 						});
 			}
 		});
+	}
+
+	private void getTribePlains(final ArrayList<String> jsonTribeDocArray,
+			final ArrayList<String> jsonTribeIdArray,
+			final ArrayList<String> jsonTribeTimesArray) {
+		// TODO Auto-generated method stub
+		HashMap<String, String> metaHeaders = new HashMap<String, String>();
+		metaHeaders.put("orderByDescending", "_$createdAt");
+		storageService.setOtherMetaHeaders(metaHeaders);
+		storageService.findAllDocuments(getString(R.string.database_name),
+				getString(R.string.forums_collection), new App42CallBack() {
+					public void onSuccess(Object response) {
+						Storage storage = (Storage) response;
+						ArrayList<Storage.JSONDocument> jsonDocList = storage
+								.getJsonDocList();
+						jsonDocArray = new ArrayList<String>();
+						jsonIdArray = new ArrayList<String>();
+						jsonTimesArray = new ArrayList<String>();
+
+						for (int i = 0; i < jsonDocList.size(); i++) {
+							jsonDocArray.add(jsonDocList.get(i).getJsonDoc());
+							jsonIdArray.add(jsonDocList.get(i).getDocId());
+							jsonTimesArray.add(jsonDocList.get(i)
+									.getCreatedAt());
+						}
+
+						processTribePlains(jsonTribeDocArray, jsonTribeIdArray,
+								jsonTribeTimesArray, jsonDocArray, jsonIdArray,
+								jsonTimesArray);
+					}
+
+					public void onException(Exception ex) {
+						System.out.println("Exception Message"
+								+ ex.getMessage());
+						errorHandler(ex);
+					}
+				});
+	}
+
+	protected void processTribePlains(ArrayList<String> jsonTribeDocArray,
+			ArrayList<String> jsonTribeIdArray,
+			ArrayList<String> jsonTribeTimesArray,
+			ArrayList<String> jsonTribePlainsDocArray,
+			ArrayList<String> jsonTribePlainsIdArray,
+			ArrayList<String> jsonTribePlainsTimesArray) {
+		// TODO Auto-generated method stub
+		// Get string array of 100 plains
+		// Get string array of tribes
+		// Loop
+		ArrayList<String> tribes = new ArrayList<String>();
+		ArrayList<String> tribePlains = new ArrayList<String>();
+
+		for (int i = 0; i < jsonTribeDocArray.size(); i++) {
+			try {
+				JSONObject json = new JSONObject(jsonTribeDocArray.get(i));
+				tribes.add(json.getString("name"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		for (int i = 0; i < jsonTribePlainsDocArray.size(); i++) {
+			try {
+				JSONObject json = new JSONObject(jsonTribePlainsDocArray.get(i));
+				tribePlains.add(json.getString("story"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		for (int i = 0; i < tribes.size(); i++) {
+			newTribePlains.add(i, false);
+		}
+
+		for (int i = 0; i < tribes.size(); i++) {
+			for (int j = 0; j < tribesThreshold; j++) {
+				if (tribePlains.get(j).contains(tribes.get(i) + " ")) {
+					newTribePlains.add(i, true);
+				}
+			}
+		}
+
+		populateTribeList(jsonTribeDocArray, jsonTribeIdArray,
+				jsonTribeTimesArray, newTribePlains);
 	}
 
 	private void addTribeLike(String jsonDocId, String name,
@@ -1141,9 +1240,9 @@ public class Plain extends PlainBase {
 						swing.setAbsListView(listView);
 						listView.setAdapter(swing);
 					} else {
-						adapter.notifyDataSetChanged();
 						swing = new SwingBottomInAnimationAdapter(adapter);
 						swing.setAbsListView(listView);
+						swing.notifyDataSetChanged();
 					}
 
 					tvNoListItem.setVisibility(View.INVISIBLE);
@@ -2100,6 +2199,7 @@ public class Plain extends PlainBase {
 						}
 					});
 
+					tvNoTribeListItem.setText("Refresh");
 					repliesListView.stopRefresh();
 					tvNoReplyListItem.setVisibility(View.VISIBLE);
 					tvNoReplyListItem.setText("Refresh");
