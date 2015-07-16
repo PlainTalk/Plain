@@ -7,22 +7,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-import com.toe.plain.Conversations;
-import com.toe.plain.Plain;
 import com.toe.plain.R;
+import com.toe.plain.activities.Chat;
+import com.toe.plain.activities.Plain;
 
 public class Notify {
-	
-	public static void showNotification(Context context, String notificationMessage,String thread) {
+
+	public static void showNotification(Context context,
+			String notificationMessage, String tag, String thread) {
 		// TODO Auto-generated method stub
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Intent notificationIntent;
 		try {
-			notificationIntent = new Intent(context, Conversations.class);
+			notificationIntent = new Intent(context, Chat.class);
+			notificationIntent.putExtra("tag", tag);
 			notificationIntent.putExtra("receiverScreenName", thread);
-			
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -30,6 +31,7 @@ public class Notify {
 			notificationIntent = new Intent(context, Plain.class);
 
 		}
+
 		// set intent so it does not start a new activity
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -43,7 +45,7 @@ public class Notify {
 				.build();
 
 		notification.contentIntent = intent;
-		notification.defaults |= Notification.FLAG_NO_CLEAR;
+		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;
 		notificationManager.notify(0, notification);
 	}

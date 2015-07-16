@@ -10,7 +10,7 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <com.toe.plain.XListView
+        <com.toe.plain.classes.XListView
             android:id="@+id/lvListItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
             android:scrollbars="vertical"
             android:transcriptMode="normal" />
 
-        <com.toe.plain.ShimmerTextView
+        <com.toe.plain.classes.ShimmerTextView
             android:id="@+id/tvNoListItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

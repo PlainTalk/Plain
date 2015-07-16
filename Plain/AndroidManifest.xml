@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.toe.plain"
-    android:versionCode="50"
-    android:versionName="0.8.4.0" >
+    android:versionCode="51"
+    android:versionName="0.8.4.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -12,15 +12,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name="com.toe.plain.Analytics"
+        android:name="com.toe.plain.utils.Analytics"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.SherlockCustom" >
         <activity
-            android:name="com.toe.plain.Welcome"
+            android:name="com.toe.plain.activities.Welcome"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,56 +30,56 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.toe.plain.PlainTutorial"
+            android:name="com.toe.plain.activities.PlainTutorial"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Hey"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.toe.plain.SignUp"
+            android:name="com.toe.plain.activities.SignUp"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Details"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name="com.toe.plain.Plain"
+            android:name="com.toe.plain.activities.Plain"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="&apos;Plain"
             android:windowSoftInputMode="stateHidden|adjustResize|adjustPan" >
         </activity>
         <activity
-            android:name="com.toe.plain.Conversations"
+            android:name="com.toe.plain.activities.Chat"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Chats" >
         </activity>
         <activity
-            android:name="com.toe.plain.Tribes"
+            android:name="com.toe.plain.activities.Tribes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Tribes" >
         </activity>
         <activity
-            android:name="com.toe.plain.AboutTribes"
+            android:name="com.toe.plain.activities.AboutTribes"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="About tribes" >
         </activity>
         <activity
-            android:name="com.toe.plain.Rules"
+            android:name="com.toe.plain.activities.Rules"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Rules" >
         </activity>
         <activity
-            android:name="com.toe.plain.About"
+            android:name="com.toe.plain.activities.About"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="About" >
         </activity>
         <activity
-            android:name="com.toe.plain.EasterEgg"
+            android:name="com.toe.plain.activities.EasterEgg"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="You found it!" >
         </activity>
 
         <receiver
-            android:name="com.toe.plain.NotificationReceiver"
+            android:name="com.toe.plain.receivers.NotificationReceiver"
             android:exported="false" >
             <intent-filter android:priority="2147483647" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -108,7 +109,7 @@
 
         <!--
          Optionally, register AnalyticsReceiver and AnalyticsService to support background
-         dispatching on non-Google Play devices
+         dispatching on non-Google Play devices
         -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
@@ -125,7 +126,7 @@
 
         <!--
            Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
-           installation campaign reporting
+           installation campaign reporting
         -->
         <receiver
             android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"

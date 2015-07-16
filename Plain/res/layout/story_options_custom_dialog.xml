@@ -15,7 +15,7 @@
         android:orientation="horizontal"
         android:weightSum="2" >
 
-        <com.toe.plain.FlipImageView
+        <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivReplain"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -29,7 +29,7 @@
             app:flipRotations="y"
             app:reverseRotation="true" />
 
-        <com.toe.plain.FlipImageView
+        <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivReply"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -44,7 +44,7 @@
             app:reverseRotation="true" />
     </LinearLayout>
 
-    <com.toe.plain.FlipImageView
+    <com.toe.plain.classes.FlipImageView
         android:id="@+id/ivChat"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -64,7 +64,7 @@
         android:orientation="horizontal"
         android:weightSum="2" >
 
-        <com.toe.plain.FlipImageView
+        <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivShare"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -78,7 +78,7 @@
             app:flipRotations="y"
             app:reverseRotation="true" />
 
-        <com.toe.plain.FlipImageView
+        <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivFavourite"
             android:layout_width="150dp"
             android:layout_height="150dp"

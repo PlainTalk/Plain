@@ -8,7 +8,7 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <com.toe.plain.FlipImageView
+    <com.toe.plain.classes.FlipImageView
         android:id="@+id/ivXoxoTutorial"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -21,7 +21,7 @@
         app:flipRotations="y"
         app:reverseRotation="true" />
 
-    <com.toe.plain.FlipImageView
+    <com.toe.plain.classes.FlipImageView
         android:id="@+id/ivDone"
         android:layout_width="80dp"
         android:layout_height="80dp"

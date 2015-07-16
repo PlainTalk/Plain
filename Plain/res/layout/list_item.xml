@@ -42,7 +42,7 @@
             android:textSize="15.0dip"
             android:textStyle="bold" />
 
-        <com.toe.plain.FlipImageView
+        <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivLike"
             android:layout_width="20dp"
             android:layout_height="20dp"
