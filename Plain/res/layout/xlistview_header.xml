@@ -24,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:layout_marginLeft="10dp"
                 android:text="@string/xlistview_header_hint_normal"
                 android:textColor="#fff"
                 android:textSize="15dp" />

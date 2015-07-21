@@ -197,7 +197,7 @@ public class Tribes extends TribesBase {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (story.contains(hashtag)) {
+				if (story.contains(sp.getString("tribeHashtag", hashtag))) {
 					if (storyIsClean) {
 						if (story.length() > 1) {
 							if (story.length() < 1000) {
@@ -232,8 +232,7 @@ public class Tribes extends TribesBase {
 		Bundle b = getIntent().getExtras();
 		hashtag = b.getString("tribe");
 		sp.edit().putString("tribeHashtag", hashtag).commit();
-
-		fetchResults(hashtag);
+		fetchResults(sp.getString("tribeHashtag", hashtag));
 	}
 
 	private void fetchResults(String keyword) {
@@ -330,7 +329,7 @@ public class Tribes extends TribesBase {
 					@Override
 					public void onRefresh() {
 						// TODO Auto-generated method stub
-						getTribe();
+						fetchResults(sp.getString("tribeHashtag", hashtag));
 					}
 
 					@Override
@@ -504,7 +503,10 @@ public class Tribes extends TribesBase {
 																						"Plain deleted!",
 																						Toast.LENGTH_SHORT)
 																						.show();
-																				getTribe();
+																				fetchResults(sp
+																						.getString(
+																								"tribeHashtag",
+																								hashtag));
 																			}
 																		});
 																	}
@@ -607,7 +609,8 @@ public class Tribes extends TribesBase {
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
-								getTribe();
+								fetchResults(sp.getString("tribeHashtag",
+										hashtag));
 							}
 						});
 					}
@@ -734,7 +737,8 @@ public class Tribes extends TribesBase {
 								setSupportProgressBarIndeterminateVisibility(false);
 								Toast.makeText(getApplicationContext(),
 										"Liked!", Toast.LENGTH_SHORT).show();
-								getTribe();
+								fetchResults(sp.getString("tribeHashtag",
+										hashtag));
 							}
 						});
 					}
@@ -770,7 +774,7 @@ public class Tribes extends TribesBase {
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							getTribe();
+							fetchResults(sp.getString("tribeHashtag", hashtag));
 						}
 					});
 				}
@@ -790,7 +794,7 @@ public class Tribes extends TribesBase {
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							getTribe();
+							fetchResults(sp.getString("tribeHashtag", hashtag));
 						}
 					});
 				}
@@ -838,7 +842,6 @@ public class Tribes extends TribesBase {
 			jsonStory.put("tag", tag.toLowerCase());
 			jsonStory.put("admin", false);
 			jsonStory.put("username", sp.getString("username", null));
-			jsonStory.put("screenName", sp.getString("screenName", null));
 
 			storeTag(tag.toLowerCase());
 		} catch (JSONException e) {
@@ -859,8 +862,10 @@ public class Tribes extends TribesBase {
 								Toast.makeText(getApplicationContext(),
 										"Plain published!", Toast.LENGTH_SHORT)
 										.show();
-								emojiconEditText.setText(hashtag + " ");
-								getTribe();
+								emojiconEditText.setText(sp.getString(
+										"tribeHashtag", hashtag) + " ");
+								fetchResults(sp.getString("tribeHashtag",
+										hashtag));
 							}
 						});
 					}
@@ -963,7 +968,7 @@ public class Tribes extends TribesBase {
 		subMenu.add(3, 3, 3, "Invite members");
 
 		MenuItem subMenuItem = subMenu.getItem();
-		subMenuItem.setIcon(R.drawable.more_menu_icon);
+		subMenuItem.setIcon(R.drawable.menu_icon);
 		subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS
 				| MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		return super.onCreateOptionsMenu(menu);

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -68,11 +67,9 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.tjeannin.apprate.AppRate;
 import com.toe.plain.R;
-import com.toe.plain.adapters.ConversationsListItemAdapter;
 import com.toe.plain.adapters.ListItemAdapter;
 import com.toe.plain.adapters.PlainFragmentAdapter;
 import com.toe.plain.adapters.TribeDirectoryListItemAdapter;
-import com.toe.plain.chat.XmppConnection;
 import com.toe.plain.classes.Shimmer;
 import com.toe.plain.classes.ShimmerTextView;
 import com.toe.plain.classes.XListView;
@@ -82,7 +79,6 @@ import com.toe.plain.dialogs.FavouriteOptionsCustomDialog;
 import com.toe.plain.dialogs.NewTribeCustomDialog;
 import com.toe.plain.dialogs.ReplyOptionsCustomDialog;
 import com.toe.plain.dialogs.StoryOptionsCustomDialog;
-import com.toe.plain.listitems.ConversationsListItem;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.listitems.TribeDirectoryListItem;
 import com.toe.plain.receivers.NotificationReceiver;
@@ -118,7 +114,7 @@ public class Plain extends PlainBase {
 			public void uncaughtException(Thread thread, Throwable ex) {
 				// TODO Auto-generated method stub
 				Log.e("PLAIN CRASH", ex.toString());
-				finish();
+				android.os.Process.killProcess(android.os.Process.myPid());
 			}
 		});
 	}
@@ -233,118 +229,128 @@ public class Plain extends PlainBase {
 			break;
 		case 2:
 			tvNoConversationListItem = (ShimmerTextView) findViewById(R.id.tvNoListItem);
+			tvNoConversationListItem.setTypeface(font);
+			new Shimmer().start(tvNoConversationListItem);
+
 			conversationsListView = (XListView) findViewById(R.id.lvListItems);
 			conversationsListView.setPullRefreshEnable(false);
 			conversationsListView.setPullLoadEnable(false);
 
-			if (conversationNames.isEmpty()) {
-				try {
-					conversationNames = (ArrayList<ConversationsListItem>) ObjectSerializer
-							.deserialize(sp
-									.getString(
-											"conversations",
-											ObjectSerializer
-													.serialize(new ArrayList<ConversationsListItem>())));
+			tvNoConversationListItem.setText("Soon enough :-)");
 
-				} catch (Exception e) {
-					Log.e("error in conversations retrieval", e.toString());
-				}
-				try {
-					XmppConnection.track_conversations = (ArrayList<String>) ObjectSerializer
-							.deserialize(sp
-									.getString(
-											"track_conversations",
-											ObjectSerializer
-													.serialize(new ArrayList<String>())));
-				} catch (IOException e) {
-					Log.e("error getting track conversations", e.toString());
-				}
-
-				try {
-					XmppConnection.message_map = (LinkedHashMap<String, String>) ObjectSerializer
-							.deserialize(sp.getString(
-									"message_map",
-									ObjectSerializer
-											.serialize(new LinkedHashMap<String, String>())));
-				} catch (IOException e) {
-					Log.e("error message map retrieval", e.toString());
-				}
-
-				try {
-					XmppConnection.track_plains = (ArrayList<String>) ObjectSerializer
-							.deserialize(sp.getString("track_plains",
-									ObjectSerializer
-											.serialize(new ArrayList<String>())));
-				} catch (IOException e) {
-					Log.e("error retrieving plains", e.toString());
-				}
-
-			}
-
-			conversationsAdapter = new ConversationsListItemAdapter(
-					getApplicationContext(), R.layout.conversations_list_item,
-					conversationNames);
-			conversationsListView.setAdapter(conversationsAdapter);
-
-			if (conversationNames.size() > 0) {
-				tvNoConversationListItem.setVisibility(View.INVISIBLE);
-			} else {
-				tvNoConversationListItem.setText("Press a plain to chat");
-			}
-
-			conversationsListView
-					.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-						@Override
-						public boolean onItemLongClick(AdapterView<?> parent,
-								View view, int position, long id) {
-							XmppConnection.deleteConversation(position);
-							return false;
-
-						}
-					});
-			conversationsListView
-					.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-						@Override
-						public void onItemClick(AdapterView<?> parent,
-								View view, int position, long id) {
-							// TODO Auto-generated method stub
-
-							Bundle bundle = new Bundle();
-
-							String plain_id_user_id = conversationNames.get(
-									position - 1).getChatState();
-							String conversation_plain_id = conversationNames
-									.get(position - 1).getName();
-							String receiverUsername = plain_id_user_id.replace(
-									conversation_plain_id, "");
-
-							String tag = conversationNames.get(position - 1)
-									.getName();
-
-							if (receiverUsername != null && tag != null) {
-								bundle.putString("receiverUsername",
-										receiverUsername);
-								bundle.putString("tag", tag);
-
-								Intent intent = new Intent(Plain.this,
-										Chat.class);
-								intent.putExtras(bundle);
-								startActivity(intent);
-							} else {
-								Toast.makeText(Plain.this,
-										"Option unavailable", Toast.LENGTH_LONG)
-										.show();
-							}
-
-						}
-					});
-
-			XmppConnection.initConversations(getApplicationContext(),
-					handleChange, conversationsAdapter, conversationNames,
-					sp.getString("username", null),
-					sp.getString("password", null));
+			// if (conversationNames.isEmpty()) {
+			// try {
+			// conversationNames = (ArrayList<ConversationsListItem>)
+			// ObjectSerializer
+			// .deserialize(sp
+			// .getString(
+			// "conversations",
+			// ObjectSerializer
+			// .serialize(new ArrayList<ConversationsListItem>())));
+			//
+			// } catch (Exception e) {
+			// Log.e("error in conversations retrieval", e.toString());
+			// }
+			// try {
+			// XmppConnection.track_conversations = (ArrayList<String>)
+			// ObjectSerializer
+			// .deserialize(sp
+			// .getString(
+			// "track_conversations",
+			// ObjectSerializer
+			// .serialize(new ArrayList<String>())));
+			// } catch (IOException e) {
+			// Log.e("error getting track conversations", e.toString());
+			// }
+			//
+			// try {
+			// XmppConnection.message_map = (LinkedHashMap<String, String>)
+			// ObjectSerializer
+			// .deserialize(sp.getString(
+			// "message_map",
+			// ObjectSerializer
+			// .serialize(new LinkedHashMap<String, String>())));
+			// } catch (IOException e) {
+			// Log.e("error message map retrieval", e.toString());
+			// }
+			//
+			// try {
+			// XmppConnection.track_plains = (ArrayList<String>)
+			// ObjectSerializer
+			// .deserialize(sp.getString("track_plains",
+			// ObjectSerializer
+			// .serialize(new ArrayList<String>())));
+			// } catch (IOException e) {
+			// Log.e("error retrieving plains", e.toString());
+			// }
+			//
+			// }
+			//
+			// conversationsAdapter = new ConversationsListItemAdapter(
+			// getApplicationContext(), R.layout.conversations_list_item,
+			// conversationNames);
+			// conversationsListView.setAdapter(conversationsAdapter);
+			//
+			// if (conversationNames.size() > 0) {
+			// tvNoConversationListItem.setVisibility(View.INVISIBLE);
+			// } else {
+			// tvNoConversationListItem.setText("Soon enough :-)");
+			// }
+			//
+			// conversationsListView
+			// .setOnItemLongClickListener(new
+			// AdapterView.OnItemLongClickListener() {
+			//
+			// @Override
+			// public boolean onItemLongClick(AdapterView<?> parent,
+			// View view, int position, long id) {
+			// XmppConnection.deleteConversation(position);
+			// return false;
+			//
+			// }
+			// });
+			// conversationsListView
+			// .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			//
+			// @Override
+			// public void onItemClick(AdapterView<?> parent,
+			// View view, int position, long id) {
+			// // TODO Auto-generated method stub
+			//
+			// Bundle bundle = new Bundle();
+			//
+			// String plain_id_user_id = conversationNames.get(
+			// position - 1).getChatState();
+			// String conversation_plain_id = conversationNames
+			// .get(position - 1).getName();
+			// String receiverUsername = plain_id_user_id.replace(
+			// conversation_plain_id, "");
+			//
+			// String tag = conversationNames.get(position - 1)
+			// .getName();
+			//
+			// if (receiverUsername != null && tag != null) {
+			// bundle.putString("receiverUsername",
+			// receiverUsername);
+			// bundle.putString("tag", tag);
+			//
+			// Intent intent = new Intent(Plain.this,
+			// Chat.class);
+			// intent.putExtras(bundle);
+			// startActivity(intent);
+			// } else {
+			// Toast.makeText(Plain.this,
+			// "Option unavailable", Toast.LENGTH_LONG)
+			// .show();
+			// }
+			//
+			// }
+			// });
+			//
+			// XmppConnection.initConversations(getApplicationContext(),
+			// handleChange, conversationsAdapter, conversationNames,
+			// sp.getString("username", null),
+			// sp.getString("password", null));
 
 			// sp.getString("username", null);
 			break;
@@ -1598,61 +1604,67 @@ public class Plain extends PlainBase {
 
 										@Override
 										public void onClick(View v) {
-											try {
-												tag = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1))
-														.getString("tag");
-											} catch (JSONException e1) {
-												Log.e("error getting tag",
-														e1.toString());
-											}
-
-											plain_id = jsonIdArray
-													.get(arg2 - 1);
-
-											senderUsername = sp.getString(
-													"username", null);
-											senderPassword = sp.getString(
-													"password", null);
-
-											try {
-												JSONObject json = new JSONObject(
-														jsonDocArray
-																.get(arg2 - 1));
-												receiverUsername = json
-														.getString("username");
-											} catch (JSONException e) {
-												// TODO Auto-generated catch
-												// block
-												e.printStackTrace();
-											}
-
-											Intent intent = new Intent(
-													Plain.this, Chat.class);
-											Bundle bundle = new Bundle();
-											bundle.putString("senderUsername",
-													senderUsername);
-											bundle.putString("senderPassword",
-													senderPassword);
-											bundle.putString(
-													"receiverUsername",
-													receiverUsername);
-
-											bundle.putString("tag", tag);
-
-											intent.putExtras(bundle);
-
-											if (receiverUsername != null
-													&& tag != null) {
-												startActivity(intent);
-											} else {
-												Toast.makeText(Plain.this,
-														"Option unavailable",
-														Toast.LENGTH_LONG)
-														.show();
-											}
+											Toast.makeText(
+													getApplicationContext(),
+													"Liking how you think...",
+													Toast.LENGTH_SHORT).show();
 											socDialog.dismiss();
+
+											// try {
+											// tag = new JSONObject(
+											// jsonDocArray
+											// .get(arg2 - 1))
+											// .getString("tag");
+											// } catch (JSONException e1) {
+											// Log.e("error getting tag",
+											// e1.toString());
+											// }
+											//
+											// plain_id = jsonIdArray
+											// .get(arg2 - 1);
+											//
+											// senderUsername = sp.getString(
+											// "username", null);
+											// senderPassword = sp.getString(
+											// "password", null);
+											//
+											// try {
+											// JSONObject json = new JSONObject(
+											// jsonDocArray
+											// .get(arg2 - 1));
+											// receiverUsername = json
+											// .getString("username");
+											// } catch (JSONException e) {
+											// // TODO Auto-generated catch
+											// // block
+											// e.printStackTrace();
+											// }
+											//
+											// Intent intent = new Intent(
+											// Plain.this, Chat.class);
+											// Bundle bundle = new Bundle();
+											// bundle.putString("senderUsername",
+											// senderUsername);
+											// bundle.putString("senderPassword",
+											// senderPassword);
+											// bundle.putString(
+											// "receiverUsername",
+											// receiverUsername);
+											//
+											// bundle.putString("tag", tag);
+											//
+											// intent.putExtras(bundle);
+											//
+											// if (receiverUsername != null
+											// && tag != null) {
+											// startActivity(intent);
+											// } else {
+											// Toast.makeText(Plain.this,
+											// "Option unavailable",
+											// Toast.LENGTH_LONG)
+											// .show();
+											// }
+											// socDialog.dismiss();
 										}
 									});
 							return true;
@@ -2400,11 +2412,11 @@ public class Plain extends PlainBase {
 		subMenu.add(1, 1, 1, "Create a tribe");
 		subMenu.add(2, 2, 2, "Preferences");
 		subMenu.add(3, 3, 3, "Rules");
-		subMenu.add(4, 4, 4, "Invite friends");
+		subMenu.add(4, 4, 4, "Invite new plainers");
 		subMenu.add(5, 5, 5, "About");
 
 		MenuItem subMenuItem = subMenu.getItem();
-		subMenuItem.setIcon(R.drawable.more_menu_icon);
+		subMenuItem.setIcon(R.drawable.menu_icon);
 		subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS
 				| MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -2583,7 +2595,7 @@ public class Plain extends PlainBase {
 			i.setType("text/plain");
 			i.putExtra(android.content.Intent.EXTRA_TEXT,
 					getString(R.string.share_message));
-			startActivity(Intent.createChooser(i, "Invite friends using..."));
+			startActivity(Intent.createChooser(i, "Invite a friend using..."));
 			break;
 		case 5:
 			i = new Intent(getApplicationContext(), About.class);

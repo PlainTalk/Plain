@@ -2,7 +2,7 @@
 
     <item
         android:id="@+id/mDone"
-        android:icon="@drawable/done_icon"
+        android:icon="@drawable/done_unselected"
         android:showAsAction="always"
         android:title="Search"/>
 

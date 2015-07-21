@@ -255,7 +255,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 					+ tribesMessage;
 
 		} else {
-			notificationMessage = "Hey there! I like you :-)";
+			notificationMessage = "Hey there! You should smile today :-)";
 		}
 
 		showNotification(context, notificationMessage);

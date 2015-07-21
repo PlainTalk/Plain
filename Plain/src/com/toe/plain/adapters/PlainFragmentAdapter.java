@@ -13,7 +13,7 @@ import com.toe.plain.activities.Plain;
 public class PlainFragmentAdapter extends PagerAdapter {
 
 	protected static final String[] CONTENT = new String[] { "Plains",
-			"Replies", "Conversations [BETA]", "Tribes", "Favourites" };
+			"Replies", "Chats", "Tribes", "Favourites" };
 
 	private int mCount = CONTENT.length;
 

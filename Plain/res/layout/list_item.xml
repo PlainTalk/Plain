@@ -44,8 +44,8 @@
 
         <com.toe.plain.classes.FlipImageView
             android:id="@+id/ivLike"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:scaleType="center"
             android:src="@drawable/like_icon"
             app:flipDrawable="@drawable/like_icon"
