@@ -936,40 +936,47 @@ public class Plain extends PlainBase {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (storyIsClean) {
-					if (story.length() > 1) {
-						if (story.length() < 1000) {
-							submitButton.setEnabled(false);
-							Timer timer = new Timer();
-							timer.schedule(new TimerTask() {
+				if (!story.contains("0") && !story.contains("7")) {
+					if (storyIsClean) {
+						if (story.length() > 1) {
+							if (story.length() < 1000) {
+								submitButton.setEnabled(false);
+								Timer timer = new Timer();
+								timer.schedule(new TimerTask() {
 
-								@Override
-								public void run() {
-									// TODO Auto-generated method stub
-									runOnUiThread(new Runnable() {
-										public void run() {
-											try {
-												submitButton.setEnabled(true);
-											} catch (Exception e) {
-												// TODO: handle exception
-												Log.e("Button delay error",
-														e.toString());
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										runOnUiThread(new Runnable() {
+											public void run() {
+												try {
+													submitButton
+															.setEnabled(true);
+												} catch (Exception e) {
+													// TODO: handle exception
+													Log.e("Button delay error",
+															e.toString());
+												}
 											}
-										}
-									});
-								}
-							}, 5000);
-							publishStory(story);
+										});
+									}
+								}, 5000);
+								publishStory(story);
+							} else {
+								emojiconEditText
+										.setError("Try shortening that a bit...");
+							}
 						} else {
 							emojiconEditText
-									.setError("Try shortening that a bit...");
+									.setError("Please say something...");
 						}
 					} else {
-						emojiconEditText.setError("Please say something...");
+						emojiconEditText
+								.setError(getString(R.string.et_not_clean_error));
 					}
 				} else {
 					emojiconEditText
-							.setError(getString(R.string.et_not_clean_error));
+							.setError("Trying to post a phone number? Nope.");
 				}
 			}
 		});
@@ -1084,47 +1091,54 @@ public class Plain extends PlainBase {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (storyIsClean) {
-					if (story.length() > 1) {
-						if (story.length() < 1000) {
-							submitButtonReplies.setEnabled(false);
-							Timer timer = new Timer();
-							timer.schedule(new TimerTask() {
+				if (!story.contains("0") && !story.contains("7")) {
+					if (storyIsClean) {
+						if (story.length() > 1) {
+							if (story.length() < 1000) {
+								submitButtonReplies.setEnabled(false);
+								Timer timer = new Timer();
+								timer.schedule(new TimerTask() {
 
-								@Override
-								public void run() {
-									// TODO Auto-generated method stub
-									runOnUiThread(new Runnable() {
-										public void run() {
-											try {
-												submitButtonReplies
-														.setEnabled(true);
-											} catch (Exception e) {
-												// TODO: handle exception
-												Log.e("Button delay error",
-														e.toString());
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										runOnUiThread(new Runnable() {
+											public void run() {
+												try {
+													submitButtonReplies
+															.setEnabled(true);
+												} catch (Exception e) {
+													// TODO: handle exception
+													Log.e("Button delay error",
+															e.toString());
+												}
 											}
-										}
-									});
-								}
-							}, 5000);
-							publishStory(story);
-							emojiconEditTextReplies
-									.setVisibility(View.INVISIBLE);
-							emojiconButtonReplies.setVisibility(View.INVISIBLE);
-							submitButtonReplies.setVisibility(View.INVISIBLE);
-							emojiconEditTextReplies.getText().clear();
+										});
+									}
+								}, 5000);
+								publishStory(story);
+								emojiconEditTextReplies
+										.setVisibility(View.INVISIBLE);
+								emojiconButtonReplies
+										.setVisibility(View.INVISIBLE);
+								submitButtonReplies
+										.setVisibility(View.INVISIBLE);
+								emojiconEditTextReplies.getText().clear();
+							} else {
+								emojiconEditTextReplies
+										.setError("Try shortening that a bit...");
+							}
 						} else {
 							emojiconEditTextReplies
-									.setError("Try shortening that a bit...");
+									.setError("Please say something...");
 						}
 					} else {
 						emojiconEditTextReplies
-								.setError("Please say something...");
+								.setError(getString(R.string.et_not_clean_error));
 					}
 				} else {
 					emojiconEditTextReplies
-							.setError(getString(R.string.et_not_clean_error));
+							.setError("Trying to post a phone number? Nope.");
 				}
 			}
 		});
@@ -1224,7 +1238,7 @@ public class Plain extends PlainBase {
 				R.array.banned_words);
 
 		for (int i = 0; i < bannedWords.length; i++) {
-			if (story.contains(bannedWords[i])) {
+			if (story.toLowerCase().contains(bannedWords[i])) {
 				storyIsClean = false;
 			}
 		}

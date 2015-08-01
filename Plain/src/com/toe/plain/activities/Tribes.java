@@ -197,26 +197,31 @@ public class Tribes extends TribesBase {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (story.contains(sp.getString("tribeHashtag", hashtag))) {
-					if (storyIsClean) {
-						if (story.length() > 1) {
-							if (story.length() < 1000) {
-								publishStory(story);
+				if (!story.contains("0") && !story.contains("7")) {
+					if (story.contains(sp.getString("tribeHashtag", hashtag))) {
+						if (storyIsClean) {
+							if (story.length() > 1) {
+								if (story.length() < 1000) {
+									publishStory(story);
+								} else {
+									emojiconEditText
+											.setError("Try shortening that a bit...");
+								}
 							} else {
 								emojiconEditText
-										.setError("Try shortening that a bit...");
+										.setError("Please say something...");
 							}
 						} else {
 							emojiconEditText
-									.setError("Please say something...");
+									.setError(getString(R.string.et_not_clean_error));
 						}
 					} else {
-						emojiconEditText
-								.setError(getString(R.string.et_not_clean_error));
+						emojiconEditText.setError("Please make sure " + hashtag
+								+ " is included");
 					}
 				} else {
-					emojiconEditText.setError("Please make sure " + hashtag
-							+ " is included");
+					emojiconEditText
+							.setError("Trying to post a phone number? Nope.");
 				}
 			}
 		});

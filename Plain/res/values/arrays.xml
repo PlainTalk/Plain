@@ -2,17 +2,17 @@
 <resources>
 
     <string-array name="banned_words">
-        <item>pussy</item>
         <item>puss</item>
         <item>vagina</item>
         <item>penis</item>
-        <item> cum </item>
+        <item>cum</item>
         <item>dick</item>
         <item>rape</item>
         <item>masturb</item>
         <item>jerk off</item>
         <item>fingering</item>
         <item>horny</item>
+        <item>clit</item>
     </string-array>
     <string-array name="countries">
         <item>Afghanistan;af;93</item>

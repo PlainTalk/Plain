@@ -18,7 +18,7 @@
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_marginRight="10dp" >
 
@@ -85,9 +85,18 @@
             </LinearLayout>
 
             <TextView
+                android:layout_width="100dp"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="#aaa"
+                android:gravity="center" />
+
+            <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="Lorem ipsum dolor sit amet"
@@ -95,24 +104,6 @@
                 android:textSize="20.0dip"
                 android:textStyle="bold" >
             </TextView>
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:background="#aaa"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/tvTimestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:text="about a minute ago"
-                android:textColor="#888" />
         </LinearLayout>
     </LinearLayout>
 

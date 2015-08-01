@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.toe.plain"
-    android:versionCode="53"
-    android:versionName="0.8.5.1" >
+    android:versionCode="54"
+    android:versionName="0.8.5.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -109,7 +109,7 @@
 
         <!--
          Optionally, register AnalyticsReceiver and AnalyticsService to support background
-         dispatching on non-Google Play devices
+         dispatching on non-Google Play devices
         -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
@@ -126,7 +126,7 @@
 
         <!--
            Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
-           installation campaign reporting
+           installation campaign reporting
         -->
         <receiver
             android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
