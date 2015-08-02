@@ -7,21 +7,26 @@ import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.toe.plain.R;
+import com.toe.plain.activities.PlainView;
 import com.toe.plain.classes.FlipImageView;
-import com.toe.plain.dialogs.TagTextCustomDialog;
+import com.toe.plain.dialogs.TagTextDialog;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.utils.TextViewFixTouchConsume;
 import com.toe.plain.utils.TimeUtils;
@@ -54,7 +59,7 @@ public class ListItemAdapter extends
 			v = inflater.inflate(R.layout.list_item, null);
 		}
 
-		ListItem i = objects.get(position);
+		final ListItem i = objects.get(position);
 		if (i != null) {
 			TextView tvStory = (TextView) v.findViewById(R.id.story);
 			tvStory.setTypeface(font);
@@ -63,6 +68,24 @@ public class ListItemAdapter extends
 			TextView tvTimeStamp = (TextView) v.findViewById(R.id.tvTimestamp);
 			FlipImageView ivLike = (FlipImageView) v.findViewById(R.id.ivLike);
 			ivLike.setFlipped(true);
+			ImageView ivPlainView = (ImageView) v
+					.findViewById(R.id.ivPlainView);
+			ivPlainView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(context, PlainView.class);
+					Bundle b = new Bundle();
+					b.putString("plain", i.getStory());
+					b.putInt("likes", i.getLikes());
+					b.putString("tag", i.getTag());
+					b.putString("time", i.getTimestamp());
+					intent.putExtras(b);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);
+				}
+			});
 
 			if (tvStory != null) {
 				tvStory.setMovementMethod(TextViewFixTouchConsume.LocalLinkMovementMethod
@@ -148,7 +171,7 @@ public class ListItemAdapter extends
 		}
 
 		public void onClick(View tv) {
-			TagTextCustomDialog ttcDialog = new TagTextCustomDialog(activity);
+			TagTextDialog ttcDialog = new TagTextDialog(activity);
 			ttcDialog.getWindow().setBackgroundDrawable(
 					new ColorDrawable(Color.TRANSPARENT));
 			ttcDialog.collection = context.getResources().getString(

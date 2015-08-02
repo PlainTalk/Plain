@@ -9,7 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.toe.plain.R;
 import com.toe.plain.activities.Chat;
-import com.toe.plain.activities.Plain;
+import com.toe.plain.activities.MainActivity;
 
 public class Notify {
 
@@ -28,7 +28,7 @@ public class Notify {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			notificationIntent = new Intent(context, Plain.class);
+			notificationIntent = new Intent(context, MainActivity.class);
 
 		}
 

@@ -64,6 +64,13 @@
             android:textColor="#666"
             android:textSize="15.0dip"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/ivPlainView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="center"
+            android:src="@drawable/plain_view_icon" />
     </LinearLayout>
 
     <TextView

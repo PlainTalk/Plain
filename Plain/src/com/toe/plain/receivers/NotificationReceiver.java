@@ -24,7 +24,7 @@ import com.shephertz.app42.paas.sdk.android.storage.QueryBuilder.Operator;
 import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.toe.plain.R;
-import com.toe.plain.activities.Plain;
+import com.toe.plain.activities.MainActivity;
 import com.toe.plain.utils.ObjectSerializer;
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -268,14 +268,14 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 		Intent notificationIntent;
 		try {
-			notificationIntent = new Intent(context, Plain.class);
+			notificationIntent = new Intent(context, MainActivity.class);
 			notificationIntent.putExtra("message_delivered", true);
 			notificationIntent.putExtra("message", notificationMessage);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			notificationIntent = new Intent(context, Plain.class);
+			notificationIntent = new Intent(context, MainActivity.class);
 
 		}
 		// set intent so it does not start a new activity

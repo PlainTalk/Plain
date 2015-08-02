@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.toe.plain.R;
-import com.toe.plain.activities.Plain;
+import com.toe.plain.activities.MainActivity;
 
 public class PlainFragmentAdapter extends PagerAdapter {
 
@@ -17,9 +17,9 @@ public class PlainFragmentAdapter extends PagerAdapter {
 
 	private int mCount = CONTENT.length;
 
-	Plain activity;
+	MainActivity activity;
 
-	public PlainFragmentAdapter(Plain activity) {
+	public PlainFragmentAdapter(MainActivity activity) {
 		this.activity = activity;
 	}
 

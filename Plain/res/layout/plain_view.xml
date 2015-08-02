@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#fff"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/listUi"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:gravity="center"
+        android:minHeight="50dp"
+        android:orientation="vertical"
+        android:padding="8dp" >
+
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <github.ankushsachdeva.emojicon.EmojiconTextView
+                    android:id="@+id/tvPlain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Lorem ipsum dolor sit amet"
+                    android:textColor="#444"
+                    android:textSize="30.0dip"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp" >
+
+            <TextView
+                android:id="@+id/tvTag"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="3dp"
+                android:gravity="center"
+                android:text="a12"
+                android:textColor="@color/background_color_dark"
+                android:textSize="15.0dip"
+                android:textStyle="bold" />
+
+            <com.toe.plain.classes.FlipImageView
+                android:id="@+id/ivLike"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="center"
+                android:src="@drawable/like_icon"
+                app:flipDrawable="@drawable/like_icon"
+                app:flipDuration="1500"
+                app:flipInterpolator="@android:anim/overshoot_interpolator"
+                app:flipRotations="y"
+                app:reverseRotation="true" />
+
+            <TextView
+                android:id="@+id/tvLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="3dp"
+                android:gravity="center"
+                android:text="10"
+                android:textColor="#666"
+                android:textSize="15.0dip"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#aaa" />
+
+        <TextView
+            android:id="@+id/tvTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="about a minute ago"
+            android:textColor="#888" />
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#aaa" />
+
+        <TextView
+            android:id="@+id/tvNoListItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Loading..."
+            android:textColor="#555"
+            android:textSize="16dp" />
+    </LinearLayout>
+
+    <com.toe.plain.classes.XListView
+        android:id="@+id/lvListItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadingEdge="none"
+        android:fastScrollAlwaysVisible="true"
+        android:fastScrollEnabled="true"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="0dp"
+        android:scrollbars="vertical"
+        android:transcriptMode="normal" />
+
+</LinearLayout>

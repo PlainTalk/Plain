@@ -3,6 +3,7 @@ package com.toe.plain.adapters;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.toe.plain.R;
 import com.toe.plain.classes.FlipImageView;
-import com.toe.plain.dialogs.TagTextCustomDialog;
+import com.toe.plain.dialogs.TagTextDialog;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.utils.TextViewFixTouchConsume;
 import com.toe.plain.utils.TimeUtils;
@@ -32,7 +33,6 @@ public class TribesListItemAdapter extends
 	private Context context;
 	private SherlockFragmentActivity activity;
 	private Typeface font;
-	private int timeOffset = 10800000;
 
 	public TribesListItemAdapter(Context context,
 			SherlockFragmentActivity activity, int textViewResourceId,
@@ -102,8 +102,11 @@ public class TribesListItemAdapter extends
 					return null;
 				}
 
+				Calendar calender = Calendar.getInstance();
+				TimeZone timezone = calender.getTimeZone();
+
 				int timeDistance = getTimeDistanceInMilliseconds(time
-						+ timeOffset);
+						+ timezone.getRawOffset());
 				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
 			}
 		}
@@ -146,7 +149,7 @@ public class TribesListItemAdapter extends
 		}
 
 		public void onClick(View tv) {
-			TagTextCustomDialog ttcDialog = new TagTextCustomDialog(activity);
+			TagTextDialog ttcDialog = new TagTextDialog(activity);
 			ttcDialog.getWindow().setBackgroundDrawable(
 					new ColorDrawable(Color.TRANSPARENT));
 			ttcDialog.collection = context.getResources().getString(

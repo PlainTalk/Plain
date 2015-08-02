@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/background_color"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <com.toe.plain.classes.FlipImageView
+        android:id="@+id/ivXoxoTutorial"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:scaleType="fitXY"
+        android:src="@drawable/tutorial_five"
+        app:flipDrawable="@drawable/tutorial_five"
+        app:flipDuration="2000"
+        app:flipInterpolator="@android:anim/decelerate_interpolator"
+        app:flipRotations="y"
+        app:reverseRotation="true" />
+
+    <com.toe.plain.classes.FlipImageView
+        android:id="@+id/ivDone"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="60dp"
+        android:scaleType="center"
+        android:src="@drawable/done_selector"
+        app:flipDrawable="@drawable/done_selector"
+        app:flipDuration="2000"
+        app:flipInterpolator="@android:anim/overshoot_interpolator"
+        app:flipRotations="y"
+        app:reverseRotation="true" />
+
+</FrameLayout>
