@@ -71,17 +71,17 @@
                     android:gravity="left"
                     android:text="#FooBar"
                     android:textColor="#444"
-                    android:textSize="30.0dip"
+                    android:textSize="32.0dip"
                     android:textStyle="bold" >
                 </TextView>
 
                 <ImageView
                     android:id="@+id/ivNotification"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/notification_dot" />
+                    android:src="@drawable/notification_icon" />
             </LinearLayout>
 
             <TextView

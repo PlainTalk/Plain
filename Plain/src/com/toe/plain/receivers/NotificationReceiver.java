@@ -207,21 +207,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 		lastId = sp.getString("lastId", null);
 		sp.edit().putString("lastId", jsonIdArray.get(0)).commit();
 
-		// lastTribeId = sp.getString("lastReplyId", null);
-		// sp.edit().putString("lastReplyId", jsonIdArray.get(0)).commit();
-
 		if (lastId != null) {
 			for (i = 1; i < jsonIdArray.size(); i++) {
 				if (lastId.equals(jsonIdArray.get(i))) {
 					break;
 				}
 			}
-
-			// for (int j = 1; j < jsonTribeArray.size(); i++) {
-			// if (lastTribeId.equals(jsonTribeArray.get(j))) {
-			// break;
-			// }
-			// }
 
 			if (i == jsonIdArray.size())
 				plainsMessage = "";
@@ -239,26 +230,24 @@ public class NotificationReceiver extends BroadcastReceiver {
 				repliesMessage = numberOfReplies + " replies!";
 			}
 
-			if (jsonTribeArray.size() == 0) {
-				tribesMessage = "";
-			} else {
-				if (jsonTribeArray.size() == 1) {
-					tribesMessage = " " + hashtag + ": "
-							+ jsonTribeArray.size() + " new plain!";
-				} else {
-					tribesMessage = " " + hashtag + ": "
-							+ jsonTribeArray.size() + " new plains!";
-				}
-			}
+			// if (jsonTribeArray.size() == 0) {
+			// tribesMessage = "";
+			// } else {
+			// if (jsonTribeArray.size() == 1) {
+			// tribesMessage = " " + hashtag + ": "
+			// + jsonTribeArray.size() + " new plain!";
+			// } else {
+			// tribesMessage = " " + hashtag + ": "
+			// + jsonTribeArray.size() + " new plains!";
+			// }
+			// }
 
-			notificationMessage = plainsMessage + " " + repliesMessage
-					+ tribesMessage;
-
+			notificationMessage = plainsMessage + " " + repliesMessage;
 		} else {
 			notificationMessage = "Hey there! You should smile today :-)";
 		}
 
-		showNotification(context, notificationMessage);
+		showNotification(context, notificationMessage + "\n\n");
 	}
 
 	private void showNotification(Context context, String notificationMessage) {

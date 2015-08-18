@@ -127,7 +127,7 @@ public class Tribe extends TribeBase {
 
 			@Override
 			public void onDismiss() {
-				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley);
+				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley_icon);
 			}
 		});
 		popup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
@@ -168,7 +168,7 @@ public class Tribe extends TribeBase {
 					if (popup.isKeyBoardOpen()) {
 						popup.showAtBottom();
 						changeEmojiKeyboardIcon(emojiButton,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 
 					else {
@@ -179,7 +179,7 @@ public class Tribe extends TribeBase {
 						inputMethodManager.showSoftInput(emojiconEditText,
 								InputMethodManager.SHOW_IMPLICIT);
 						changeEmojiKeyboardIcon(emojiButton,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 				}
 

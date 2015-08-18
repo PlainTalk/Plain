@@ -437,7 +437,8 @@ public class MainActivity extends MainActivityBase {
 													"\""
 															+ favouriteStories
 																	.get(arg2 - 1)
-															+ "\"\n\n- 'Plain");
+															+ "\"\n\n"
+															+ getString(R.string.signature));
 											startActivity(Intent.createChooser(
 													i,
 													"Share the plain using..."));
@@ -864,7 +865,7 @@ public class MainActivity extends MainActivityBase {
 
 			@Override
 			public void onDismiss() {
-				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley);
+				changeEmojiKeyboardIcon(emojiButton, R.drawable.smiley_icon);
 			}
 		});
 		popup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
@@ -905,7 +906,7 @@ public class MainActivity extends MainActivityBase {
 					if (popup.isKeyBoardOpen()) {
 						popup.showAtBottom();
 						changeEmojiKeyboardIcon(emojiButton,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 
 					else {
@@ -916,7 +917,7 @@ public class MainActivity extends MainActivityBase {
 						inputMethodManager.showSoftInput(emojiconEditText,
 								InputMethodManager.SHOW_IMPLICIT);
 						changeEmojiKeyboardIcon(emojiButton,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 				}
 
@@ -934,48 +935,46 @@ public class MainActivity extends MainActivityBase {
 				storyIsClean = true;
 				storyIsClean = filterWords(story);
 
-				if (!story.contains("0") && !story.contains("7")) {
-					if (storyIsClean) {
-						if (story.length() > 1) {
-							if (story.length() < 1000) {
-								submitButton.setEnabled(false);
-								Timer timer = new Timer();
-								timer.schedule(new TimerTask() {
+				// if (!story.contains("0") && !story.contains("7")) {
+				if (storyIsClean) {
+					if (story.length() > 1) {
+						if (story.length() < 1000) {
+							submitButton.setEnabled(false);
+							Timer timer = new Timer();
+							timer.schedule(new TimerTask() {
 
-									@Override
-									public void run() {
-										// TODO Auto-generated method stub
-										runOnUiThread(new Runnable() {
-											public void run() {
-												try {
-													submitButton
-															.setEnabled(true);
-												} catch (Exception e) {
-													// TODO: handle exception
-													Log.e("Button delay error",
-															e.toString());
-												}
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									runOnUiThread(new Runnable() {
+										public void run() {
+											try {
+												submitButton.setEnabled(true);
+											} catch (Exception e) {
+												// TODO: handle exception
+												Log.e("Button delay error",
+														e.toString());
 											}
-										});
-									}
-								}, 5000);
-								publishStory(story);
-							} else {
-								emojiconEditText
-										.setError("Try shortening that a bit...");
-							}
+										}
+									});
+								}
+							}, 5000);
+							publishStory(story);
 						} else {
 							emojiconEditText
-									.setError("Please say something...");
+									.setError("Try shortening that a bit...");
 						}
 					} else {
-						emojiconEditText
-								.setError(getString(R.string.et_not_clean_error));
+						emojiconEditText.setError("Please say something...");
 					}
 				} else {
 					emojiconEditText
-							.setError("Trying to post a phone number? Nope.");
+							.setError(getString(R.string.et_not_clean_error));
 				}
+				// } else if (story.contains("0") && story.contains("7")) {
+				// emojiconEditText
+				// .setError("Trying to post a phone number? Nope.");
+				// }
 			}
 		});
 	}
@@ -1013,7 +1012,7 @@ public class MainActivity extends MainActivityBase {
 			@Override
 			public void onDismiss() {
 				changeEmojiKeyboardIcon(emojiconButtonReplies,
-						R.drawable.smiley);
+						R.drawable.smiley_icon);
 			}
 		});
 		popupReplies
@@ -1058,7 +1057,7 @@ public class MainActivity extends MainActivityBase {
 					if (popupReplies.isKeyBoardOpen()) {
 						popupReplies.showAtBottom();
 						changeEmojiKeyboardIcon(emojiconButtonReplies,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 
 					else {
@@ -1070,7 +1069,7 @@ public class MainActivity extends MainActivityBase {
 								emojiconEditTextReplies,
 								InputMethodManager.SHOW_IMPLICIT);
 						changeEmojiKeyboardIcon(emojiconButtonReplies,
-								R.drawable.ic_action_keyboard);
+								R.drawable.keyboard_icon);
 					}
 				}
 
@@ -1472,15 +1471,28 @@ public class MainActivity extends MainActivityBase {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											replainStory(fullList.get(arg2 - 1)
-													.getStory(),
-													fullList.get(arg2 - 1)
-															.getLikes(),
-													fullList.get(arg2 - 1)
-															.getTag(), fullList
-															.get(arg2 - 1)
-															.isAdmin());
-											soDialog.dismiss();
+											if (arg2 > 25) {
+												replainStory(
+														fullList.get(arg2 - 1)
+																.getStory(),
+														fullList.get(arg2 - 1)
+																.getLikes(),
+														fullList.get(arg2 - 1)
+																.getTag(),
+														fullList.get(arg2 - 1)
+																.isAdmin());
+												soDialog.dismiss();
+											} else {
+												runOnUiThread(new Runnable() {
+													public void run() {
+														Toast.makeText(
+																getApplicationContext(),
+																"Woops! Too soon to replain this!",
+																Toast.LENGTH_SHORT)
+																.show();
+													}
+												});
+											}
 										}
 									});
 							soDialog.share
@@ -1498,7 +1510,8 @@ public class MainActivity extends MainActivityBase {
 															+ fullList.get(
 																	arg2 - 1)
 																	.getStory()
-															+ "\"\n\n- from 'Plain");
+															+ "\"\n\n"
+															+ getString(R.string.signature));
 
 											startActivity(Intent.createChooser(
 													i,
@@ -2165,7 +2178,8 @@ public class MainActivity extends MainActivityBase {
 																		+ replies
 																				.get(arg2 - 1)
 																				.getStory()
-																		+ "\"\n\n- from 'Plain");
+																		+ "\"\n\n"
+																		+ getString(R.string.signature));
 														startActivity(Intent
 																.createChooser(
 																		i,

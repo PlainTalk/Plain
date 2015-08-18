@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.toe.plain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/tutorial_five"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="20dp"
+        android:gravity="center|bottom"
+        android:text="Hi, you&apos;re a plainer now"
+        android:textColor="#fff"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+    <com.toe.plain.classes.FlipImageView
+        android:id="@+id/ivDone"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center|bottom"
+        android:scaleType="center"
+        android:src="@drawable/done_selector"
+        app:flipDrawable="@drawable/done_selector"
+        app:flipDuration="2000"
+        app:flipInterpolator="@android:anim/overshoot_interpolator"
+        app:flipRotations="y"
+        app:reverseRotation="true" />
+
+</LinearLayout>

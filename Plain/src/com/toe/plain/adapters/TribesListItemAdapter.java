@@ -19,12 +19,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.toe.plain.R;
 import com.toe.plain.classes.FlipImageView;
 import com.toe.plain.dialogs.TagTextDialog;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.utils.TextViewFixTouchConsume;
-import com.toe.plain.utils.TimeUtils;
 
 public class TribesListItemAdapter extends
 		com.nhaarman.listviewanimations.ArrayAdapter<ListItem> {
@@ -61,10 +61,8 @@ public class TribesListItemAdapter extends
 			tvStory.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.likes);
 			TextView tvTag = (TextView) v.findViewById(R.id.tag);
-			TextView tvTimeStamp = (TextView) v.findViewById(R.id.tvTimestamp);
-			FlipImageView ivLike = (FlipImageView) v.findViewById(R.id.ivLike);
-			ivLike.setFlipped(true);
-
+			RelativeTimeTextView tvTimeStamp = (RelativeTimeTextView) v
+					.findViewById(R.id.tvTimestamp);
 			if (tvStory != null) {
 				tvStory.setMovementMethod(TextViewFixTouchConsume.LocalLinkMovementMethod
 						.getInstance());
@@ -105,9 +103,10 @@ public class TribesListItemAdapter extends
 				Calendar calender = Calendar.getInstance();
 				TimeZone timezone = calender.getTimeZone();
 
-				int timeDistance = getTimeDistanceInMilliseconds(time
-						+ timezone.getRawOffset());
-				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
+				// int timeDistance = getTimeDistanceInMilliseconds(time
+				// + timezone.getRawOffset());
+
+				tvTimeStamp.setReferenceTime(time + timezone.getRawOffset());
 			}
 		}
 		return v;

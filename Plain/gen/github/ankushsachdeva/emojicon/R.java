@@ -8,12 +8,12 @@ package github.ankushsachdeva.emojicon;
 
 public final class R {
 	public static final class attr {
-		public static final int emojiconSize = 0x7f010020;
-		public static final int emojiconTextLength = 0x7f010022;
-		public static final int emojiconTextStart = 0x7f010021;
+		public static final int emojiconSize = 0x7f010023;
+		public static final int emojiconTextLength = 0x7f010025;
+		public static final int emojiconTextStart = 0x7f010024;
 	}
 	public static final class dimen {
-		public static final int keyboard_height = 0x7f0b0000;
+		public static final int keyboard_height = 0x7f0a0000;
 	}
 	public static final class drawable {
 		public static final int emoji_0023 = 0x7f02009f;
@@ -1122,26 +1122,26 @@ public final class R {
 		public static final int emoji_a097 = 0x7f0204ee;
 		public static final int emoji_a098 = 0x7f0204ef;
 		public static final int emoji_a099 = 0x7f0204f0;
-		public static final int ic_emoji_nature_light = 0x7f0204fb;
-		public static final int ic_emoji_nature_light_activated = 0x7f0204fc;
-		public static final int ic_emoji_nature_light_normal = 0x7f0204fd;
-		public static final int ic_emoji_objects_light = 0x7f0204fe;
-		public static final int ic_emoji_objects_light_activated = 0x7f0204ff;
-		public static final int ic_emoji_objects_light_normal = 0x7f020500;
-		public static final int ic_emoji_people_light = 0x7f020501;
-		public static final int ic_emoji_people_light_activated = 0x7f020502;
-		public static final int ic_emoji_people_light_normal = 0x7f020503;
-		public static final int ic_emoji_places_light = 0x7f020504;
-		public static final int ic_emoji_places_light_activated = 0x7f020505;
-		public static final int ic_emoji_places_light_normal = 0x7f020506;
-		public static final int ic_emoji_recent_light = 0x7f020507;
-		public static final int ic_emoji_recent_light_activated = 0x7f020508;
-		public static final int ic_emoji_recent_light_normal = 0x7f020509;
-		public static final int ic_emoji_symbols_light = 0x7f02050a;
-		public static final int ic_emoji_symbols_light_activated = 0x7f02050b;
-		public static final int ic_emoji_symbols_light_normal = 0x7f02050c;
-		public static final int ic_launcher = 0x7f02050d;
-		public static final int keyboard_background_holo = 0x7f020512;
+		public static final int ic_emoji_nature_light = 0x7f0204f9;
+		public static final int ic_emoji_nature_light_activated = 0x7f0204fa;
+		public static final int ic_emoji_nature_light_normal = 0x7f0204fb;
+		public static final int ic_emoji_objects_light = 0x7f0204fc;
+		public static final int ic_emoji_objects_light_activated = 0x7f0204fd;
+		public static final int ic_emoji_objects_light_normal = 0x7f0204fe;
+		public static final int ic_emoji_people_light = 0x7f0204ff;
+		public static final int ic_emoji_people_light_activated = 0x7f020500;
+		public static final int ic_emoji_people_light_normal = 0x7f020501;
+		public static final int ic_emoji_places_light = 0x7f020502;
+		public static final int ic_emoji_places_light_activated = 0x7f020503;
+		public static final int ic_emoji_places_light_normal = 0x7f020504;
+		public static final int ic_emoji_recent_light = 0x7f020505;
+		public static final int ic_emoji_recent_light_activated = 0x7f020506;
+		public static final int ic_emoji_recent_light_normal = 0x7f020507;
+		public static final int ic_emoji_symbols_light = 0x7f020508;
+		public static final int ic_emoji_symbols_light_activated = 0x7f020509;
+		public static final int ic_emoji_symbols_light_normal = 0x7f02050a;
+		public static final int ic_launcher = 0x7f02050b;
+		public static final int keyboard_background_holo = 0x7f020510;
 		public static final int orca_attach_camera_normal = 0x7f02051b;
 		public static final int orca_attach_camera_pressed = 0x7f02051c;
 		public static final int orca_attach_location_normal = 0x7f02051d;
@@ -1181,20 +1181,20 @@ public final class R {
 		public static final int orca_emoji_more_front_pressed = 0x7f02053f;
 		public static final int orca_emoji_tab_background = 0x7f020540;
 		public static final int orca_emoji_tab_dark_background = 0x7f020541;
-		public static final int sym_keyboard_delete_holo_dark = 0x7f020557;
+		public static final int sym_keyboard_delete_holo_dark = 0x7f020559;
 	}
 	public static final class id {
-		public static final int Emoji_GridView = 0x7f09005f;
-		public static final int emojicon_icon = 0x7f090060;
-		public static final int emojis_backspace = 0x7f090068;
-		public static final int emojis_pager = 0x7f090069;
-		public static final int emojis_tab = 0x7f090061;
-		public static final int emojis_tab_0_recents = 0x7f090062;
-		public static final int emojis_tab_1_people = 0x7f090063;
-		public static final int emojis_tab_2_nature = 0x7f090064;
-		public static final int emojis_tab_3_objects = 0x7f090065;
-		public static final int emojis_tab_4_cars = 0x7f090066;
-		public static final int emojis_tab_5_punctuation = 0x7f090067;
+		public static final int Emoji_GridView = 0x7f0c005f;
+		public static final int emojicon_icon = 0x7f0c0060;
+		public static final int emojis_backspace = 0x7f0c0068;
+		public static final int emojis_pager = 0x7f0c0069;
+		public static final int emojis_tab = 0x7f0c0061;
+		public static final int emojis_tab_0_recents = 0x7f0c0062;
+		public static final int emojis_tab_1_people = 0x7f0c0063;
+		public static final int emojis_tab_2_nature = 0x7f0c0064;
+		public static final int emojis_tab_3_objects = 0x7f0c0065;
+		public static final int emojis_tab_4_cars = 0x7f0c0066;
+		public static final int emojis_tab_5_punctuation = 0x7f0c0067;
 	}
 	public static final class layout {
 		public static final int emojicon_grid = 0x7f03001b;
@@ -1202,13 +1202,13 @@ public final class R {
 		public static final int emojicons = 0x7f03001d;
 	}
 	public static final class string {
-		public static final int app_name = 0x7f070023;
+		public static final int app_name = 0x7f060024;
 	}
 	public static final class style {
-		public static final int emojiDialog = 0x7f060005;
+		public static final int emojiDialog = 0x7f070005;
 	}
 	public static final class styleable {
-		public static final int[] Emojicon = { 0x7f010020, 0x7f010021, 0x7f010022 };
+		public static final int[] Emojicon = { 0x7f010023, 0x7f010024, 0x7f010025 };
 		public static final int Emojicon_emojiconSize = 0;
 		public static final int Emojicon_emojiconTextLength = 2;
 		public static final int Emojicon_emojiconTextStart = 1;

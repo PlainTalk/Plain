@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.toe.plain.R;
@@ -34,23 +36,58 @@ public class Tutorial extends SherlockFragmentActivity {
 		setAdapter();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void initPagerView(int position, View view) {
-		FlipImageView flip = (FlipImageView) findViewById(R.id.ivXoxoTutorial);
+		LinearLayout llTutorial = (LinearLayout) findViewById(R.id.llTutorial);
+		TextView tvTutorial = (TextView) findViewById(R.id.tvTutorial);
+		final int sdk = android.os.Build.VERSION.SDK_INT;
+
 		switch (position) {
 		case 0:
-			flip.setFlipped(true);
+			if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				llTutorial.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.tutorial_one));
+			} else {
+				llTutorial.setBackground(getResources().getDrawable(
+						R.drawable.tutorial_one));
+			}
+
+			tvTutorial.setText("Type out anything at all");
 			break;
 		case 1:
-			flip.setFlipped(true);
+			if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				llTutorial.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.tutorial_two));
+			} else {
+				llTutorial.setBackground(getResources().getDrawable(
+						R.drawable.tutorial_two));
+			}
+
+			tvTutorial.setText("Send it out into the world");
 			break;
 		case 2:
-			flip.setFlipped(true);
+			if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				llTutorial.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.tutorial_three));
+			} else {
+				llTutorial.setBackground(getResources().getDrawable(
+						R.drawable.tutorial_three));
+			}
+
+			tvTutorial.setText("Make tribes, create your own communities");
 			break;
 		case 3:
-			flip.setFlipped(true);
+			if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				llTutorial.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.tutorial_four));
+			} else {
+				llTutorial.setBackground(getResources().getDrawable(
+						R.drawable.tutorial_four));
+			}
+
+			tvTutorial.setText("Create relationships, make friends");
 			break;
 		case 4:
-			flip.setFlipped(true);
 			final FlipImageView ivDone = (FlipImageView) findViewById(R.id.ivDone);
 			ivDone.setOnClickListener(new View.OnClickListener() {
 

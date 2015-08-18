@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CacheManager;
@@ -37,13 +38,11 @@ import com.shephertz.app42.paas.sdk.android.storage.Storage;
 import com.shephertz.app42.paas.sdk.android.storage.StorageService;
 import com.toe.plain.R;
 import com.toe.plain.adapters.ListItemAdapter;
-import com.toe.plain.classes.ShimmerTextView;
 import com.toe.plain.classes.XListView;
 import com.toe.plain.classes.XListView.IXListViewListener;
 import com.toe.plain.dialogs.TagTextDialog;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.utils.TextViewFixTouchConsume;
-import com.toe.plain.utils.TimeUtils;
 
 public class PlainView extends SherlockFragmentActivity {
 
@@ -51,7 +50,8 @@ public class PlainView extends SherlockFragmentActivity {
 	String plain, tag, timestamp, error;
 	Integer likes;
 	EmojiconTextView tvPlain;
-	TextView tvTag, tvLikes, tvTimestamp, tvNoListItem;
+	TextView tvTag, tvLikes, tvNoListItem;
+	RelativeTimeTextView tvTimestamp;
 	XListView lvReplies;
 	SherlockFragmentActivity activity;
 	ListItemAdapter adapter;
@@ -104,7 +104,7 @@ public class PlainView extends SherlockFragmentActivity {
 
 		tvTag = (TextView) findViewById(R.id.tvTag);
 		tvLikes = (TextView) findViewById(R.id.tvLikes);
-		tvTimestamp = (TextView) findViewById(R.id.tvTimestamp);
+		tvTimestamp = (RelativeTimeTextView) findViewById(R.id.tvTimestamp);
 		tvNoListItem = (TextView) findViewById(R.id.tvNoListItem);
 
 		lvReplies = (XListView) findViewById(R.id.lvListItems);
@@ -128,12 +128,12 @@ public class PlainView extends SherlockFragmentActivity {
 				TextView.BufferType.SPANNABLE);
 		tvTag.setText(tag);
 		tvLikes.setText(likes + "");
-		tvTimestamp.setText(processTime(timestamp));
+		tvTimestamp.setReferenceTime(processTime(timestamp));
 
 		getSupportActionBar().setTitle("@" + tag);
 	}
 
-	private String processTime(String timestamp) {
+	private long processTime(String timestamp) {
 		// TODO Auto-generated method stub
 		Date date = formatTime(timestamp);
 		long time = date.getTime();
@@ -141,16 +141,13 @@ public class PlainView extends SherlockFragmentActivity {
 		Date curDate = currentDate();
 		long now = curDate.getTime();
 		if (time > now || time <= 0) {
-			return null;
+			return 0;
 		}
 
 		Calendar calender = Calendar.getInstance();
 		TimeZone timezone = calender.getTimeZone();
 
-		int timeDistance = getTimeDistanceInMilliseconds(time
-				+ timezone.getRawOffset());
-
-		return TimeUtils.millisToLongDHMS(timeDistance);
+		return time + timezone.getRawOffset();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -186,11 +183,6 @@ public class PlainView extends SherlockFragmentActivity {
 	public static Date currentDate() {
 		Calendar calendar = Calendar.getInstance();
 		return calendar.getTime();
-	}
-
-	private static int getTimeDistanceInMilliseconds(long time) {
-		long timeDistance = currentDate().getTime() - time;
-		return Math.round(Math.abs(timeDistance));
 	}
 
 	protected void searchForTag(String tagQuery) {
@@ -278,7 +270,7 @@ public class PlainView extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		runOnUiThread(new Runnable() {
 			public void run() {
-				tvNoListItem.setText("Replies");
+				tvNoListItem.setText("Conversation:");
 				lvReplies = (XListView) findViewById(R.id.lvListItems);
 				lvReplies.setPullLoadEnable(false);
 				lvReplies.stopRefresh();

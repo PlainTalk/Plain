@@ -24,19 +24,19 @@ public class TutorialFragmentAdapter extends PagerAdapter {
 		int resId = 0;
 		switch (position) {
 		case 0:
-			resId = R.layout.tutorial_one;
+			resId = R.layout.tutorial;
 			break;
 		case 1:
-			resId = R.layout.tutorial_two;
+			resId = R.layout.tutorial;
 			break;
 		case 2:
-			resId = R.layout.tutorial_three;
+			resId = R.layout.tutorial;
 			break;
 		case 3:
-			resId = R.layout.tutorial_four;
+			resId = R.layout.tutorial;
 			break;
 		case 4:
-			resId = R.layout.tutorial_five;
+			resId = R.layout.tutorial_final;
 			break;
 		}
 		View view = inflater.inflate(resId, null);

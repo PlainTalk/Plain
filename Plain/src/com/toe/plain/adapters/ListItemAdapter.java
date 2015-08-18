@@ -23,13 +23,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.toe.plain.R;
 import com.toe.plain.activities.PlainView;
 import com.toe.plain.classes.FlipImageView;
 import com.toe.plain.dialogs.TagTextDialog;
 import com.toe.plain.listitems.ListItem;
 import com.toe.plain.utils.TextViewFixTouchConsume;
-import com.toe.plain.utils.TimeUtils;
 
 public class ListItemAdapter extends
 		com.nhaarman.listviewanimations.ArrayAdapter<ListItem> {
@@ -65,9 +65,8 @@ public class ListItemAdapter extends
 			tvStory.setTypeface(font);
 			TextView tvLikes = (TextView) v.findViewById(R.id.likes);
 			TextView tvTag = (TextView) v.findViewById(R.id.tag);
-			TextView tvTimeStamp = (TextView) v.findViewById(R.id.tvTimestamp);
-			FlipImageView ivLike = (FlipImageView) v.findViewById(R.id.ivLike);
-			ivLike.setFlipped(true);
+			RelativeTimeTextView tvTimeStamp = (RelativeTimeTextView) v
+					.findViewById(R.id.tvTimestamp);
 			ImageView ivPlainView = (ImageView) v
 					.findViewById(R.id.ivPlainView);
 			ivPlainView.setOnClickListener(new OnClickListener() {
@@ -127,9 +126,10 @@ public class ListItemAdapter extends
 				Calendar calender = Calendar.getInstance();
 				TimeZone timezone = calender.getTimeZone();
 
-				int timeDistance = getTimeDistanceInMilliseconds(time
-						+ timezone.getRawOffset());
-				tvTimeStamp.setText(TimeUtils.millisToLongDHMS(timeDistance));
+				// int timeDistance = getTimeDistanceInMilliseconds(time
+				// + timezone.getRawOffset());
+
+				tvTimeStamp.setReferenceTime(time + timezone.getRawOffset());
 			}
 		}
 		return v;
@@ -219,10 +219,5 @@ public class ListItemAdapter extends
 	public static Date currentDate() {
 		Calendar calendar = Calendar.getInstance();
 		return calendar.getTime();
-	}
-
-	private static int getTimeDistanceInMilliseconds(long time) {
-		long timeDistance = currentDate().getTime() - time;
-		return Math.round(Math.abs(timeDistance));
 	}
 }
